@@ -20,18 +20,23 @@ export const WelcomeSection = () => {
       scrollTrigger: {
         trigger: container,
         start: "top top",
-        end: "+=100%", // 1 viewport height to scroll through
+        end: "+=120%", // Slightly longer for a smoother transition
         scrub: true,
         pin: true,
-        pinSpacing: false, // Allows the hero section below it to scroll up and replace it!
+        pinSpacing: false,
       },
     })
 
-    // Fade out and move text up as user scrolls
-    tl.to(text, { y: -50, opacity: 0, duration: 1 })
+    // 1. Text fades and moves up quickly (parallax)
+    tl.to(text, { y: -100, opacity: 0, duration: 0.5, ease: "power2.in" })
     
-    // Optional: add a slight shadow/darken to the background as it gets covered
-    tl.to(container, { opacity: 0, duration: 0.5 }, "-=0.5")
+    // 2. The background wipes up smoothly using clip-path, revealing HeroSection underneath
+    tl.fromTo(
+      container,
+      { clipPath: "inset(0% 0% 0% 0%)" },
+      { clipPath: "inset(0% 0% 100% 0%)", duration: 0.8, ease: "power2.inOut" },
+      "-=0.3" // Starts wiping while text is finishing its fade
+    )
 
     return () => {
       tl.kill()
