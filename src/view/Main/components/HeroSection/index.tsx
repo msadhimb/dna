@@ -1,10 +1,9 @@
 "use client"
 
-import React, { useEffect, useState, useRef } from "react"
+import { useEffect, useState, useRef } from "react"
 import { useTheme } from "next-themes"
-import { Switch } from "@/components/ui/switch"
 import { Countdown } from "@/components/Countdown"
-import { Volume2, VolumeX, ChevronDown, Heart, Moon, Sun } from "lucide-react"
+import { ChevronDown, Heart } from "lucide-react"
 import Image from "next/image"
 
 const HeroSection = () => {
