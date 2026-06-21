@@ -161,12 +161,13 @@ export function CurtainTransition({ theme }: CurtainTransitionProps) {
         >
           {/* Layer gambar — oversized, akan bergerak lebih cepat dari frame */}
           <div
-            className={`photo-inner-${i} absolute`}
+            className={`photo-inner-${i}`}
             style={{
+              position: "absolute",
               top: "-15%",
               left: "-15%",
-              right: "-15%",
-              bottom: "-15%",
+              width: "130%", // ← eksplisit, bukan right/bottom
+              height: "130%", // ← eksplisit
               transform: "translateY(30%)",
             }}
           >
@@ -174,8 +175,8 @@ export function CurtainTransition({ theme }: CurtainTransitionProps) {
               src={theme === "dark" ? frame.dark : frame.light}
               alt={`Curtain Photo ${i + 1}`}
               fill
-              sizes="100vw"
-              priority
+              sizes="130vw"
+              priority={i === 0} // ← priority hanya frame pertama
               className="object-cover object-center"
             />
           </div>
