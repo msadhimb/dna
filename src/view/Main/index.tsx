@@ -35,8 +35,8 @@ const PREVIEW_FRAMES = [
   },
   {
     light: (
-      <div className="flex h-full w-full items-center justify-center bg-primary font-serif text-3xl tracking-wider text-muted">
-        <p className="max-w-lg text-center">
+      <div className="flex h-full w-full items-center justify-center bg-primary font-signature text-2xl font-bold tracking-wider text-muted md:text-3xl">
+        <p className="max-w-sm text-center md:max-w-lg">
           Dalam setiap pagi yang penuh harapan, kami menemukan alasan untuk
           tersenyum. Dalam setiap langkah yang kami tempuh bersama, tumbuh
           keyakinan bahwa cinta ini layak diperjuangkan.
@@ -44,8 +44,8 @@ const PREVIEW_FRAMES = [
       </div>
     ),
     dark: (
-      <div className="flex h-full w-full items-center justify-center bg-primary font-serif text-3xl tracking-wider text-white">
-        <p className="max-w-lg text-center">
+      <div className="flex h-full w-full items-center justify-center bg-primary font-signature text-2xl font-bold tracking-wider text-black md:text-3xl">
+        <p className="max-w-sm text-center md:max-w-lg">
           Dalam malam yang sunyi, kami belajar tentang kesabaran, pengertian,
           dan ketulusan. Karena cinta sejati bukan hanya hadir dalam cahaya,
           tetapi juga tetap bertahan dalam gelap.
