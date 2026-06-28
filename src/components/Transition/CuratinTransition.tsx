@@ -1,20 +1,86 @@
 "use client"
 
-import React, { useEffect, useRef } from "react"
-import { gsap } from "gsap"
-import { ScrollTrigger } from "gsap/ScrollTrigger"
-
-if (typeof window !== "undefined") {
-  gsap.registerPlugin(ScrollTrigger)
-}
+import React, { useRef, useImperativeHandle, forwardRef } from "react"
+import gsap from "gsap"
 
 interface CurtainTransitionProps {
   frames: React.ReactNode[]
 }
 
-export function CurtainTransition({ frames }: CurtainTransitionProps) {
+export interface CurtainTransitionRef {
+  getTimeline: () => gsap.core.Timeline
+}
+
+export const CurtainTransition = forwardRef<
+  CurtainTransitionRef,
+  CurtainTransitionProps
+>(({ frames }, ref) => {
   const leftHalfRef = useRef<HTMLDivElement>(null)
   const rightHalfRef = useRef<HTMLDivElement>(null)
+
+  useImperativeHandle(ref, () => ({
+    getTimeline: () => {
+      const tl = gsap.timeline()
+      const STAGGER = 0.25
+      const FRAME_DUR = 1.2
+      const IMAGE_DUR = 0.75
+      const heroSection = document.getElementById("hero-section")
+      const journeyWrapper = document.getElementById("journey-wrapper")
+
+      // Curtain muncul: titik kecil → garis vertikal → melebar penuh
+      tl.to(".curtain-bg", {
+        scaleX: 0.008,
+        scaleY: 0.013,
+        duration: 0.4,
+        ease: "power2.in",
+        delay: 0.5,
+      })
+        .to(".curtain-bg", { scaleY: 1, duration: 0.7, ease: "power3.out" })
+        .to(".curtain-bg", { scaleX: 1, duration: 0.6, ease: "expo.inOut" })
+
+      // Frame photos slideIn satu per satu
+      frames.forEach((_, i) => {
+        const pos = i === 0 ? "-=0.3" : `-=${FRAME_DUR - STAGGER}`
+        tl.to(
+          `.photo-bg-${i}`,
+          { scale: 1, duration: FRAME_DUR, ease: "power2.out" },
+          pos
+        ).to(
+          `.photo-inner-${i}`,
+          { y: "0%", duration: IMAGE_DUR, ease: "power3.out" },
+          "<"
+        )
+      })
+
+      // Fade hero halus sebelum split
+      if (heroSection) {
+        tl.to(heroSection, { opacity: 0, duration: 0.25, ease: "power1.inOut" }).to(
+          {},
+          { duration: 0.5 }
+        )
+      }
+
+      // Prepare Journey Sequence underneath the split
+      if (journeyWrapper) {
+        tl.set(journeyWrapper, { opacity: 1, pointerEvents: "auto" })
+      }
+
+      // Split curtain kiri dan kanan
+      if (leftHalfRef.current && rightHalfRef.current) {
+        tl.to(
+          leftHalfRef.current,
+          { xPercent: -100, duration: 1.1, ease: "expo.inOut", force3D: true },
+          "split"
+        ).to(
+          rightHalfRef.current,
+          { xPercent: 100, duration: 1.1, ease: "expo.inOut", force3D: true },
+          "split"
+        )
+      }
+
+      return tl
+    },
+  }))
 
   const contentJSX = (
     <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
@@ -61,98 +127,6 @@ export function CurtainTransition({ frames }: CurtainTransitionProps) {
     </div>
   )
 
-  useEffect(() => {
-    let tl: gsap.core.Timeline | null = null
-    let interval: NodeJS.Timeout
-
-    const initGSAP = () => {
-      const heroSection = document.getElementById("hero-section")
-      const leftHalf = leftHalfRef.current
-      const rightHalf = rightHalfRef.current
-      if (!heroSection || !leftHalf || !rightHalf) return false
-
-      gsap.set([leftHalf, rightHalf], {
-        willChange: "transform",
-        backfaceVisibility: "hidden",
-        force3D: true,
-      })
-
-      const STAGGER = 0.25
-      const FRAME_DUR = 1.2
-      const IMAGE_DUR = 0.75
-
-      tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: heroSection,
-          start: "top top",
-          end: "+=200%",
-          scrub: 1,
-          pin: true,
-          pinSpacing: true,
-          anticipatePin: 1,
-        },
-      })
-
-      // Curtain muncul: titik kecil → garis vertikal → melebar penuh
-      tl.to(".curtain-bg", {
-        scaleX: 0.008,
-        scaleY: 0.013,
-        duration: 0.4,
-        ease: "power2.in",
-        delay: 0.5,
-      })
-        .to(".curtain-bg", { scaleY: 1, duration: 0.7, ease: "power3.out" })
-        .to(".curtain-bg", { scaleX: 1, duration: 0.6, ease: "expo.inOut" })
-
-      // Frame photos slideIn satu per satu
-      frames.forEach((_, i) => {
-        const pos = i === 0 ? "-=0.3" : `-=${FRAME_DUR - STAGGER}`
-        tl!.to(
-          `.photo-bg-${i}`,
-          { scale: 1, duration: FRAME_DUR, ease: "power2.out" },
-          pos
-        )
-        tl!.to(
-          `.photo-inner-${i}`,
-          { y: "0%", duration: IMAGE_DUR, ease: "power3.out" },
-          "<"
-        )
-      })
-
-      // Fade hero halus sebelum split
-      tl.to(heroSection, { opacity: 0, duration: 0.25, ease: "power1.inOut" })
-      tl.to({}, { duration: 0.5 })
-
-      // Split curtain kiri dan kanan
-      tl.to(
-        leftHalf,
-        { xPercent: -100, duration: 1.1, ease: "expo.inOut", force3D: true },
-        "split"
-      )
-      tl.to(
-        rightHalf,
-        { xPercent: 100, duration: 1.1, ease: "expo.inOut", force3D: true },
-        "split"
-      )
-
-      return true
-    }
-
-    if (!initGSAP()) {
-      interval = setInterval(() => {
-        if (initGSAP()) clearInterval(interval)
-      }, 100)
-    }
-
-    return () => {
-      if (interval) clearInterval(interval)
-      if (tl) {
-        tl.scrollTrigger?.kill()
-        tl.kill()
-      }
-    }
-  }, [frames])
-
   return (
     <div className="pointer-events-none fixed inset-0 z-50 flex">
       <div ref={leftHalfRef} className="relative h-full w-1/2 overflow-hidden">
@@ -168,4 +142,6 @@ export function CurtainTransition({ frames }: CurtainTransitionProps) {
       </div>
     </div>
   )
-}
+})
+
+CurtainTransition.displayName = "CurtainTransition"

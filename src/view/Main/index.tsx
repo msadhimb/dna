@@ -1,16 +1,25 @@
 "use client"
 
-import React, { useEffect, useState, useMemo } from "react"
+import React, { useEffect, useState, useMemo, useRef } from "react"
 import { useTheme } from "next-themes"
 import { Heart } from "lucide-react"
 import HeroSection from "./components/HeroSection"
-import { CurtainTransition } from "@/components/Transition/CuratinTransition"
-import { JourneySequence } from "@/components/JourneySequence"
-// import { JourneySequence } from "./components/JourneySequence"
-
+import {
+  CurtainTransition,
+  CurtainTransitionRef,
+} from "@/components/Transition/CuratinTransition"
+import JourneySequence, {
+  JourneySequenceRef,
+} from "@/components/JourneySequence"
 import { WelcomeSection } from "./components/WelcomeSection"
 import { LoadingScreen } from "@/components/LoadingScreen"
 import Image from "next/image"
+import gsap from "gsap"
+import { ScrollTrigger } from "gsap/ScrollTrigger"
+import { useGSAP } from "@gsap/react"
+import { cn } from "@/lib/utils"
+
+gsap.registerPlugin(ScrollTrigger)
 
 const PREVIEW_FRAMES = [
   {
@@ -62,7 +71,10 @@ const MainView = () => {
 
   const theme = resolvedTheme === "dark" ? "dark" : "light"
 
-  // Extract URLs to preload based on theme (only if they are strings)
+  const mainRef = useRef<HTMLElement>(null)
+  const curtainRef = useRef<CurtainTransitionRef>(null)
+  const journeyRef = useRef<JourneySequenceRef>(null)
+
   const urlsToPreload = useMemo(() => {
     return (
       theme === "dark"
@@ -102,6 +114,44 @@ const MainView = () => {
     setMounted(true)
   }, [])
 
+  useGSAP(
+    () => {
+      if (!isLoaded) return
+
+      const masterTrigger = document.getElementById("master-trigger")
+      const journeyWrapper = document.getElementById("journey-wrapper")
+
+      if (
+        !masterTrigger ||
+        !journeyWrapper ||
+        !curtainRef.current ||
+        !journeyRef.current
+      )
+        return
+
+      gsap.set(journeyWrapper, { opacity: 0 })
+
+      const masterTl = gsap.timeline({
+        scrollTrigger: {
+          trigger: masterTrigger,
+          start: "top top",
+          end: "+=700%",
+          scrub: 1,
+          pin: true,
+          pinSpacing: true,
+          anticipatePin: 1,
+        },
+      })
+
+      const curtainTl = curtainRef.current.getTimeline()
+      const journeyTl = journeyRef.current.getTimeline()
+
+      masterTl.add(curtainTl)
+      masterTl.add(journeyTl)
+    },
+    { scope: mainRef, dependencies: [isLoaded] }
+  )
+
   if (!mounted) {
     return (
       <div className="flex h-screen items-center justify-center bg-background">
@@ -111,7 +161,7 @@ const MainView = () => {
   }
 
   return (
-    <main>
+    <main ref={mainRef}>
       {!isLoaded && (
         <LoadingScreen
           imageUrls={urlsToPreload}
@@ -119,13 +169,28 @@ const MainView = () => {
         />
       )}
 
-      {/* 0. Welcome */}
       <WelcomeSection />
 
-      {/* 1. Hero */}
-      <HeroSection />
-      <CurtainTransition frames={frames} />
-      {/* <JourneySequence theme={theme} /> */}
+      <section
+        id="master-trigger"
+        className="relative h-screen w-full overflow-hidden bg-background"
+      >
+        <div className="absolute inset-0 z-0">
+          <HeroSection />
+        </div>
+
+        <div className="pointer-events-none absolute inset-0 z-30">
+          <CurtainTransition ref={curtainRef} frames={frames} />
+        </div>
+
+        <div
+          id="journey-wrapper"
+          className="o pointer-events-none absolute inset-0 z-20 flex h-full w-full flex-col justify-center overflow-hidden opacity-0"
+        >
+          <JourneySequence ref={journeyRef} theme={theme} />
+        </div>
+      </section>
+
       <div className="h-[300vh] w-full bg-background" />
     </main>
   )
