@@ -317,20 +317,20 @@ export const JourneySequence = forwardRef<
       <div
         ref={textContainerRef}
         id="journey-text-container"
-        className="absolute top-50 z-10 flex flex-col items-center gap-2 text-center md:top-48 md:gap-4"
+        className="gsap-element absolute top-50 z-10 flex flex-col items-center gap-2 text-center md:top-48 md:gap-4"
       >
         <div className="flex gap-3 whitespace-nowrap md:gap-4">
           <h1
             ref={textLeftRef}
             id="journey-text-left"
-            className="inline-block font-signature text-2xl font-bold tracking-[0.2em] text-muted drop-shadow-lg sm:text-3xl md:text-7xl md:tracking-[0.3em] dark:text-primary"
+            className="gsap-element inline-block font-signature text-2xl font-bold tracking-[0.2em] text-muted drop-shadow-lg sm:text-3xl md:text-7xl md:tracking-[0.3em] dark:text-primary"
           >
             {theme === "light" ? "Forever" : "Eternal"}
           </h1>
           <h1
             ref={textRightRef}
             id="journey-text-right"
-            className="inline-block font-signature text-2xl font-bold tracking-[0.2em] text-muted drop-shadow-lg sm:text-3xl md:text-7xl md:tracking-[0.3em] dark:text-primary"
+            className="gsap-element inline-block font-signature text-2xl font-bold tracking-[0.2em] text-muted drop-shadow-lg sm:text-3xl md:text-7xl md:tracking-[0.3em] dark:text-primary"
           >
             {theme === "light" ? "Begins" : "Vows"}
           </h1>
@@ -347,7 +347,7 @@ export const JourneySequence = forwardRef<
 
       <div
         ref={journeyImageRef}
-        className="relative z-0 h-[42vh] w-[85vw] overflow-hidden rounded-2xl md:h-[40vh] md:w-[40vw] md:rounded-3xl"
+        className="gsap-element relative z-0 h-[42vh] w-[85vw] overflow-hidden rounded-2xl md:h-[40vh] md:w-[40vw] md:rounded-3xl"
         style={{ borderRadius: "24px" }}
       >
         <Image
@@ -368,7 +368,7 @@ export const JourneySequence = forwardRef<
         <div
           ref={groomBioRef}
           className={cn(
-            "absolute inset-y-0 z-10 flex w-screen flex-col items-end justify-center gap-2 bg-linear-to-l from-black/80 via-black/40 to-transparent p-6 text-right opacity-0 sm:p-8 md:w-1/2 md:p-12",
+            "gsap-element absolute inset-y-0 z-10 flex w-screen flex-col items-end justify-center gap-2 bg-linear-to-l from-black/80 via-black/40 to-transparent p-6 text-right opacity-0 sm:p-8 md:w-1/2 md:p-12",
             theme === "dark" ? "right-53 md:right-0" : "right-20 md:right-0"
           )}
         >
@@ -392,7 +392,7 @@ export const JourneySequence = forwardRef<
         <div
           ref={brideBioRef}
           className={cn(
-            "absolute inset-y-0 z-10 flex w-screen flex-col items-start justify-center gap-2 bg-linear-to-r from-black/80 via-black/40 to-transparent p-6 text-left opacity-0 sm:p-8 md:w-1/2 md:p-12",
+            "gsap-element absolute inset-y-0 z-10 flex w-screen flex-col items-start justify-center gap-2 bg-linear-to-r from-black/80 via-black/40 to-transparent p-6 text-left opacity-0 sm:p-8 md:w-1/2 md:p-12",
             theme === "dark" ? "right-54 md:right-0" : "left-85 md:right-0"
           )}
         >

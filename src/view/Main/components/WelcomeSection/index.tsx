@@ -29,7 +29,7 @@ export const WelcomeSection = () => {
 
     // 1. Text fades and moves up quickly (parallax)
     tl.to(text, { y: -100, opacity: 0, duration: 0.5, ease: "power2.in" })
-    
+
     // 2. The background wipes up smoothly using clip-path, revealing HeroSection underneath
     tl.fromTo(
       container,
@@ -46,16 +46,16 @@ export const WelcomeSection = () => {
   return (
     <section
       ref={containerRef}
-      className="relative flex h-screen w-full flex-col items-center justify-center overflow-hidden bg-background z-10"
+      className="gsap-element relative z-10 flex h-screen w-full flex-col items-center justify-center overflow-hidden bg-background"
     >
-      <div 
-        ref={textRef} 
-        className="flex w-full max-w-screen-lg flex-col items-center justify-center px-4 text-center"
+      <div
+        ref={textRef}
+        className="gsap-element flex w-full max-w-screen-lg flex-col items-center justify-center px-4 text-center"
       >
         <h1 className="mb-4 font-serif text-5xl font-bold tracking-widest text-foreground md:text-7xl">
           Welcome
         </h1>
-        <p className="text-lg font-light uppercase tracking-[0.2em] text-foreground/70 md:text-xl">
+        <p className="text-lg font-light tracking-[0.2em] text-foreground/70 uppercase md:text-xl">
           To Our Wedding
         </p>
       </div>
