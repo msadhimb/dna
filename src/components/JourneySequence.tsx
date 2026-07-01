@@ -93,6 +93,9 @@ export const JourneySequence = forwardRef<
           return tl
         }
 
+        tl.set([groomBioRef.current, brideBioRef.current], { opacity: 0 }, 0)
+        tl.set(journeyImgElement, { scale: 1, x: 0, y: 0 }, 0)
+
         const dist = (mobileVal: string, desktopVal: string) =>
           isMobile ? mobileVal : desktopVal
 
@@ -129,7 +132,7 @@ export const JourneySequence = forwardRef<
             height: "100vh",
             borderRadius: "0px",
             x: theme === "dark" ? 0 : dist("-30vw", "0"),
-            y: theme === "dark" ? 0 : dist("40", "0"),
+            y: dist("50", "90"),
             duration: 1,
             ease: "power2.inOut",
           },
@@ -156,7 +159,7 @@ export const JourneySequence = forwardRef<
           .to(
             textContainerRef.current,
             {
-              y: -180,
+              y: dist("-190", "-180"),
               duration: 1,
               ease: "power2.inOut",
             },
@@ -175,7 +178,7 @@ export const JourneySequence = forwardRef<
         ).to(
           textContainerRef.current,
           {
-            y: isMobile ? -280 : -300,
+            y: -300,
             duration: 1,
             ease: "power2.inOut",
           },
@@ -230,8 +233,8 @@ export const JourneySequence = forwardRef<
           journeyImgElement,
           {
             scale: isMobile ? 1.6 : 2,
-            x: theme === "dark" ? dist("45vw", "25vw") : dist("30vw", "-50vw"),
-            y: theme === "dark" ? dist("-25vh", "5vh") : dist("20vh", "40vh"),
+            x: theme === "dark" ? dist("35vw", "25vw") : dist("30vw", "-50vw"),
+            y: theme === "dark" ? dist("-15vh", "5vh") : dist("20vh", "40vh"),
             duration: 1.5,
             ease: "power1.inOut",
           },
@@ -363,54 +366,51 @@ export const JourneySequence = forwardRef<
           priority
           className="journey-inner-img object-cover"
         />
-
-        {/* Groom Bio Overlay (Left Side) */}
-        <div
-          ref={groomBioRef}
-          className={cn(
-            "gsap-element absolute inset-y-0 z-10 flex w-screen flex-col items-end justify-center gap-2 bg-linear-to-l from-black/80 via-black/40 to-transparent p-6 text-right opacity-0 sm:p-8 md:w-1/2 md:p-12",
-            theme === "dark" ? "right-53 md:right-0" : "right-20 md:right-0"
-          )}
-        >
-          <div className="flex items-center gap-2">
-            <FloralOrnament className="h-4 w-12 text-[#d4af37] md:h-5 md:w-20 dark:text-primary" />
-            <Flower
-              className="h-4 w-4 text-[#d4af37] md:h-5 md:w-5 dark:text-primary"
-              strokeWidth={1.25}
-            />
-          </div>
-          <h2 className="font-signature text-4xl font-bold tracking-wide text-[#d4af37] drop-shadow-xl sm:text-4xl md:text-6xl lg:text-8xl dark:text-primary">
-            Muhamad Salman Adhim Baqy
-          </h2>
-          <p className="text-md font-serif text-sm leading-relaxed font-light tracking-widest text-white drop-shadow-md">
-            Putra dari Bapak Suprapto Wibowo <br /> & Ibu Christiana Sri Budhi
-            Handayaniningsih
-          </p>
+      </div>
+      {/* Groom Bio Overlay (Left Side) */}
+      <div
+        ref={groomBioRef}
+        className={cn(
+          "gsap-element absolute inset-y-0 right-0 z-50 flex w-screen flex-col items-end justify-center gap-2 bg-linear-to-l from-black/80 via-black/40 to-transparent p-6 text-right opacity-0 sm:p-8 md:w-1/2 md:p-12"
+        )}
+      >
+        <div className="flex items-center gap-2">
+          <FloralOrnament className="h-4 w-12 text-[#d4af37] md:h-5 md:w-20 dark:text-primary" />
+          <Flower
+            className="h-4 w-4 text-[#d4af37] md:h-5 md:w-5 dark:text-primary"
+            strokeWidth={1.25}
+          />
         </div>
+        <h2 className="font-signature text-4xl font-bold tracking-wide text-[#d4af37] drop-shadow-xl sm:text-4xl md:text-6xl lg:text-8xl dark:text-primary">
+          Muhamad Salman Adhim Baqy
+        </h2>
+        <p className="text-md font-serif text-sm leading-relaxed font-light tracking-widest text-white drop-shadow-md">
+          Putra dari Bapak Suprapto Wibowo <br /> & Ibu Christiana Sri Budhi
+          Handayaniningsih
+        </p>
+      </div>
 
-        {/* Bride Bio Overlay (Right Side) */}
-        <div
-          ref={brideBioRef}
-          className={cn(
-            "gsap-element absolute inset-y-0 z-10 flex w-screen flex-col items-start justify-center gap-2 bg-linear-to-r from-black/80 via-black/40 to-transparent p-6 text-left opacity-0 sm:p-8 md:w-1/2 md:p-12",
-            theme === "dark" ? "right-54 md:right-0" : "left-85 md:right-0"
-          )}
-        >
-          <div className="flex items-center gap-2">
-            <Flower
-              className="h-4 w-4 text-[#d4af37] md:h-5 md:w-5 dark:text-primary"
-              strokeWidth={1.25}
-            />
-            <FloralOrnament className="h-4 w-12 text-[#d4af37] md:h-5 md:w-20 dark:text-primary" />
-          </div>
-          <h2 className="font-signature text-4xl font-bold tracking-wide text-[#d4af37] drop-shadow-xl sm:text-4xl md:text-6xl lg:text-8xl dark:text-primary">
-            Devi Yuliana Nurhaliza
-          </h2>
-          <p className="text-md font-serif text-sm leading-relaxed font-light tracking-widest text-white drop-shadow-md sm:text-base">
-            Putri dari Bapak Deden Herman Kuriawan <br /> & Ibu Selvia Putri
-            Agustina
-          </p>
+      {/* Bride Bio Overlay (Right Side) */}
+      <div
+        ref={brideBioRef}
+        className={cn(
+          "gsap-element absolute inset-y-0 left-0 z-50 flex w-screen flex-col items-start justify-center gap-2 bg-linear-to-r from-black/80 via-black/40 to-transparent p-6 text-left opacity-0 sm:p-8 md:w-1/2 md:p-12"
+        )}
+      >
+        <div className="flex items-center gap-2">
+          <Flower
+            className="h-4 w-4 text-[#d4af37] md:h-5 md:w-5 dark:text-primary"
+            strokeWidth={1.25}
+          />
+          <FloralOrnament className="h-4 w-12 text-[#d4af37] md:h-5 md:w-20 dark:text-primary" />
         </div>
+        <h2 className="font-signature text-4xl font-bold tracking-wide text-[#d4af37] drop-shadow-xl sm:text-4xl md:text-6xl lg:text-8xl dark:text-primary">
+          Devi Yuliana Nurhaliza
+        </h2>
+        <p className="text-md font-serif text-sm leading-relaxed font-light tracking-widest text-white drop-shadow-md sm:text-base">
+          Putri dari Bapak Deden Herman Kuriawan <br /> & Ibu Selvia Agustina
+          Damayantid
+        </p>
       </div>
     </div>
   )

@@ -75,6 +75,9 @@ const MainView = () => {
   const curtainRef = useRef<CurtainTransitionRef>(null)
   const journeyRef = useRef<JourneySequenceRef>(null)
 
+  const curtainTlRef = useRef<gsap.core.Timeline | null>(null)
+  const journeyTlRef = useRef<gsap.core.Timeline | null>(null)
+
   const urlsToPreload = useMemo(() => {
     return (
       theme === "dark"
@@ -131,26 +134,76 @@ const MainView = () => {
 
       gsap.set(journeyWrapper, { opacity: 0 })
 
-      const masterTl = gsap.timeline({
-        scrollTrigger: {
-          trigger: masterTrigger,
-          start: "top top",
-          end: "+=700%",
-          scrub: 1,
-          pin: true,
-          pinSpacing: true,
-          anticipatePin: 1,
-        },
-      })
-
       const curtainTl = curtainRef.current.getTimeline()
       const journeyTl = journeyRef.current.getTimeline()
 
-      masterTl.add(curtainTl)
-      masterTl.add(journeyTl)
+      const cDur = curtainTl.totalDuration() || 1
+      const jDur = journeyTl.totalDuration() || 1
+      const totalDur = cDur + jDur
+
+      const curtainScroll = (cDur / totalDur) * 700
+      const journeyScroll = (jDur / totalDur) * 700
+
+      const curtainWrapper = gsap.timeline()
+      curtainWrapper.add(curtainTl)
+      curtainTlRef.current = curtainWrapper
+
+      const journeyWrapperTl = gsap.timeline()
+      journeyWrapperTl.add(journeyTl)
+      journeyTlRef.current = journeyWrapperTl
+
+      ScrollTrigger.create({
+        trigger: masterTrigger,
+        start: "top top",
+        end: "+=700%",
+        pin: true,
+        pinSpacing: true,
+        anticipatePin: 1,
+      })
+
+      const curtainST = ScrollTrigger.create({
+        animation: curtainWrapper,
+        trigger: masterTrigger,
+        start: "top top",
+        end: `+=${curtainScroll}%`,
+        scrub: 1,
+      })
+
+      ScrollTrigger.create({
+        animation: journeyWrapperTl,
+        start: () => curtainST.end,
+        end: () => curtainST.end + window.innerHeight * (journeyScroll / 100),
+        scrub: 1,
+      })
     },
     { scope: mainRef, dependencies: [isLoaded] }
   )
+
+  useEffect(() => {
+    const cWrapper = curtainTlRef.current
+    const jWrapper = journeyTlRef.current
+
+    if (!cWrapper || !jWrapper || !curtainRef.current || !journeyRef.current) return
+
+    const savedCProgress = cWrapper.progress()
+    const savedJProgress = jWrapper.progress()
+
+    // Kembalikan ke posisi 0 agar DOM kembali bersih dari inline style GSAP lama
+    cWrapper.progress(0, true)
+    jWrapper.progress(0, true)
+
+    cWrapper.clear()
+    jWrapper.clear()
+
+    const newCurtainTl = curtainRef.current.getTimeline()
+    const newJourneyTl = journeyRef.current.getTimeline()
+
+    cWrapper.add(newCurtainTl)
+    jWrapper.add(newJourneyTl)
+
+    cWrapper.progress(savedCProgress, true)
+    jWrapper.progress(savedJProgress, true)
+  }, [theme])
 
   if (!mounted) {
     return (

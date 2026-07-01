@@ -1,6 +1,11 @@
 "use client"
 
-import React, { useRef, useImperativeHandle, forwardRef } from "react"
+import React, {
+  useRef,
+  useImperativeHandle,
+  forwardRef,
+  useEffect,
+} from "react"
 import gsap from "gsap"
 
 interface CurtainTransitionProps {
@@ -26,6 +31,32 @@ export const CurtainTransition = forwardRef<
       const IMAGE_DUR = 0.75
       const heroSection = document.getElementById("hero-section")
       const journeyWrapper = document.getElementById("journey-wrapper")
+
+      tl.set(heroSection, {
+        opacity: 1,
+      })
+      tl.set(leftHalfRef.current, {
+        xPercent: 0,
+      })
+
+      tl.set(rightHalfRef.current, {
+        xPercent: 0,
+      })
+
+      tl.set(".curtain-bg", {
+        scaleX: 0.001,
+        scaleY: 0.001,
+      })
+
+      frames.forEach((_, i) => {
+        tl.set(`.photo-bg-${i}`, {
+          scale: 0.001,
+        })
+
+        tl.set(`.photo-inner-${i}`, {
+          y: "30%",
+        })
+      })
 
       // Curtain muncul: titik kecil → garis vertikal → melebar penuh
       tl.to(".curtain-bg", {
@@ -79,6 +110,14 @@ export const CurtainTransition = forwardRef<
       return tl
     },
   }))
+
+  useEffect(() => {
+    console.log("Curtain mount")
+
+    return () => {
+      console.log("Curtain unmount")
+    }
+  }, [])
 
   const contentJSX = (
     <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
