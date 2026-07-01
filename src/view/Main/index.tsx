@@ -190,8 +190,6 @@ const MainView = () => {
           <JourneySequence ref={journeyRef} theme={theme} />
         </div>
       </section>
-
-      <div className="h-[300vh] w-full bg-background" />
     </main>
   )
 }
