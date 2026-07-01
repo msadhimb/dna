@@ -233,7 +233,7 @@ export const JourneySequence = forwardRef<
           journeyImgElement,
           {
             scale: isMobile ? 1.6 : 2,
-            x: theme === "dark" ? dist("35vw", "25vw") : dist("30vw", "-50vw"),
+            x: theme === "dark" ? dist("35vw", "25vw") : dist("30vw", "20vw"),
             y: theme === "dark" ? dist("-15vh", "5vh") : dist("20vh", "40vh"),
             duration: 1.5,
             ease: "power1.inOut",
