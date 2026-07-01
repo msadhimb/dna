@@ -173,7 +173,7 @@ const MainView = () => {
 
       <section
         id="master-trigger"
-        className="relative h-screen w-full overflow-hidden bg-background"
+        className="gsap-element relative h-screen w-full overflow-hidden bg-background"
       >
         <div className="absolute inset-0 z-0">
           <HeroSection />
@@ -185,11 +185,12 @@ const MainView = () => {
 
         <div
           id="journey-wrapper"
-          className="o pointer-events-none absolute inset-0 z-20 flex h-full w-full flex-col justify-center overflow-hidden opacity-0"
+          className="gsap-element pointer-events-none absolute inset-0 z-20 flex h-full w-full flex-col justify-center overflow-hidden bg-background opacity-0"
         >
           <JourneySequence ref={journeyRef} theme={theme} />
         </div>
       </section>
+      <div className="h-screen w-full bg-background" />
     </main>
   )
 }

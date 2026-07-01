@@ -53,17 +53,15 @@ export const CurtainTransition = forwardRef<
       })
 
       // Fade hero halus sebelum split
-      if (heroSection) {
-        tl.to(heroSection, { opacity: 0, duration: 0.25, ease: "power1.inOut" }).to(
-          {},
-          { duration: 0.5 }
-        )
-      }
-
-      // Prepare Journey Sequence underneath the split
-      if (journeyWrapper) {
-        tl.set(journeyWrapper, { opacity: 1, pointerEvents: "auto" })
-      }
+      tl.to(
+        heroSection,
+        {
+          opacity: 0,
+          duration: 0.25,
+          ease: "power1.inOut",
+        },
+        "heroFade"
+      ).to(journeyWrapper, { opacity: 1, pointerEvents: "auto" }, "heroFade")
 
       // Split curtain kiri dan kanan
       if (leftHalfRef.current && rightHalfRef.current) {
