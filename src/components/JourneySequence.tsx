@@ -156,7 +156,7 @@ export const JourneySequence = forwardRef<
           .to(
             textContainerRef.current,
             {
-              y: isMobile ? -220 : -180,
+              y: -180,
               duration: 1,
               ease: "power2.inOut",
             },
@@ -317,7 +317,7 @@ export const JourneySequence = forwardRef<
       <div
         ref={textContainerRef}
         id="journey-text-container"
-        className="absolute top-60 z-10 flex flex-col items-center gap-2 text-center md:top-48 md:gap-4"
+        className="absolute top-50 z-10 flex flex-col items-center gap-2 text-center md:top-48 md:gap-4"
       >
         <div className="flex gap-3 whitespace-nowrap md:gap-4">
           <h1
@@ -369,7 +369,7 @@ export const JourneySequence = forwardRef<
           ref={groomBioRef}
           className={cn(
             "absolute inset-y-0 z-10 flex w-screen flex-col items-end justify-center gap-2 bg-linear-to-l from-black/80 via-black/40 to-transparent p-6 text-right opacity-0 sm:p-8 md:w-1/2 md:p-12",
-            theme === "dark" ? "right-58 md:right-0" : "right-23 md:right-0"
+            theme === "dark" ? "right-53 md:right-0" : "right-20 md:right-0"
           )}
         >
           <div className="flex items-center gap-2">
@@ -393,7 +393,7 @@ export const JourneySequence = forwardRef<
           ref={brideBioRef}
           className={cn(
             "absolute inset-y-0 z-10 flex w-screen flex-col items-start justify-center gap-2 bg-linear-to-r from-black/80 via-black/40 to-transparent p-6 text-left opacity-0 sm:p-8 md:w-1/2 md:p-12",
-            theme === "dark" ? "right-60 md:right-0" : "left-94 md:right-0"
+            theme === "dark" ? "right-54 md:right-0" : "left-85 md:right-0"
           )}
         >
           <div className="flex items-center gap-2">

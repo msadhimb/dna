@@ -6,8 +6,18 @@ interface LoadingScreenProps {
   onComplete: () => void
 }
 
-export const LoadingScreen: React.FC<LoadingScreenProps> = ({ imageUrls, onComplete }) => {
+export const LoadingScreen: React.FC<LoadingScreenProps> = ({
+  imageUrls,
+  onComplete,
+}) => {
   const [progress, setProgress] = useState(0)
+
+  useEffect(() => {
+    document.body.style.overflow = "hidden"
+    return () => {
+      document.body.style.overflow = ""
+    }
+  }, [])
 
   useEffect(() => {
     let loadedImages = 0
