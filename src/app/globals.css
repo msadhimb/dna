@@ -47,6 +47,31 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  --color-book-bg: var(--book-bg);
+  --color-book-dot: var(--book-dot);
+  --color-book-page-bg: var(--book-page-bg);
+  --color-book-page-bg2: var(--book-page-bg2);
+  --color-book-border: var(--book-border);
+  --color-book-divider: var(--book-divider);
+  --color-book-label: var(--book-label);
+  --color-book-body: var(--book-body);
+  --color-book-ornament: var(--book-ornament);
+  --color-book-ribbon: var(--book-ribbon);
+  --color-book-cover-a: var(--book-cover-a);
+  --color-book-cover-b: var(--book-cover-b);
+  --color-book-cover-border: var(--book-cover-border);
+  --color-book-cover-inner: var(--book-cover-inner);
+  --color-book-cover-title: var(--book-cover-title);
+  --color-book-cover-sub: var(--book-cover-sub);
+  --color-book-mono-border: var(--book-mono-border);
+  --color-book-mono-text: var(--book-mono-text);
+  --color-book-mono-glow: var(--book-mono-glow);
+  --color-book-inside-cover: var(--book-inside-cover);
+  --color-book-spine: var(--book-spine);
+  --color-book-spine-shadow: var(--book-spine-shadow);
+  --color-book-shadow: var(--book-shadow);
+  --color-book-edge-light: var(--book-edge-light);
+  --color-book-edge-dark: var(--book-edge-dark);
 }
 
 :root {
@@ -82,6 +107,32 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  --book-bg: #f0ebe0;
+  --book-dot: #a08050;
+  --book-page-bg: #fdf8f0;
+  --book-page-bg2: #f7f2e8;
+  --book-border: rgba(201,162,39,0.3);
+  --book-divider: rgba(201,162,39,0.2);
+  --book-label: #9a865a;
+  --book-body: #1e1a14;
+  --book-ornament: #c9a227;
+  --book-ribbon: #b8902a;
+  --book-cover-a: #2e3d2c;
+  --book-cover-b: #111a10;
+  --book-cover-border: rgba(201,162,39,0.55);
+  --book-cover-inner: rgba(201,162,39,0.28);
+  --book-cover-title: #d9c78a;
+  --book-cover-sub: #b0a882;
+  --book-mono-border: #c9a227;
+  --book-mono-text: #eddfa8;
+  --book-mono-glow: none;
+  --book-inside-cover: #ede0c0;
+  --book-spine: #1a2b18;
+  --book-spine-shadow: rgba(0,0,0,0.28);
+  --book-shadow: 0 40px 80px -20px rgba(0,0,0,0.35);
+  --book-edge-light: #f4ecd8;
+  --book-edge-dark: #cbb98a;
 }
 
 .dark {
@@ -116,6 +167,32 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+
+  --book-bg: #080808;
+  --book-dot: #832004;
+  --book-page-bg: #0e0e0e;
+  --book-page-bg2: #0a0808;
+  --book-border: rgba(131,32,4,0.3);
+  --book-divider: rgba(131,32,4,0.2);
+  --book-label: #7a6060;
+  --book-body: #e0d8d0;
+  --book-ornament: #832004;
+  --book-ribbon: #9a2a0a;
+  --book-cover-a: #0e0e0e;
+  --book-cover-b: #050505;
+  --book-cover-border: rgba(131,32,4,0.5);
+  --book-cover-inner: rgba(131,32,4,0.22);
+  --book-cover-title: #9a7070;
+  --book-cover-sub: #7a5a5a;
+  --book-mono-border: #832004;
+  --book-mono-text: #c8b0a0;
+  --book-mono-glow: 0 0 28px rgba(131,32,4,0.55);
+  --book-inside-cover: #0c0808;
+  --book-spine: #050505;
+  --book-spine-shadow: rgba(0,0,0,0.8);
+  --book-shadow: 0 40px 100px -20px rgba(131,32,4,0.25);
+  --book-edge-light: #2a1c18;
+  --book-edge-dark: #150c0a;
 }
 
 @layer base {

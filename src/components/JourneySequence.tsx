@@ -3,7 +3,7 @@
 import Image from "next/image"
 import { useRef, useImperativeHandle, forwardRef } from "react"
 import gsap from "gsap"
-import { Flower, Flower2, Sparkle, Sparkles } from "lucide-react"
+import { Flower, Flower2, Sparkle, Sparkles, Plane } from "lucide-react"
 import { useScreenWidth } from "@/hooks/useScreenWidth"
 import { cn } from "@/lib/utils"
 
@@ -15,9 +15,6 @@ export interface JourneySequenceRef {
   getTimeline: () => gsap.core.Timeline
 }
 
-/** Small ornamental flourish used to break up empty space around the
- *  couple's names and beneath the title. Inherits color via currentColor
- *  so it automatically follows the light/dark palette. */
 function FloralOrnament({ className = "" }: { className?: string }) {
   return (
     <svg
@@ -38,8 +35,6 @@ function FloralOrnament({ className = "" }: { className?: string }) {
   )
 }
 
-/** Slightly larger flourish used for the mid-edge accents in the
- *  page-level decoration layer. */
 function EdgeOrnament({ className = "" }: { className?: string }) {
   return (
     <svg
@@ -62,6 +57,13 @@ function EdgeOrnament({ className = "" }: { className?: string }) {
   )
 }
 
+// Rectangle dan siluet paper-plane, sama-sama 12 titik supaya bisa diinterpolasi
+const CLIP_RECT =
+  "polygon(0% 0%, 33% 0%, 66% 0%, 100% 0%, 100% 50%, 100% 100%, 66% 100%, 33% 100%, 0% 100%, 0% 50%, 0% 25%, 0% 75%)"
+
+const CLIP_PLANE =
+  "polygon(50% 0%, 55% 35%, 95% 45%, 58% 55%, 65% 100%, 50% 60%, 35% 100%, 42% 55%, 5% 45%, 45% 35%, 48% 20%, 52% 20%)"
+
 export const JourneySequence = forwardRef<
   JourneySequenceRef,
   JourneySequenceProps
@@ -72,6 +74,7 @@ export const JourneySequence = forwardRef<
   const groomBioRef = useRef<HTMLDivElement>(null)
   const brideBioRef = useRef<HTMLDivElement>(null)
   const textContainerRef = useRef<HTMLDivElement>(null)
+  const paperPlaneRef = useRef<HTMLDivElement>(null)
   const screenWidth = useScreenWidth()
   const isMobile = screenWidth > 0 && screenWidth < 768
 
@@ -351,7 +354,7 @@ export const JourneySequence = forwardRef<
       <div
         ref={journeyImageRef}
         className="gsap-element relative z-0 h-[42vh] w-[85vw] overflow-hidden rounded-2xl md:h-[40vh] md:w-[40vw] md:rounded-3xl"
-        style={{ borderRadius: "24px" }}
+        style={{ borderRadius: "24px", clipPath: CLIP_RECT }}
       >
         <Image
           src={
@@ -411,6 +414,17 @@ export const JourneySequence = forwardRef<
           Putri dari Bapak Deden Herman Kuriawan <br /> & Ibu Selvia Agustina
           Damayantid
         </p>
+      </div>
+
+      <div
+        ref={paperPlaneRef}
+        className="pointer-events-none absolute top-1/2 left-1/2 z-50 -translate-x-1/2 -translate-y-1/2 text-[#d4af37] opacity-0 dark:text-primary"
+      >
+        <Plane
+          className="h-16 w-16 md:h-28 md:w-28"
+          strokeWidth={1}
+          fill="currentColor"
+        />
       </div>
     </div>
   )
