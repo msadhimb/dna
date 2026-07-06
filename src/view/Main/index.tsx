@@ -13,12 +13,12 @@ import JourneySequence, {
 } from "@/components/JourneySequence"
 import { WelcomeSection } from "./components/WelcomeSection"
 import { LoadingScreen } from "@/components/LoadingScreen"
+import EventDetails from "@/components/EventDetails"
+import RomanticQuote from "@/components/RomanticQuote"
 import Image from "next/image"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { useGSAP } from "@gsap/react"
-import { cn } from "@/lib/utils"
-import BookFlip, { BookFlipRef } from "@/components/BookFlip"
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -45,20 +45,61 @@ const PREVIEW_FRAMES = [
   },
   {
     light: (
-      <div className="flex h-full w-full items-center justify-center bg-primary font-signature text-2xl font-bold tracking-wider text-muted md:text-3xl">
-        <p className="max-w-sm text-center md:max-w-lg">
-          Dalam setiap pagi yang penuh harapan, kami menemukan alasan untuk
-          tersenyum. Dalam setiap langkah yang kami tempuh bersama, tumbuh
-          keyakinan bahwa cinta ini layak diperjuangkan.
+      <div className="relative flex h-full w-full flex-col items-center justify-center gap-4 bg-primary px-6 py-10 text-muted md:px-10">
+        {/* Ayat */}
+        <p className="max-w-sm text-center font-signature text-2xl leading-relaxed font-bold tracking-wide md:max-w-lg md:text-3xl">
+          وَمِنْ آيَاتِهِ أَنْ خَلَقَ لَكُم مِّنْ أَنفُسِكُمْ أَزْوَاجًا
+          لِّتَسْكُنُوا إِلَيْهَا وَجَعَلَ بَيْنَكُم مَّوَدَّةً وَرَحْمَةً ۚ
+          إِنَّ فِي ذَٰلِكَ لَآيَاتٍ لِّقَوْمٍ يَتَفَكَّرُونَ
+        </p>
+
+        {/* Ornamental divider */}
+        <div className="flex items-center gap-3 opacity-70">
+          <span className="h-px w-8 bg-current" />
+          <span className="text-xs">✦</span>
+          <span className="h-px w-8 bg-current" />
+        </div>
+
+        {/* Reference */}
+        <p className="font-sans text-xs tracking-[0.2em] uppercase opacity-80">
+          QS. Ar-Rum : 21
+        </p>
+
+        {/* Translation */}
+        <p className="max-w-sm text-center font-sans text-sm leading-relaxed font-light italic opacity-90 md:max-w-lg">
+          &ldquo;Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan
+          pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung
+          dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa
+          kasih dan sayang. Sesungguhnya pada yang demikian itu benar-benar
+          terdapat tanda-tanda bagi kaum yang berpikir.&rdquo;
         </p>
       </div>
     ),
     dark: (
-      <div className="flex h-full w-full items-center justify-center bg-primary font-signature text-2xl font-bold tracking-wider text-black md:text-3xl">
-        <p className="max-w-sm text-center md:max-w-lg">
-          Dalam malam yang sunyi, kami belajar tentang kesabaran, pengertian,
-          dan ketulusan. Karena cinta sejati bukan hanya hadir dalam cahaya,
-          tetapi juga tetap bertahan dalam gelap.
+      <div className="relative flex h-full w-full flex-col items-center justify-center gap-4 bg-primary px-6 py-10 text-black md:px-10">
+        {/* Ayat */}
+        <p className="max-w-sm text-center font-signature text-2xl leading-relaxed font-bold tracking-wide md:max-w-lg md:text-3xl">
+          رَبَّنَا هَبْ لَنَا مِنْ أَزْوَاجِنَا وَذُرِّيَّاتِنَا قُرَّةَ
+          أَعْيُنٍ وَاجْعَلْنَا لِلْمُتَّقِينَ إِمَامًا
+        </p>
+
+        {/* Ornamental divider */}
+        <div className="flex items-center gap-3 opacity-70">
+          <span className="h-px w-8 bg-current" />
+          <span className="text-xs">✦</span>
+          <span className="h-px w-8 bg-current" />
+        </div>
+
+        {/* Reference */}
+        <p className="font-sans text-xs tracking-[0.2em] uppercase opacity-80">
+          QS. Al-Furqan : 74
+        </p>
+
+        {/* Translation */}
+        <p className="max-w-sm text-center font-sans text-sm leading-relaxed font-light italic opacity-90 md:max-w-lg">
+          &ldquo;Wahai Tuhan kami, anugerahkanlah kepada kami istri-istri kami
+          dan keturunan kami sebagai penyejuk mata (bagi kami), dan jadikanlah
+          kami imam bagi orang-orang yang bertakwa.&rdquo;
         </p>
       </div>
     ),
@@ -75,11 +116,9 @@ const MainView = () => {
   const mainRef = useRef<HTMLElement>(null)
   const curtainRef = useRef<CurtainTransitionRef>(null)
   const journeyRef = useRef<JourneySequenceRef>(null)
-  const bookRef = useRef<BookFlipRef>(null)
 
   const curtainTlRef = useRef<gsap.core.Timeline | null>(null)
   const journeyTlRef = useRef<gsap.core.Timeline | null>(null)
-  const bookTlRef = useRef<gsap.core.Timeline | null>(null)
 
   const urlsToPreload = useMemo(() => {
     return (
@@ -131,25 +170,18 @@ const MainView = () => {
         !masterTrigger ||
         !journeyWrapper ||
         !curtainRef.current ||
-        !journeyRef.current ||
-        !bookRef.current
+        !journeyRef.current
       )
         return
 
       gsap.set(journeyWrapper, { opacity: 0 })
 
-      const bookWrap = document.getElementById("book-wrapper")
-      if (bookWrap) gsap.set(bookWrap, { opacity: 0 })
-
       const curtainTl = curtainRef.current.getTimeline()
       const journeyTl = journeyRef.current.getTimeline()
-      const bookTl = bookRef.current.getTimeline()
 
       const cDur = curtainTl.totalDuration() || 1
       const jDur = journeyTl.totalDuration() || 1
-      const bDur = bookTl.totalDuration() || 1
-      const totalDur = cDur + jDur + bDur
-      const totalScrollHeight = 1000 // Total scroll distance
+      const totalScrollHeight = ((cDur + jDur) / (cDur + jDur)) * 1000
 
       const curtainWrapper = gsap.timeline()
       curtainWrapper.add(curtainTl)
@@ -158,25 +190,8 @@ const MainView = () => {
       const journeyWrapperTl = gsap.timeline()
       journeyWrapperTl.to(journeyWrapper, { opacity: 1, duration: 0.2 })
       journeyWrapperTl.add(journeyTl)
-      journeyWrapperTl.to(journeyWrapper, {
-        y: "-100vh",
-        opacity: 0,
-        duration: 0.8,
-        ease: "power2.inOut",
-      })
-      journeyTlRef.current = journeyWrapperTl
 
-      const bookWrapperTl = gsap.timeline()
-      if (bookWrap) {
-        bookWrapperTl.set(bookWrap, { y: "100vh", opacity: 1 })
-        bookWrapperTl.to(bookWrap, {
-          y: "0vh",
-          duration: 0.8,
-          ease: "power2.out",
-        })
-      }
-      bookWrapperTl.add(bookTl)
-      bookTlRef.current = bookWrapperTl
+      journeyTlRef.current = journeyWrapperTl
 
       const masterTl = gsap.timeline({
         scrollTrigger: {
@@ -192,7 +207,6 @@ const MainView = () => {
 
       masterTl.add(curtainWrapper)
       masterTl.add(journeyWrapperTl)
-      masterTl.add(bookWrapperTl, "-=0.8")
     },
     { scope: mainRef, dependencies: [isLoaded] }
   )
@@ -200,47 +214,31 @@ const MainView = () => {
   useEffect(() => {
     const cWrapper = curtainTlRef.current
     const jWrapper = journeyTlRef.current
-    const bWrapper = bookTlRef.current
 
-    if (
-      !cWrapper ||
-      !jWrapper ||
-      !bWrapper ||
-      !curtainRef.current ||
-      !journeyRef.current ||
-      !bookRef.current
-    )
+    if (!cWrapper || !jWrapper || !curtainRef.current || !journeyRef.current)
       return
 
     const savedCProgress = cWrapper.progress()
     const savedJProgress = jWrapper.progress()
-    const savedBProgress = bWrapper.progress()
 
     // Kembalikan ke posisi 0 agar DOM kembali bersih dari inline style GSAP lama
     cWrapper.progress(0, true)
     jWrapper.progress(0, true)
-    bWrapper.progress(0, true)
 
     cWrapper.clear()
     jWrapper.clear()
-    bWrapper.clear()
 
     const journeyWrap = document.getElementById("journey-wrapper")
-    const bookWrap = document.getElementById("book-wrapper")
     if (journeyWrap) gsap.set(journeyWrap, { clearProps: "all" })
-    if (bookWrap) gsap.set(bookWrap, { clearProps: "all" })
 
     const newCurtainTl = curtainRef.current.getTimeline()
     const newJourneyTl = journeyRef.current.getTimeline()
-    const newBookTl = bookRef.current.getTimeline()
 
     cWrapper.add(newCurtainTl)
     jWrapper.add(newJourneyTl)
-    bWrapper.add(newBookTl)
 
     cWrapper.progress(savedCProgress, true)
     jWrapper.progress(savedJProgress, true)
-    bWrapper.progress(savedBProgress, true)
   }, [theme])
 
   if (!mounted) {
@@ -280,25 +278,11 @@ const MainView = () => {
         >
           <JourneySequence ref={journeyRef} theme={theme} />
         </div>
-        <div
-          id="book-wrapper"
-          className="gsap-element pointer-events-none absolute inset-0 z-20 flex h-full w-full flex-col justify-center overflow-hidden bg-background opacity-0"
-        >
-          <BookFlip
-            ref={bookRef}
-            date="12 . 12 . 2026"
-            dateLabel="Hari Pernikahan"
-            location="Grand Ballroom, Semarang"
-            locationLabel="Lokasi"
-            coverTitle="The Wedding Of"
-            coverSubtitle="Kevin & Amanda"
-            monogram="K & A"
-            width="min(92vw, 880px)"
-            height="min(70vh, 560px)"
-            mapUrl="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3960.0!2d110.4!3d-7.0!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e708b4d3f0d024d%3A0x1730a2f9788fa517!2sGrand%20Ballroom%20Semarang!5e0!3m2!1sen!2sid!4v1"
-          />
-        </div>
       </section>
+
+      {/* New standalone sections */}
+      <EventDetails />
+      <RomanticQuote />
     </main>
   )
 }
