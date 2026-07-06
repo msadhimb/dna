@@ -7,7 +7,13 @@ import { ScrollTrigger } from "gsap/ScrollTrigger"
 
 gsap.registerPlugin(ScrollTrigger)
 
-const Ornament = ({ color, flip = false }: { color: string; flip?: boolean }) => {
+const Ornament = ({
+  color,
+  flip = false,
+}: {
+  color: string
+  flip?: boolean
+}) => {
   return (
     <div
       style={{
@@ -21,13 +27,26 @@ const Ornament = ({ color, flip = false }: { color: string; flip?: boolean }) =>
       }}
     >
       <div style={{ height: "1px", flex: 1, background: color }} />
-      <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: color }} />
+      <div
+        style={{
+          width: "6px",
+          height: "6px",
+          borderRadius: "50%",
+          background: color,
+        }}
+      />
       <div style={{ height: "1px", flex: 1, background: color }} />
     </div>
   )
 }
 
-const WideOrnament = ({ color, flip = false }: { color: string; flip?: boolean }) => {
+const WideOrnament = ({
+  color,
+  flip = false,
+}: {
+  color: string
+  flip?: boolean
+}) => {
   return (
     <div
       style={{
@@ -40,9 +59,21 @@ const WideOrnament = ({ color, flip = false }: { color: string; flip?: boolean }
         transform: flip ? "rotate(180deg)" : "none",
       }}
     >
-      <div style={{ height: "1px", flex: 1, background: color, opacity: 0.6 }} />
-      <div style={{ width: "4px", height: "4px", borderRadius: "50%", background: color, opacity: 0.8 }} />
-      <div style={{ height: "1px", flex: 1, background: color, opacity: 0.6 }} />
+      <div
+        style={{ height: "1px", flex: 1, background: color, opacity: 0.6 }}
+      />
+      <div
+        style={{
+          width: "4px",
+          height: "4px",
+          borderRadius: "50%",
+          background: color,
+          opacity: 0.8,
+        }}
+      />
+      <div
+        style={{ height: "1px", flex: 1, background: color, opacity: 0.6 }}
+      />
     </div>
   )
 }
@@ -196,7 +227,6 @@ const RomanticQuote = () => {
     <section
       ref={sectionRef}
       className="relative w-full overflow-hidden bg-background"
-      style={{ minHeight: "100vh" }}
     >
       <div
         className="pointer-events-none absolute inset-0"
@@ -214,7 +244,7 @@ const RomanticQuote = () => {
         }}
       />
 
-      <div className="relative z-10 flex flex-col items-center justify-center gap-8 px-6 py-24 text-center md:gap-10 md:py-32">
+      <div className="relative z-10 flex flex-col items-center justify-center gap-8 p-6 text-center md:gap-10 md:py-32">
         <p
           ref={labelRef}
           style={{

@@ -39,7 +39,13 @@ function Ornament({ color, flip = false }: { color: string; flip?: boolean }) {
   )
 }
 
-function WideOrnament({ color, flip = false }: { color: string; flip?: boolean }) {
+function WideOrnament({
+  color,
+  flip = false,
+}: {
+  color: string
+  flip?: boolean
+}) {
   return (
     <svg
       viewBox="0 0 200 12"
@@ -52,7 +58,12 @@ function WideOrnament({ color, flip = false }: { color: string; flip?: boolean }
       }}
       fill="none"
     >
-      <path d="M0 6 H70 M130 6 H200" stroke="currentColor" strokeWidth="0.6" opacity="0.8" />
+      <path
+        d="M0 6 H70 M130 6 H200"
+        stroke="currentColor"
+        strokeWidth="0.6"
+        opacity="0.8"
+      />
       <path
         d="M75 6 L80 2 L85 6 L90 2 L95 6 L100 2 L105 6 L110 2 L115 6 L120 2 L125 6"
         stroke="currentColor"
@@ -161,7 +172,6 @@ export default function EventDetails() {
     <section
       ref={sectionRef}
       className="relative w-full overflow-hidden bg-background"
-      style={{ minHeight: "100vh" }}
     >
       {/* Dot texture — identical to BookFlip */}
       <div
@@ -182,7 +192,7 @@ export default function EventDetails() {
         }}
       />
 
-      <div className="relative z-10 flex flex-col items-center justify-center gap-8 px-6 py-24 text-center md:gap-10 md:py-32">
+      <div className="relative z-10 flex flex-col items-center justify-center gap-8 p-6 text-center md:gap-10 md:py-32">
         {/* ── Label ── */}
         <p
           ref={topLabelRef}
@@ -201,7 +211,11 @@ export default function EventDetails() {
         <h2
           ref={titleRef}
           className="font-signature"
-          style={{ fontSize: "clamp(2.2rem, 6vw, 4rem)", color: body, lineHeight: 1.1 }}
+          style={{
+            fontSize: "clamp(2.2rem, 6vw, 4rem)",
+            color: body,
+            lineHeight: 1.1,
+          }}
         >
           Waktu & Tempat
         </h2>
@@ -270,9 +284,30 @@ export default function EventDetails() {
           className="flex items-center gap-4"
           style={{ color: accent, opacity: 0.5 }}
         >
-          <div style={{ height: "1px", width: "48px", background: accent, opacity: 0.4 }} />
-          <div style={{ width: "6px", height: "6px", transform: "rotate(45deg)", border: `1px solid ${accent}` }} />
-          <div style={{ height: "1px", width: "48px", background: accent, opacity: 0.4 }} />
+          <div
+            style={{
+              height: "1px",
+              width: "48px",
+              background: accent,
+              opacity: 0.4,
+            }}
+          />
+          <div
+            style={{
+              width: "6px",
+              height: "6px",
+              transform: "rotate(45deg)",
+              border: `1px solid ${accent}`,
+            }}
+          />
+          <div
+            style={{
+              height: "1px",
+              width: "48px",
+              background: accent,
+              opacity: 0.4,
+            }}
+          />
         </div>
 
         {/* ── Location Block ── */}
