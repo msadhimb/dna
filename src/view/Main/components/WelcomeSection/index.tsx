@@ -21,7 +21,7 @@ export const WelcomeSection = () => {
         trigger: container,
         start: "top top",
         end: "+=120%", // Slightly longer for a smoother transition
-        scrub: true,
+        scrub: 1.5,
         pin: true,
         pinSpacing: false,
       },
@@ -46,11 +46,12 @@ export const WelcomeSection = () => {
   return (
     <section
       ref={containerRef}
-      className="gsap-element relative z-10 flex h-screen w-full flex-col items-center justify-center overflow-hidden bg-background"
+      className="gsap-element relative z-10 flex h-screen w-full flex-col items-center justify-center overflow-hidden bg-background will-change-transform"
+      style={{ willChange: "transform, clip-path" }}
     >
       <div
         ref={textRef}
-        className="gsap-element flex w-full max-w-screen-lg flex-col items-center justify-center px-4 text-center"
+        className="gsap-element flex w-full max-w-screen-lg flex-col items-center justify-center px-4 text-center will-change-transform"
       >
         <h1 className="mb-4 font-serif text-5xl font-bold tracking-widest text-foreground md:text-7xl">
           Welcome

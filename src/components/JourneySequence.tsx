@@ -195,7 +195,7 @@ export const JourneySequence = forwardRef<
             scale: isMobile ? 1.6 : 2,
             x:
               theme === "dark"
-                ? dist("-35vw", "-45vw")
+                ? dist("-35vw", "-35vw")
                 : dist("-55vw", "-50vw"),
             y: theme === "dark" ? dist("-15vh", "20vh") : dist("20vh", "50vh"),
             duration: 1.5,
@@ -265,6 +265,8 @@ export const JourneySequence = forwardRef<
           duration: 1.5,
           ease: "power1.inOut",
         })
+
+        tl.to({}, { duration: 1 })
 
         return tl
       },

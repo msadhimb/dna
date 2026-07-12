@@ -150,17 +150,18 @@ export default function EventDetails() {
 
       gsap.fromTo(
         elements,
-        { opacity: 0, y: 28 },
+        { opacity: 0, y: 40 },
         {
           opacity: 1,
           y: 0,
-          duration: 1,
-          stagger: 0.12,
-          ease: "power3.out",
+          duration: 1.2,
+          stagger: 0.15,
+          ease: "power2.out",
           scrollTrigger: {
             trigger: sectionRef.current,
-            start: "top 75%",
-            toggleActions: "play none none reverse",
+            start: "top 85%",
+            end: "top 40%",
+            scrub: 1.5,
           },
         }
       )
@@ -171,7 +172,7 @@ export default function EventDetails() {
   return (
     <section
       ref={sectionRef}
-      className="relative w-full overflow-hidden bg-background"
+      className="relative w-full overflow-hidden bg-background will-change-transform"
     >
       {/* Dot texture — identical to BookFlip */}
       <div
