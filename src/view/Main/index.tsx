@@ -204,8 +204,16 @@ const MainView = () => {
       journeyTlRef.current = journeyWrapperTl
 
       const bookFlipWrapperTl = gsap.timeline()
-      bookFlipWrapperTl.to(journeyWrapper, { opacity: 0, duration: 0.2 })
-      bookFlipWrapperTl.to(bookFlipWrapper, { opacity: 1, duration: 0.2 }, "<")
+      bookFlipWrapperTl.to(journeyWrapper, {
+        y: "-100%",
+        opacity: 1,
+        duration: 1,
+      })
+      bookFlipWrapperTl.to(
+        bookFlipWrapper,
+        { y: 0, opacity: 1, duration: 1 },
+        "<"
+      )
       bookFlipWrapperTl.add(bookFlipTl)
 
       bookFlipTlRef.current = bookFlipWrapperTl
@@ -259,7 +267,7 @@ const MainView = () => {
 
     const journeyWrap = document.getElementById("journey-wrapper")
     if (journeyWrap) gsap.set(journeyWrap, { clearProps: "all" })
-    
+
     const bookFlipWrap = document.getElementById("book-flip-wrapper")
     if (bookFlipWrap) gsap.set(bookFlipWrap, { clearProps: "all" })
 
@@ -268,12 +276,12 @@ const MainView = () => {
     const newBookFlipTl = bookFlipRef.current.getTimeline()
 
     cWrapper.add(newCurtainTl)
-    
+
     jWrapper.to(journeyWrap, { opacity: 1, duration: 0.2 })
     jWrapper.add(newJourneyTl)
-    
-    bWrapper.to(journeyWrap, { opacity: 0, duration: 0.2 })
-    bWrapper.to(bookFlipWrap, { opacity: 1, duration: 0.2 }, "<")
+
+    bWrapper.to(journeyWrap, { y: "-100%", opacity: 1, duration: 1 })
+    bWrapper.to(bookFlipWrap, { y: 0, opacity: 1, duration: 1 }, "<")
     bWrapper.add(newBookFlipTl)
 
     cWrapper.progress(savedCProgress, true)
@@ -335,9 +343,6 @@ const MainView = () => {
           />
         </div>
       </section>
-
-      {/* New standalone sections */}
-      <EventDetails />
       <RomanticQuote />
     </main>
   )

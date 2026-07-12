@@ -9,11 +9,26 @@ import { cn } from "@/lib/utils"
 import Ornament from "./components/Ornament"
 import CornerFlourishes from "./components/CornerFlourishes"
 import Image from "next/image"
+import Cover from "./components/Cover"
 
 gsap.registerPlugin(ScrollTrigger)
 
 export interface BookFlipRef {
   getTimeline: () => gsap.core.Timeline
+}
+
+/** Content + styling for a single face (front or back) of a flipping layer. */
+export interface BookFlipFace {
+  /** Custom JSX for this face. Falls back to the default Buku Nikah content if omitted. */
+  content?: React.ReactNode
+  className?: string
+  style?: React.CSSProperties
+}
+
+/** Content for a flipping layer (cover or page), split into front & back faces. */
+export interface BookFlipLayer {
+  front?: BookFlipFace
+  back?: BookFlipFace
 }
 
 export interface BookFlipProps {
@@ -31,6 +46,10 @@ export interface BookFlipProps {
   mapUrl?: string
   className?: string
   theme?: "light" | "dark"
+  /** Front & back content of the outer cover layer. Defaults to the Buku Nikah cover design. */
+  cover?: BookFlipLayer
+  /** Front & back content of the inner flipping page (mobile only). Defaults to the date page. */
+  page?: BookFlipLayer
 }
 
 export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
@@ -49,6 +68,8 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
       mapUrl,
       className,
       theme,
+      cover,
+      page,
     },
     ref
   ) => {
@@ -88,6 +109,8 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
             rotateY: -10,
             rotateZ: 2,
             scale: 0.82,
+            x: "0%",
+            z: 0,
             y: 160,
             opacity: 0,
             transformOrigin: "center 80%",
@@ -108,6 +131,8 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
           gsap.set(shadowRef.current, { opacity: 0, scaleX: 0.4 })
           gsap.set(ribbonRef.current, { opacity: 1, y: 0 })
           gsap.set(shadowNodes, { opacity: 0 })
+
+          const isDesktop = window.innerWidth >= 768
 
           tl.to(bookRef.current, {
             opacity: 1,
@@ -130,85 +155,107 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
               "-=0.5"
             )
             .to({}, { duration: 0.4 })
-            .to(bookRef.current, {
+
+          if (isDesktop) {
+            // DESKTOP: 1 Flip, Content split left and right
+            tl.to(bookRef.current, {
               rotateY: -12,
               rotateX: 12,
-              z: 100,
-              x: () => (window.innerWidth >= 768 ? "50%" : "0%"),
-              duration: 0.9,
+              z: 150,
+              scale: 1.05,
+              x: "50%",
+              duration: 1.2,
               ease: "power1.inOut",
             })
-            .to(
-              coverRef.current,
-              { rotateY: -90, duration: 0.9, ease: "power2.in" },
-              "<"
-            )
-            .to(
-              [coverFrontShadowRef.current, coverBackShadowRef.current],
-              { opacity: 0.55, duration: 0.9, ease: "power1.in" },
-              "<"
-            )
-            .to(coverRef.current, {
-              rotateY: -180,
-              duration: 0.9,
-              ease: "power2.out",
-            })
-            .to(
-              [coverFrontShadowRef.current, coverBackShadowRef.current],
-              { opacity: 0, duration: 0.9, ease: "power1.out" },
-              "<"
-            )
-            .to(
-              bookRef.current,
-              {
-                rotateY: 0,
-                rotateX: 0,
-                z: 0,
-                duration: 0.9,
-                ease: "power2.out",
-              },
-              "<"
-            )
-            .to({}, { duration: 0.6 })
-            .to(bookRef.current, {
-              rotateY: -12,
-              rotateX: 12,
-              z: 100,
-              x: () => (window.innerWidth >= 768 ? "50%" : "0%"),
-              duration: 0.9,
+              .to(
+                coverRef.current,
+                { rotateY: -180, duration: 1.2, ease: "power2.inOut" },
+                "<"
+              )
+              .to(
+                [coverFrontShadowRef.current, coverBackShadowRef.current],
+                { opacity: 0.55, duration: 0.6, yoyo: true, repeat: 1 },
+                "<"
+              )
+              .set(coverRef.current, { zIndex: 10 }, "<0.6")
+              .to(
+                bookRef.current,
+                {
+                  rotateY: 0,
+                  rotateX: 0,
+                  z: 50,
+                  scale: 1,
+                  duration: 0.8,
+                  ease: "power2.out",
+                },
+                "-=0.4"
+              )
+          } else {
+            // MOBILE: 2 Flips, Dynamic Journey Sequence
+            tl.to(bookRef.current, {
+              rotateY: -15,
+              rotateX: 15,
+              z: 200,
+              x: "10%",
+              duration: 1,
               ease: "power1.inOut",
             })
-            .to(
-              page1Ref.current,
-              { rotateY: -90, duration: 0.9, ease: "power2.in" },
-              "<"
-            )
-            .to(
-              [page1FrontShadowRef.current, page1BackShadowRef.current],
-              { opacity: 0.55, duration: 0.9, ease: "power1.in" },
-              "<"
-            )
-            .to(page1Ref.current, {
-              rotateY: -180,
-              duration: 0.9,
-              ease: "power2.out",
-            })
-            .to(
-              [page1FrontShadowRef.current, page1BackShadowRef.current],
-              { opacity: 0, duration: 0.9, ease: "power1.out" },
-              "<"
-            )
-            .to(
-              bookRef.current,
-              {
-                rotateY: 0,
-                rotateX: 0,
-                z: 0,
-                duration: 0.9,
-                ease: "power2.out",
-              },
-              "<"
-            )
+              .to(
+                coverRef.current,
+                { rotateY: -180, duration: 1, ease: "power2.inOut" },
+                "<"
+              )
+              .to(
+                [coverFrontShadowRef.current, coverBackShadowRef.current],
+                { opacity: 0.55, duration: 0.5, yoyo: true, repeat: 1 },
+                "<"
+              )
+              .set(coverRef.current, { zIndex: 10 }, "<0.5")
+              .to(
+                bookRef.current,
+                {
+                  rotateY: 0,
+                  rotateX: 0,
+                  z: 100, // Zoom in on Date (Page 1 Front)
+                  x: "0%",
+                  duration: 0.8,
+                  ease: "power2.out",
+                },
+                "-=0.2"
+              )
+              .to({}, { duration: 0.6 }) // Pause to read date
+              .to(bookRef.current, {
+                rotateY: -15,
+                rotateX: 15,
+                z: 250, // Zoom closer during second flip
+                x: "15%",
+                duration: 1,
+                ease: "power1.inOut",
+              })
+              .to(
+                page1Ref.current,
+                { rotateY: -180, duration: 1, ease: "power2.inOut" },
+                "<"
+              )
+              .to(
+                [page1FrontShadowRef.current, page1BackShadowRef.current],
+                { opacity: 0.55, duration: 0.5, yoyo: true, repeat: 1 },
+                "<"
+              )
+              .set(page1Ref.current, { zIndex: 30 }, "<0.5")
+              .to(
+                bookRef.current,
+                {
+                  rotateY: 0,
+                  rotateX: 0,
+                  z: 120, // Zoom in on Map (Page 2)
+                  x: "0%",
+                  duration: 0.8,
+                  ease: "power2.out",
+                },
+                "-=0.2"
+              )
+          }
 
           return tl
         },
@@ -222,12 +269,53 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
       ? "linear-gradient(160deg, #8a1f1a 0%, #5c130f 55%, #3d0c09 100%)"
       : "linear-gradient(160deg, #1c3d22 0%, #12271a 55%, #0a1810 100%)"
     const gold = "#e9cf7a"
-    const goldSoft = "#d9c78a"
+
+    const defaultCoverBack = (
+      <div className="hidden h-full w-full flex-col items-center justify-center gap-4 md:flex">
+        <CornerFlourishes color={isDark ? "#d4af37" : "#c9a227"} />
+        <Ornament color={isDark ? "#d4af37" : "#c9a227"} />
+        <span className="font-serif text-[10px] tracking-[0.4em] text-[#9a865a] uppercase dark:text-[#a38d53]">
+          {dateLabel}
+        </span>
+        <span className="font-signature text-[clamp(1.8rem,4vw,3rem)] leading-tight text-[#1e1a14] dark:text-[#e0d8d0]">
+          {date}
+        </span>
+        <Ornament color={isDark ? "#d4af37" : "#c9a227"} flip />
+      </div>
+    )
+
+    const defaultPageFront = (
+      <>
+        <CornerFlourishes color={isDark ? "#d4af37" : "#c9a227"} />
+        <Ornament color={isDark ? "#d4af37" : "#c9a227"} />
+        <span className="font-serif text-[10px] tracking-[0.4em] text-[#9a865a] uppercase dark:text-[#a38d53]">
+          {dateLabel}
+        </span>
+        <span className="font-signature text-[clamp(1.8rem,4vw,3rem)] leading-tight text-[#1e1a14] dark:text-[#e0d8d0]">
+          {date}
+        </span>
+        <Ornament color={isDark ? "#d4af37" : "#c9a227"} flip />
+      </>
+    )
+
+    const defaultPageBack = null
+
+    // Resolve provided props against the defaults above.
+    const coverFront = cover?.front
+    const coverBack = cover?.back
+    const pageFront = page?.front
+    const pageBack = page?.back
 
     const isFirstRender = useRef(true)
     React.useEffect(() => {
       if (isFirstRender.current) {
         isFirstRender.current = false
+        return
+      }
+
+      // Jika buku sedang off-screen (masih di Journey Sequence posisinya di bawah layar), skip animasi putar.
+      const rect = sectionRef.current?.getBoundingClientRect()
+      if (rect && rect.top > window.innerHeight * 0.5) {
         return
       }
 
@@ -239,7 +327,18 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
         page1Ref.current,
         "rotateY"
       ) as number
-      const targetX = gsap.getProperty(bookRef.current, "x")
+
+      const targetX = gsap.getProperty(bookRef.current, "x") + "%"
+      const targetZ = gsap.getProperty(bookRef.current, "z")
+      const targetRotX = gsap.getProperty(bookRef.current, "rotateX")
+      let currentRotY = gsap.getProperty(bookRef.current, "rotateY") as number
+      currentRotY = currentRotY % 360
+      if (currentRotY > 180) currentRotY -= 360
+      if (currentRotY < -180) currentRotY += 360
+      gsap.set(bookRef.current, { rotateY: currentRotY })
+
+      const targetRotY = currentRotY
+      const targetScale = gsap.getProperty(bookRef.current, "scale")
 
       if (targetCoverRot < -10) {
         // Animasi: Tutup dulu, lalu buka lagi
@@ -257,10 +356,11 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
           .to(
             bookRef.current,
             {
-              x: 0,
+              x: "0%",
               rotateX: 0,
               rotateY: 0,
               z: 0,
+              scale: 1,
               duration: 0.6,
               ease: "power2.inOut",
             },
@@ -290,6 +390,10 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
             bookRef.current,
             {
               x: targetX,
+              z: targetZ,
+              rotateX: targetRotX,
+              rotateY: targetRotY + 360,
+              scale: targetScale,
               duration: 0.6,
               ease: "power2.inOut",
             },
@@ -310,28 +414,12 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
       <section
         ref={sectionRef}
         className={cn(
-          "gsap-element relative flex h-screen w-full flex-col items-center justify-center overflow-hidden bg-[#f0ebe0] dark:bg-[#1a1010]",
+          "gsap-element relative flex h-screen w-full flex-col items-center justify-center overflow-hidden",
           isDark && "dark",
           className
         )}
         style={{ perspective: "1400px", perspectiveOrigin: "50% 38%" }}
       >
-        <div
-          className="pointer-events-none absolute inset-0"
-          style={{
-            backgroundImage: `radial-gradient(circle, ${isDark ? "#d4af37" : "#a08050"}22 1px, transparent 0)`,
-            backgroundSize: "28px 28px",
-          }}
-        />
-        <div
-          className="pointer-events-none absolute inset-0"
-          style={{
-            background: isDark
-              ? "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(212,175,55,0.07), transparent)"
-              : "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(201,162,39,0.07), transparent)",
-          }}
-        />
-
         <div
           ref={bookRef}
           className="relative"
@@ -342,7 +430,7 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
             willChange: "transform, opacity",
           }}
         >
-          {/* PAGE 2 — bottom layer (map) */}
+          {/* PAGE 2 — bottom layer (map), always visible, does not flip */}
           <div
             className="absolute inset-0 flex flex-col items-center justify-center gap-4 overflow-hidden rounded-[4px_8px_8px_4px] border border-[#c9a227]/30 bg-[#f7f2e8] px-7 py-9 text-center dark:border-[#d4af37]/30 dark:bg-[#0f0f0f]"
             style={{ zIndex: 5 }}
@@ -375,10 +463,10 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
             )}
           </div>
 
-          {/* PAGE 1 — flipping page (front: date, back: inside texture) */}
+          {/* PAGE — flipping page (front & back configurable via `page` prop), mobile only */}
           <div
             ref={page1Ref}
-            className="absolute inset-0"
+            className="absolute inset-0 md:hidden"
             style={{
               zIndex: 15,
               transformStyle: "preserve-3d",
@@ -386,35 +474,36 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
             }}
           >
             <div
-              className="absolute inset-0 flex flex-col items-center justify-center gap-4 overflow-hidden rounded-[4px_8px_8px_4px] border border-[#c9a227]/30 bg-[#fdf8f0] px-7 py-9 text-center dark:border-[#d4af37]/30 dark:bg-[#141414]"
+              className={cn(
+                "absolute inset-0 flex flex-col items-center justify-center gap-4 overflow-hidden rounded-[4px_8px_8px_4px] border border-[#c9a227]/30 bg-[#fdf8f0] px-7 py-9 text-center dark:border-[#d4af37]/30 dark:bg-[#141414]",
+                pageFront?.className
+              )}
               style={{
                 transform: "translateZ(1px)",
                 backfaceVisibility: "hidden",
                 WebkitBackfaceVisibility: "hidden",
+                ...pageFront?.style,
               }}
             >
-              <CornerFlourishes color={isDark ? "#d4af37" : "#c9a227"} />
-              <Ornament color={isDark ? "#d4af37" : "#c9a227"} />
-              <span className="font-serif text-[10px] tracking-[0.4em] text-[#9a865a] uppercase dark:text-[#a38d53]">
-                {dateLabel}
-              </span>
-              <span className="font-signature text-[clamp(1.8rem,4vw,3rem)] leading-tight text-[#1e1a14] dark:text-[#e0d8d0]">
-                {date}
-              </span>
-              <Ornament color={isDark ? "#d4af37" : "#c9a227"} flip />
+              {pageFront?.content ?? defaultPageFront}
               <div
                 ref={page1FrontShadowRef}
                 className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/10 to-black/60"
               />
             </div>
             <div
-              className="absolute inset-0 rounded-[8px_4px_4px_8px] border border-[#c9a227]/30 bg-[#f7f2e8] dark:border-[#d4af37]/30 dark:bg-[#0f0f0f]"
+              className={cn(
+                "absolute inset-0 rounded-[8px_4px_4px_8px] border border-[#c9a227]/30 bg-[#f7f2e8] dark:border-[#d4af37]/30 dark:bg-[#0f0f0f]",
+                pageBack?.className
+              )}
               style={{
                 transform: "rotateY(180deg) translateZ(1px)",
                 backfaceVisibility: "hidden",
                 WebkitBackfaceVisibility: "hidden",
+                ...pageBack?.style,
               }}
             >
+              {pageBack?.content ?? defaultPageBack}
               <div
                 ref={page1BackShadowRef}
                 className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/10 to-black/60"
@@ -422,7 +511,7 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
             </div>
           </div>
 
-          {/* COVER — flipping page, styled like the physical Buku Nikah */}
+          {/* COVER — flipping page (front & back configurable via `cover` prop) */}
           <div
             ref={coverRef}
             className="absolute inset-0"
@@ -434,7 +523,10 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
           >
             {/* Front of cover */}
             <div
-              className="absolute inset-0 flex flex-col items-center justify-between overflow-hidden rounded-[4px_8px_8px_4px] border-2 px-7 py-8 text-center"
+              className={cn(
+                "absolute inset-0 flex flex-col items-center justify-between overflow-hidden rounded-[4px_8px_8px_4px] border-2 px-7 py-8 text-center",
+                coverFront?.className
+              )}
               style={{
                 transform: "translateZ(1px)",
                 background: coverGradient,
@@ -442,78 +534,12 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
                 backfaceVisibility: "hidden",
                 WebkitBackfaceVisibility: "hidden",
                 boxShadow: "inset 0 0 40px rgba(0,0,0,0.45)",
+                ...coverFront?.style,
               }}
             >
-              {/* faux leather / linen texture */}
-              <div
-                className="pointer-events-none absolute inset-0 opacity-40"
-                style={{
-                  backgroundImage:
-                    "repeating-linear-gradient(0deg, rgba(0,0,0,0.06) 0px, rgba(0,0,0,0.06) 1px, transparent 1px, transparent 3px), repeating-linear-gradient(90deg, rgba(0,0,0,0.05) 0px, rgba(0,0,0,0.05) 1px, transparent 1px, transparent 3px)",
-                }}
-              />
-
-              {/* title block */}
-              <div className="relative z-10 mt-3 flex flex-col items-center gap-[2px]">
-                <span
-                  className="font-serif text-[2rem] font-bold"
-                  style={{
-                    color: gold,
-                    textShadow: "0 1px 1px rgba(0,0,0,0.5)",
-                  }}
-                >
-                  BUKU NIKAH {isDark ? "SUAMI" : "ISTRI"}
-                </span>
-              </div>
-
-              {/* emblem */}
-              <div className="relative z-10 flex flex-col items-center gap-2">
-                <div
-                  style={{
-                    filter:
-                      "sepia(1) saturate(3) hue-rotate(5deg) brightness(1.05)",
-                    overflow: "hidden",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <Image
-                    src={"/asset/icon/garuda.png"}
-                    alt="Emblem"
-                    width={200}
-                    height={200}
-                  />
-                </div>
-              </div>
-
-              {/* bottom block */}
-              <div className="relative z-10 mb-2 flex flex-col items-center gap-[2px]">
-                <span
-                  className="font-serif text-[1.8rem] font-bold"
-                  style={{
-                    color: gold,
-                    textShadow: "0 1px 1px rgba(0,0,0,0.5)",
-                  }}
-                >
-                  DEPARTEMEN AGAMA
-                </span>
-                <span
-                  className="font-serif text-[1.8rem] font-bold"
-                  style={{
-                    color: gold,
-                    textShadow: "0 1px 1px rgba(0,0,0,0.5)",
-                  }}
-                >
-                  REPUBLIK INDONESIA
-                </span>
-              </div>
-
-              {/* ribbon */}
-              <div
-                ref={ribbonRef}
-                className="absolute bottom-[10px] flex items-end gap-[6px]"
-              />
+              {coverFront?.content ?? (
+                <Cover isDark={isDark} gold={gold} ribbonRef={ribbonRef} />
+              )}
 
               <div
                 ref={coverFrontShadowRef}
@@ -523,14 +549,20 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
 
             {/* Back of cover (inside cover) */}
             <div
-              className="absolute inset-0 rounded-[8px_4px_4px_8px] border bg-[#fdf8f0] dark:bg-[#141414]"
+              className={cn(
+                "absolute inset-0 flex flex-col items-center justify-center gap-4 overflow-hidden rounded-[8px_4px_4px_8px] border bg-[#fdf8f0] px-7 py-9 text-center dark:bg-[#141414]",
+                coverBack?.className
+              )}
               style={{
                 transform: "rotateY(180deg) translateZ(1px)",
                 backfaceVisibility: "hidden",
                 WebkitBackfaceVisibility: "hidden",
                 borderColor: `${gold}30`,
+                ...coverBack?.style,
               }}
             >
+              {coverBack?.content ?? defaultCoverBack}
+
               <div
                 ref={coverBackShadowRef}
                 className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/10 to-black/60"

@@ -331,7 +331,7 @@ export const JourneySequence = forwardRef<
         </div>
         <p className="text-md font-serif text-sm leading-relaxed font-light tracking-widest text-white drop-shadow-md sm:text-base">
           Putri dari Bapak Deden Herman Kuriawan <br /> & Ibu Selvia Agustina
-          Damayantid
+          Damayanti
         </p>
       </div>
 
