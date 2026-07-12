@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react"
 import { useTheme } from "next-themes"
-import { Countdown } from "@/components/Countdown"
+import { Countdown } from "@/components/CountDown"
 import { ChevronDown, Heart } from "lucide-react"
 import Image from "next/image"
 

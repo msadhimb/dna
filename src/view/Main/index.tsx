@@ -11,6 +11,7 @@ import {
 import JourneySequence, {
   JourneySequenceRef,
 } from "@/components/JourneySequence"
+import BookFlip, { BookFlipRef } from "@/components/BookFlip"
 import { WelcomeSection } from "./components/WelcomeSection"
 import { LoadingScreen } from "@/components/LoadingScreen"
 import EventDetails from "@/components/EventDetails"
@@ -116,9 +117,11 @@ const MainView = () => {
   const mainRef = useRef<HTMLElement>(null)
   const curtainRef = useRef<CurtainTransitionRef>(null)
   const journeyRef = useRef<JourneySequenceRef>(null)
+  const bookFlipRef = useRef<BookFlipRef>(null)
 
   const curtainTlRef = useRef<gsap.core.Timeline | null>(null)
   const journeyTlRef = useRef<gsap.core.Timeline | null>(null)
+  const bookFlipTlRef = useRef<gsap.core.Timeline | null>(null)
 
   const urlsToPreload = useMemo(() => {
     return (
@@ -165,23 +168,30 @@ const MainView = () => {
 
       const masterTrigger = document.getElementById("master-trigger")
       const journeyWrapper = document.getElementById("journey-wrapper")
+      const bookFlipWrapper = document.getElementById("book-flip-wrapper")
 
       if (
         !masterTrigger ||
         !journeyWrapper ||
+        !bookFlipWrapper ||
         !curtainRef.current ||
-        !journeyRef.current
+        !journeyRef.current ||
+        !bookFlipRef.current
       )
         return
 
       gsap.set(journeyWrapper, { opacity: 0 })
+      gsap.set(bookFlipWrapper, { opacity: 0 })
 
       const curtainTl = curtainRef.current.getTimeline()
       const journeyTl = journeyRef.current.getTimeline()
+      const bookFlipTl = bookFlipRef.current.getTimeline()
 
       const cDur = curtainTl.totalDuration() || 1
       const jDur = journeyTl.totalDuration() || 1
-      const totalScrollHeight = ((cDur + jDur) / (cDur + jDur)) * 1000
+      const bDur = bookFlipTl.totalDuration() || 1
+      const totalScrollHeight =
+        ((cDur + jDur + bDur) / (cDur + jDur + bDur)) * 1500
 
       const curtainWrapper = gsap.timeline()
       curtainWrapper.add(curtainTl)
@@ -192,6 +202,13 @@ const MainView = () => {
       journeyWrapperTl.add(journeyTl)
 
       journeyTlRef.current = journeyWrapperTl
+
+      const bookFlipWrapperTl = gsap.timeline()
+      bookFlipWrapperTl.to(journeyWrapper, { opacity: 0, duration: 0.2 })
+      bookFlipWrapperTl.to(bookFlipWrapper, { opacity: 1, duration: 0.2 }, "<")
+      bookFlipWrapperTl.add(bookFlipTl)
+
+      bookFlipTlRef.current = bookFlipWrapperTl
 
       const masterTl = gsap.timeline({
         scrollTrigger: {
@@ -207,6 +224,7 @@ const MainView = () => {
 
       masterTl.add(curtainWrapper)
       masterTl.add(journeyWrapperTl)
+      masterTl.add(bookFlipWrapperTl)
     },
     { scope: mainRef, dependencies: [isLoaded] }
   )
@@ -214,31 +232,53 @@ const MainView = () => {
   useEffect(() => {
     const cWrapper = curtainTlRef.current
     const jWrapper = journeyTlRef.current
+    const bWrapper = bookFlipTlRef.current
 
-    if (!cWrapper || !jWrapper || !curtainRef.current || !journeyRef.current)
+    if (
+      !cWrapper ||
+      !jWrapper ||
+      !bWrapper ||
+      !curtainRef.current ||
+      !journeyRef.current ||
+      !bookFlipRef.current
+    )
       return
 
     const savedCProgress = cWrapper.progress()
     const savedJProgress = jWrapper.progress()
+    const savedBProgress = bWrapper.progress()
 
     // Kembalikan ke posisi 0 agar DOM kembali bersih dari inline style GSAP lama
     cWrapper.progress(0, true)
     jWrapper.progress(0, true)
+    bWrapper.progress(0, true)
 
     cWrapper.clear()
     jWrapper.clear()
+    bWrapper.clear()
 
     const journeyWrap = document.getElementById("journey-wrapper")
     if (journeyWrap) gsap.set(journeyWrap, { clearProps: "all" })
+    
+    const bookFlipWrap = document.getElementById("book-flip-wrapper")
+    if (bookFlipWrap) gsap.set(bookFlipWrap, { clearProps: "all" })
 
     const newCurtainTl = curtainRef.current.getTimeline()
     const newJourneyTl = journeyRef.current.getTimeline()
+    const newBookFlipTl = bookFlipRef.current.getTimeline()
 
     cWrapper.add(newCurtainTl)
+    
+    jWrapper.to(journeyWrap, { opacity: 1, duration: 0.2 })
     jWrapper.add(newJourneyTl)
+    
+    bWrapper.to(journeyWrap, { opacity: 0, duration: 0.2 })
+    bWrapper.to(bookFlipWrap, { opacity: 1, duration: 0.2 }, "<")
+    bWrapper.add(newBookFlipTl)
 
     cWrapper.progress(savedCProgress, true)
     jWrapper.progress(savedJProgress, true)
+    bWrapper.progress(savedBProgress, true)
   }, [theme])
 
   if (!mounted) {
@@ -277,6 +317,22 @@ const MainView = () => {
           className="gsap-element pointer-events-none absolute inset-0 z-20 flex h-full w-full flex-col justify-center overflow-hidden bg-background opacity-0"
         >
           <JourneySequence ref={journeyRef} theme={theme} />
+        </div>
+
+        <div
+          id="book-flip-wrapper"
+          className="gsap-element pointer-events-none absolute inset-0 z-20 flex h-full w-full flex-col justify-center overflow-hidden bg-background opacity-0"
+        >
+          <BookFlip
+            ref={bookFlipRef}
+            theme={theme}
+            date="12 Januari 2027"
+            location="Gedung Pernikahan"
+            mapUrl="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d126938.99587422934!2d106.74958107931326!3d-6.15570075591392!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f3e945e34b9d%3A0x100c5e82dd4b820!2sJakarta!5e0!3m2!1sen!2sid!4v1700000000000!5m2!1sen!2sid"
+            monogram="S & A"
+            coverTitle="Buku Nikah"
+            coverSubtitle="Kementerian Agama Republik Indonesia"
+          />
         </div>
       </section>
 

@@ -6,6 +6,7 @@ import gsap from "gsap"
 import { Flower, Flower2, Sparkle, Sparkles, Plane } from "lucide-react"
 import { useScreenWidth } from "@/hooks/useScreenWidth"
 import { cn } from "@/lib/utils"
+import FloralOrnament from "../Icon/FloralOrnament"
 
 interface JourneySequenceProps {
   theme: string
@@ -15,49 +16,6 @@ export interface JourneySequenceRef {
   getTimeline: () => gsap.core.Timeline
 }
 
-function FloralOrnament({ className = "" }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 120 24"
-      className={className}
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1"
-      strokeLinecap="round"
-      aria-hidden="true"
-    >
-      <path d="M2 12 H40" />
-      <path d="M80 12 H118" />
-      <circle cx="60" cy="12" r="4" fill="currentColor" stroke="none" />
-      <path d="M60 12 C52 4, 44 4, 40 12 C44 20, 52 20, 60 12 Z" />
-      <path d="M60 12 C68 4, 76 4, 80 12 C76 20, 68 20, 60 12 Z" />
-    </svg>
-  )
-}
-
-function EdgeOrnament({ className = "" }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 80"
-      className={className}
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1"
-      strokeLinecap="round"
-      aria-hidden="true"
-    >
-      <path d="M12 4 V30" />
-      <path d="M12 50 V76" />
-      <circle cx="12" cy="40" r="3.5" fill="currentColor" stroke="none" />
-      <path d="M12 40 C6 34, 4 26, 8 20" />
-      <path d="M12 40 C18 34, 20 26, 16 20" />
-      <path d="M12 40 C6 46, 4 54, 8 60" />
-      <path d="M12 40 C18 46, 20 54, 16 60" />
-    </svg>
-  )
-}
-
-// Rectangle dan siluet paper-plane, sama-sama 12 titik supaya bisa diinterpolasi
 const CLIP_RECT =
   "polygon(0% 0%, 33% 0%, 66% 0%, 100% 0%, 100% 50%, 100% 100%, 66% 100%, 33% 100%, 0% 100%, 0% 50%, 0% 25%, 0% 75%)"
 
@@ -277,49 +235,8 @@ export const JourneySequence = forwardRef<
   return (
     <div className="relative flex h-screen w-full flex-col items-center justify-center overflow-hidden">
       <div className="pointer-events-none absolute inset-0 z-40 text-[#d4af37]/70 dark:text-primary/70">
-        <Sparkles
-          className="absolute top-4 left-4 h-8 w-8 drop-shadow-lg md:top-6 md:left-6 md:h-11 md:w-11"
-          strokeWidth={1.25}
-        />
-        <Sparkles
-          className="absolute top-4 right-4 h-8 w-8 -scale-x-100 drop-shadow-lg md:top-6 md:right-6 md:h-11 md:w-11"
-          strokeWidth={1.25}
-        />
-        <Sparkles
-          className="absolute bottom-4 left-4 h-8 w-8 -scale-y-100 drop-shadow-lg md:bottom-6 md:left-6 md:h-11 md:w-11"
-          strokeWidth={1.25}
-        />
-        <Sparkles
-          className="absolute right-4 bottom-4 h-8 w-8 -scale-100 drop-shadow-lg md:right-6 md:bottom-6 md:h-11 md:w-11"
-          strokeWidth={1.25}
-        />
-        <EdgeOrnament className="absolute top-1/2 left-2 hidden h-16 w-6 -translate-y-1/2 drop-shadow-lg sm:block md:left-4 md:h-24 md:w-8" />
-        <EdgeOrnament className="absolute top-1/2 right-2 hidden h-16 w-6 -translate-y-1/2 drop-shadow-lg sm:block md:right-4 md:h-24 md:w-8" />
-
-        <Flower
-          className="absolute top-14 left-8 h-5 w-5 opacity-60 drop-shadow md:top-20 md:left-16 md:h-7 md:w-7"
-          strokeWidth={1.25}
-        />
-        <Flower2
-          className="absolute top-24 right-10 h-4 w-4 -rotate-12 opacity-50 drop-shadow md:top-32 md:right-20 md:h-6 md:w-6"
-          strokeWidth={1.25}
-        />
-        <Flower2
-          className="absolute bottom-20 left-10 h-4 w-4 rotate-6 opacity-50 drop-shadow md:bottom-28 md:left-20 md:h-6 md:w-6"
-          strokeWidth={1.25}
-        />
-        <Flower
-          className="absolute right-8 bottom-14 h-5 w-5 rotate-12 opacity-60 drop-shadow md:right-16 md:bottom-20 md:h-7 md:w-7"
-          strokeWidth={1.25}
-        />
-        <Sparkle
-          className="absolute top-1/3 left-4 hidden h-4 w-4 opacity-40 sm:block md:left-10 md:h-5 md:w-5"
-          strokeWidth={1.25}
-        />
-        <Sparkle
-          className="absolute top-2/3 right-4 hidden h-4 w-4 opacity-40 sm:block md:right-10 md:h-5 md:w-5"
-          strokeWidth={1.25}
-        />
+        <Flower className="absolute top-1/2 left-2 hidden h-16 w-6 -translate-y-1/2 drop-shadow-lg sm:block md:left-4 md:h-24 md:w-8" />
+        <Flower className="absolute top-1/2 right-2 hidden h-16 w-6 -translate-y-1/2 drop-shadow-lg sm:block md:right-4 md:h-24 md:w-8" />
       </div>
 
       <div
@@ -345,7 +262,7 @@ export const JourneySequence = forwardRef<
         </div>
         <div className="flex items-center gap-2">
           <FloralOrnament className="h-4 w-14 text-[#d4af37] opacity-80 md:h-6 md:w-24 dark:text-primary" />
-          <Flower2
+          <Flower
             className="h-4 w-4 text-[#d4af37] opacity-90 md:h-5 md:w-5 dark:text-primary"
             strokeWidth={1.25}
           />
@@ -379,6 +296,9 @@ export const JourneySequence = forwardRef<
           "gsap-element absolute inset-y-0 right-0 z-50 flex w-screen flex-col items-end justify-center gap-2 bg-linear-to-l from-black/80 via-black/40 to-transparent p-6 text-right opacity-0 sm:p-8 md:w-1/2 md:p-12"
         )}
       >
+        <h2 className="font-signature text-4xl font-bold tracking-wide text-[#d4af37] drop-shadow-xl sm:text-4xl md:text-6xl lg:text-8xl dark:text-primary">
+          Muhamad Salman Adhim Baqy
+        </h2>
         <div className="flex items-center gap-2">
           <FloralOrnament className="h-4 w-12 text-[#d4af37] md:h-5 md:w-20 dark:text-primary" />
           <Flower
@@ -386,9 +306,6 @@ export const JourneySequence = forwardRef<
             strokeWidth={1.25}
           />
         </div>
-        <h2 className="font-signature text-4xl font-bold tracking-wide text-[#d4af37] drop-shadow-xl sm:text-4xl md:text-6xl lg:text-8xl dark:text-primary">
-          Muhamad Salman Adhim Baqy
-        </h2>
         <p className="text-md font-serif text-sm leading-relaxed font-light tracking-widest text-white drop-shadow-md">
           Putra dari Bapak Suprapto Wibowo <br /> & Ibu Christiana Sri Budhi
           Handayaniningsih
@@ -402,6 +319,9 @@ export const JourneySequence = forwardRef<
           "gsap-element absolute inset-y-0 left-0 z-50 flex w-screen flex-col items-start justify-center gap-2 bg-linear-to-r from-black/80 via-black/40 to-transparent p-6 text-left opacity-0 sm:p-8 md:w-1/2 md:p-12"
         )}
       >
+        <h2 className="font-signature text-4xl font-bold tracking-wide text-[#d4af37] drop-shadow-xl sm:text-4xl md:text-6xl lg:text-8xl dark:text-primary">
+          Devi Yuliana Nurhaliza
+        </h2>
         <div className="flex items-center gap-2">
           <Flower
             className="h-4 w-4 text-[#d4af37] md:h-5 md:w-5 dark:text-primary"
@@ -409,9 +329,6 @@ export const JourneySequence = forwardRef<
           />
           <FloralOrnament className="h-4 w-12 text-[#d4af37] md:h-5 md:w-20 dark:text-primary" />
         </div>
-        <h2 className="font-signature text-4xl font-bold tracking-wide text-[#d4af37] drop-shadow-xl sm:text-4xl md:text-6xl lg:text-8xl dark:text-primary">
-          Devi Yuliana Nurhaliza
-        </h2>
         <p className="text-md font-serif text-sm leading-relaxed font-light tracking-widest text-white drop-shadow-md sm:text-base">
           Putri dari Bapak Deden Herman Kuriawan <br /> & Ibu Selvia Agustina
           Damayantid
