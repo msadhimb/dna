@@ -334,7 +334,7 @@ const MainView = () => {
           <BookFlip
             ref={bookFlipRef}
             theme={theme}
-            date="12 Januari 2027"
+            date="12 Desember 2026"
             location="Gedung Pernikahan"
             mapUrl="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d126938.99587422934!2d106.74958107931326!3d-6.15570075591392!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f3e945e34b9d%3A0x100c5e82dd4b820!2sJakarta!5e0!3m2!1sen!2sid!4v1700000000000!5m2!1sen!2sid"
             monogram="S & A"
