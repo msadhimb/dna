@@ -16,6 +16,9 @@ import { WelcomeSection } from "./components/WelcomeSection"
 import { LoadingScreen } from "@/components/LoadingScreen"
 import EventDetails from "@/components/EventDetails"
 import RomanticQuote from "@/components/RomanticQuote"
+import DigitalGift from "@/components/DigitalGift"
+import CommentSection from "@/components/CommentSection"
+import Footer from "@/components/Footer"
 import Image from "next/image"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
@@ -181,7 +184,7 @@ const MainView = () => {
         return
 
       gsap.set(journeyWrapper, { opacity: 0 })
-      gsap.set(bookFlipWrapper, { opacity: 0 })
+      gsap.set(bookFlipWrapper, { opacity: 0, y: "100%" })
 
       const curtainTl = curtainRef.current.getTimeline()
       const journeyTl = journeyRef.current.getTimeline()
@@ -204,14 +207,9 @@ const MainView = () => {
       journeyTlRef.current = journeyWrapperTl
 
       const bookFlipWrapperTl = gsap.timeline()
-      bookFlipWrapperTl.to(journeyWrapper, {
-        y: "-100%",
-        opacity: 1,
-        duration: 1,
-      })
       bookFlipWrapperTl.to(
-        bookFlipWrapper,
-        { y: 0, opacity: 1, duration: 1 },
+        [journeyWrapper, bookFlipWrapper],
+        { y: (i) => (i === 0 ? "-100%" : "0%"), opacity: 1, duration: 0.6, ease: "power2.inOut" },
         "<"
       )
       bookFlipWrapperTl.add(bookFlipTl)
@@ -280,8 +278,11 @@ const MainView = () => {
     jWrapper.to(journeyWrap, { opacity: 1, duration: 0.2 })
     jWrapper.add(newJourneyTl)
 
-    bWrapper.to(journeyWrap, { y: "-100%", opacity: 1, duration: 1 })
-    bWrapper.to(bookFlipWrap, { y: 0, opacity: 1, duration: 1 }, "<")
+    bWrapper.to(
+      [journeyWrap, bookFlipWrap],
+      { y: (i) => (i === 0 ? "-100%" : "0%"), opacity: 1, duration: 0.6, ease: "power2.inOut" },
+      "<"
+    )
     bWrapper.add(newBookFlipTl)
 
     cWrapper.progress(savedCProgress, true)
@@ -344,6 +345,9 @@ const MainView = () => {
         </div>
       </section>
       <RomanticQuote />
+      <CommentSection />
+      <DigitalGift />
+      <Footer />
     </main>
   )
 }

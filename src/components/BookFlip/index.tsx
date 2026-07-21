@@ -55,8 +55,8 @@ export interface BookFlipProps {
 export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
   (
     {
-      width = "min(90vw, 400px)",
-      height = "min(72vh, 560px)",
+      width = "min(90vw, 30vw)",
+      height = "min(72vh, 90vh)",
       date,
       location,
       dateLabel = "Hari Pernikahan",
@@ -300,7 +300,6 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
 
     const defaultPageBack = null
 
-    // Resolve provided props against the defaults above.
     const coverFront = cover?.front
     const coverBack = cover?.back
     const pageFront = page?.front
@@ -313,9 +312,14 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
         return
       }
 
-      // Jika buku sedang off-screen (masih di Journey Sequence posisinya di bawah layar), skip animasi putar.
-      const rect = sectionRef.current?.getBoundingClientRect()
-      if (rect && rect.top > window.innerHeight * 0.5) {
+      const bookFlipWrapper = sectionRef.current?.closest("#book-flip-wrapper")
+      const wrapperOpacity = bookFlipWrapper
+        ? parseFloat(
+            (bookFlipWrapper as HTMLElement).style.opacity ||
+              getComputedStyle(bookFlipWrapper as HTMLElement).opacity
+          )
+        : 1
+      if (wrapperOpacity < 0.5) {
         return
       }
 
