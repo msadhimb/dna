@@ -27,10 +27,8 @@ export const WelcomeSection = () => {
       },
     })
 
-    // 1. Text fades and moves up quickly (parallax)
     tl.to(text, { y: -100, opacity: 0, duration: 0.5, ease: "power2.in" })
 
-    // 2. The background wipes up smoothly using clip-path, revealing HeroSection underneath
     tl.fromTo(
       container,
       { clipPath: "inset(0% 0% 0% 0%)" },

@@ -1,15 +1,19 @@
-/* eslint-disable react/display-name */
 "use client"
 
-import React, { forwardRef, useRef, useImperativeHandle } from "react"
+import React, {
+  forwardRef,
+  useRef,
+  useImperativeHandle,
+  useEffect,
+} from "react"
 import { useTheme } from "next-themes"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { cn } from "@/lib/utils"
 import Ornament from "./components/Ornament"
 import CornerFlourishes from "./components/CornerFlourishes"
-import Image from "next/image"
 import Cover from "./components/Cover"
+import useResponsive from "@/hooks/useResponsive"
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -17,15 +21,12 @@ export interface BookFlipRef {
   getTimeline: () => gsap.core.Timeline
 }
 
-/** Content + styling for a single face (front or back) of a flipping layer. */
 export interface BookFlipFace {
-  /** Custom JSX for this face. Falls back to the default Buku Nikah content if omitted. */
   content?: React.ReactNode
   className?: string
   style?: React.CSSProperties
 }
 
-/** Content for a flipping layer (cover or page), split into front & back faces. */
 export interface BookFlipLayer {
   front?: BookFlipFace
   back?: BookFlipFace
@@ -38,33 +39,22 @@ export interface BookFlipProps {
   location: string
   dateLabel?: string
   locationLabel?: string
-  /** "suami" -> merah (red) cover, "istri" -> hijau (green) cover, like the real Buku Nikah */
-  bukuNikahType?: "suami" | "istri"
-  coverTitle?: string
-  coverSubtitle?: string
-  monogram?: string
   mapUrl?: string
   className?: string
   theme?: "light" | "dark"
-  /** Front & back content of the outer cover layer. Defaults to the Buku Nikah cover design. */
   cover?: BookFlipLayer
-  /** Front & back content of the inner flipping page (mobile only). Defaults to the date page. */
   page?: BookFlipLayer
 }
 
 export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
   (
     {
-      width = "min(90vw, 30vw)",
-      height = "min(72vh, 90vh)",
+      width = "min(90vw, 420px)",
+      height = "min(72vh, 600px)",
       date,
       location,
       dateLabel = "Hari Pernikahan",
       locationLabel = "Lokasi",
-      bukuNikahType = "suami",
-      coverTitle,
-      coverSubtitle,
-      monogram,
       mapUrl,
       className,
       theme,
@@ -73,11 +63,15 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
     },
     ref
   ) => {
-    const { resolvedTheme } = useTheme()
-    const activeTheme = theme ?? (resolvedTheme === "dark" ? "dark" : "light")
-    const isDark = activeTheme === "dark"
-    const isSuami = bukuNikahType === "suami"
+    const coverFront = cover?.front
+    const coverBack = cover?.back
+    const pageFront = page?.front
+    const pageBack = page?.back
+    const defaultPageBack = null
 
+    const { resolvedTheme } = useTheme()
+    const { dist } = useResponsive()
+    const isFirstRender = useRef(true)
     const sectionRef = useRef<HTMLDivElement>(null)
     const bookRef = useRef<HTMLDivElement>(null)
     const coverRef = useRef<HTMLDivElement>(null)
@@ -88,6 +82,14 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
     const coverBackShadowRef = useRef<HTMLDivElement>(null)
     const page1FrontShadowRef = useRef<HTMLDivElement>(null)
     const page1BackShadowRef = useRef<HTMLDivElement>(null)
+
+    const activeTheme = theme ?? (resolvedTheme === "dark" ? "dark" : "light")
+    const isDark = activeTheme === "dark"
+    const coverThemeIsGreen = !isDark
+    const coverGradient = !coverThemeIsGreen
+      ? "linear-gradient(160deg, #8a1f1a 0%, #5c130f 55%, #3d0c09 100%)"
+      : "linear-gradient(160deg, #1c3d22 0%, #12271a 55%, #0a1810 100%)"
+    const gold = "#e9cf7a"
 
     useImperativeHandle(
       ref,
@@ -263,50 +265,7 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
       []
     )
 
-    // Buku Nikah palette — merah (dark) / hijau (light)
-    const coverThemeIsGreen = !isDark
-    const coverGradient = !coverThemeIsGreen
-      ? "linear-gradient(160deg, #8a1f1a 0%, #5c130f 55%, #3d0c09 100%)"
-      : "linear-gradient(160deg, #1c3d22 0%, #12271a 55%, #0a1810 100%)"
-    const gold = "#e9cf7a"
-
-    const defaultCoverBack = (
-      <div className="hidden h-full w-full flex-col items-center justify-center gap-4 md:flex">
-        <CornerFlourishes color={isDark ? "#d4af37" : "#c9a227"} />
-        <Ornament color={isDark ? "#d4af37" : "#c9a227"} />
-        <span className="font-serif text-[10px] tracking-[0.4em] text-[#9a865a] uppercase dark:text-[#a38d53]">
-          {dateLabel}
-        </span>
-        <span className="font-signature text-[clamp(1.8rem,4vw,3rem)] leading-tight text-[#1e1a14] dark:text-[#e0d8d0]">
-          {date}
-        </span>
-        <Ornament color={isDark ? "#d4af37" : "#c9a227"} flip />
-      </div>
-    )
-
-    const defaultPageFront = (
-      <>
-        <CornerFlourishes color={isDark ? "#d4af37" : "#c9a227"} />
-        <Ornament color={isDark ? "#d4af37" : "#c9a227"} />
-        <span className="font-serif text-[10px] tracking-[0.4em] text-[#9a865a] uppercase dark:text-[#a38d53]">
-          {dateLabel}
-        </span>
-        <span className="font-signature text-[clamp(1.8rem,4vw,3rem)] leading-tight text-[#1e1a14] dark:text-[#e0d8d0]">
-          {date}
-        </span>
-        <Ornament color={isDark ? "#d4af37" : "#c9a227"} flip />
-      </>
-    )
-
-    const defaultPageBack = null
-
-    const coverFront = cover?.front
-    const coverBack = cover?.back
-    const pageFront = page?.front
-    const pageBack = page?.back
-
-    const isFirstRender = useRef(true)
-    React.useEffect(() => {
+    useEffect(() => {
       if (isFirstRender.current) {
         isFirstRender.current = false
         return
@@ -345,7 +304,6 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
       const targetScale = gsap.getProperty(bookRef.current, "scale")
 
       if (targetCoverRot < -10) {
-        // Animasi: Tutup dulu, lalu buka lagi
         const tl = gsap.timeline()
         tl.to(
           [page1Ref.current, coverRef.current],
@@ -426,15 +384,14 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
       >
         <div
           ref={bookRef}
-          className="relative"
+          className="relative max-w-full"
           style={{
-            width,
-            height,
+            width: dist(width, "min(85vw, 420px)"),
+            height: dist(height, "min(70vh, 600px)"),
             transformStyle: "preserve-3d",
             willChange: "transform, opacity",
           }}
         >
-          {/* PAGE 2 — bottom layer (map), always visible, does not flip */}
           <div
             className="absolute inset-0 flex flex-col items-center justify-center gap-4 overflow-hidden rounded-[4px_8px_8px_4px] border border-[#c9a227]/30 bg-[#f7f2e8] px-7 py-9 text-center dark:border-[#d4af37]/30 dark:bg-[#0f0f0f]"
             style={{ zIndex: 5 }}
@@ -448,7 +405,7 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
               {location}
             </span>
             {mapUrl ? (
-              <div className="max-h-[220px] min-h-[140px] w-full flex-1 overflow-hidden rounded-md border border-[#c9a227]/30 dark:border-[#d4af37]/30">
+              <div className="max-h-55 min-h-35 w-full flex-1 overflow-hidden rounded-md border border-[#c9a227]/30 dark:border-[#d4af37]/30">
                 <iframe
                   src={mapUrl}
                   className={cn(
@@ -489,10 +446,22 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
                 ...pageFront?.style,
               }}
             >
-              {pageFront?.content ?? defaultPageFront}
+              {pageFront?.content ?? (
+                <>
+                  <CornerFlourishes color={isDark ? "#d4af37" : "#c9a227"} />
+                  <Ornament color={isDark ? "#d4af37" : "#c9a227"} />
+                  <span className="font-serif text-[10px] tracking-[0.4em] text-[#9a865a] uppercase dark:text-[#a38d53]">
+                    {dateLabel}
+                  </span>
+                  <span className="font-signature text-[clamp(1.8rem,4vw,3rem)] leading-tight text-[#1e1a14] dark:text-[#e0d8d0]">
+                    {date}
+                  </span>
+                  <Ornament color={isDark ? "#d4af37" : "#c9a227"} flip />
+                </>
+              )}
               <div
                 ref={page1FrontShadowRef}
-                className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/10 to-black/60"
+                className="pointer-events-none absolute inset-0 bg-linear-to-r from-black/10 to-black/60"
               />
             </div>
             <div
@@ -510,7 +479,7 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
               {pageBack?.content ?? defaultPageBack}
               <div
                 ref={page1BackShadowRef}
-                className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/10 to-black/60"
+                className="pointer-events-none absolute inset-0 bg-linear-to-r from-black/10 to-black/60"
               />
             </div>
           </div>
@@ -565,7 +534,19 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
                 ...coverBack?.style,
               }}
             >
-              {coverBack?.content ?? defaultCoverBack}
+              {coverBack?.content ?? (
+                <div className="hidden h-full w-full flex-col items-center justify-center gap-4 md:flex">
+                  <CornerFlourishes color={isDark ? "#d4af37" : "#c9a227"} />
+                  <Ornament color={isDark ? "#d4af37" : "#c9a227"} />
+                  <span className="font-serif text-[10px] tracking-[0.4em] text-[#9a865a] uppercase dark:text-[#a38d53]">
+                    {dateLabel}
+                  </span>
+                  <span className="font-signature text-[clamp(1.8rem,4vw,3rem)] leading-tight text-[#1e1a14] dark:text-[#e0d8d0]">
+                    {date}
+                  </span>
+                  <Ornament color={isDark ? "#d4af37" : "#c9a227"} flip />
+                </div>
+              )}
 
               <div
                 ref={coverBackShadowRef}

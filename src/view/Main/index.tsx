@@ -1,9 +1,9 @@
 "use client"
 
-import React, { useEffect, useState, useMemo, useRef } from "react"
+import { useEffect, useState, useMemo, useRef } from "react"
 import { useTheme } from "next-themes"
 import { Heart } from "lucide-react"
-import HeroSection from "./components/HeroSection"
+import HeroSection from "../../components/HeroSection"
 import {
   CurtainTransition,
   CurtainTransitionRef,
@@ -12,9 +12,8 @@ import JourneySequence, {
   JourneySequenceRef,
 } from "@/components/JourneySequence"
 import BookFlip, { BookFlipRef } from "@/components/BookFlip"
-import { WelcomeSection } from "./components/WelcomeSection"
+import { WelcomeSection } from "../../components/WelcomeSection"
 import { LoadingScreen } from "@/components/LoadingScreen"
-import EventDetails from "@/components/EventDetails"
 import RomanticQuote from "@/components/RomanticQuote"
 import DigitalGift from "@/components/DigitalGift"
 import CommentSection from "@/components/CommentSection"
@@ -209,7 +208,12 @@ const MainView = () => {
       const bookFlipWrapperTl = gsap.timeline()
       bookFlipWrapperTl.to(
         [journeyWrapper, bookFlipWrapper],
-        { y: (i) => (i === 0 ? "-100%" : "0%"), opacity: 1, duration: 0.6, ease: "power2.inOut" },
+        {
+          y: (i) => (i === 0 ? "-100%" : "0%"),
+          opacity: 1,
+          duration: 0.6,
+          ease: "power2.inOut",
+        },
         "<"
       )
       bookFlipWrapperTl.add(bookFlipTl)
@@ -280,7 +284,12 @@ const MainView = () => {
 
     bWrapper.to(
       [journeyWrap, bookFlipWrap],
-      { y: (i) => (i === 0 ? "-100%" : "0%"), opacity: 1, duration: 0.6, ease: "power2.inOut" },
+      {
+        y: (i) => (i === 0 ? "-100%" : "0%"),
+        opacity: 1,
+        duration: 0.6,
+        ease: "power2.inOut",
+      },
       "<"
     )
     bWrapper.add(newBookFlipTl)
@@ -338,9 +347,6 @@ const MainView = () => {
             date="12 Desember 2026"
             location="Gedung Pernikahan"
             mapUrl="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d126938.99587422934!2d106.74958107931326!3d-6.15570075591392!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f3e945e34b9d%3A0x100c5e82dd4b820!2sJakarta!5e0!3m2!1sen!2sid!4v1700000000000!5m2!1sen!2sid"
-            monogram="S & A"
-            coverTitle="Buku Nikah"
-            coverSubtitle="Kementerian Agama Republik Indonesia"
           />
         </div>
       </section>

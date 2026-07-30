@@ -7,6 +7,7 @@ import { Flower, Flower2, Sparkle, Sparkles, Plane } from "lucide-react"
 import { useScreenWidth } from "@/hooks/useScreenWidth"
 import { cn } from "@/lib/utils"
 import FloralOrnament from "../Icon/FloralOrnament"
+import useResponsive from "@/hooks/useResponsive"
 
 interface JourneySequenceProps {
   theme: string
@@ -33,8 +34,7 @@ export const JourneySequence = forwardRef<
   const brideBioRef = useRef<HTMLDivElement>(null)
   const textContainerRef = useRef<HTMLDivElement>(null)
   const paperPlaneRef = useRef<HTMLDivElement>(null)
-  const screenWidth = useScreenWidth()
-  const isMobile = screenWidth > 0 && screenWidth < 768
+  const { dist, isMobile } = useResponsive()
 
   useImperativeHandle(
     ref,
@@ -56,9 +56,6 @@ export const JourneySequence = forwardRef<
 
         tl.set([groomBioRef.current, brideBioRef.current], { opacity: 0 }, 0)
         tl.set(journeyImgElement, { scale: 1, x: 0, y: 0 }, 0)
-
-        const dist = (mobileVal: string, desktopVal: string) =>
-          isMobile ? mobileVal : desktopVal
 
         tl.to(journeyImageRef.current, {
           width: dist("85vw", "60vw"),
