@@ -316,47 +316,6 @@ const RomanticQuote = () => {
           <SplitLine text="aku akan selalu memilihmu.&rdquo;" />
         </p>
 
-        <div ref={dividerRef} className="flex items-center gap-4">
-          <div
-            style={{
-              height: "1px",
-              width: "48px",
-              background: accent,
-              opacity: 0.3,
-            }}
-          />
-          <div
-            style={{
-              width: "6px",
-              height: "6px",
-              transform: "rotate(45deg)",
-              border: `1px solid ${accent}`,
-              opacity: 0.5,
-            }}
-          />
-          <div
-            style={{
-              height: "1px",
-              width: "48px",
-              background: accent,
-              opacity: 0.3,
-            }}
-          />
-        </div>
-
-        <p
-          ref={namesRef}
-          className="font-signature"
-          style={{
-            fontSize: "clamp(1.6rem, 4vw, 2.4rem)",
-            color: body,
-            letterSpacing: "0.05em",
-            lineHeight: 1.2,
-          }}
-        >
-          Devi & Adhim
-        </p>
-
         <div ref={orn2Ref} className="flex w-full justify-center">
           <WideOrnament color={accent} flip />
         </div>
