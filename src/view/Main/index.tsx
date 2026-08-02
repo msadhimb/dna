@@ -16,7 +16,7 @@ import { WelcomeSection } from "../../components/WelcomeSection"
 import { LoadingScreen } from "@/components/LoadingScreen"
 import RomanticQuote from "@/components/RomanticQuote"
 import DigitalGift from "@/components/DigitalGift"
-import CommentSection from "@/components/CommentSection"
+import CommentSection, { CommentSectionRef } from "@/components/CommentSection"
 import Footer from "@/components/Footer"
 import Image from "next/image"
 import gsap from "gsap"
@@ -120,10 +120,13 @@ const MainView = () => {
   const curtainRef = useRef<CurtainTransitionRef>(null)
   const journeyRef = useRef<JourneySequenceRef>(null)
   const bookFlipRef = useRef<BookFlipRef>(null)
+  const commentRef = useRef<CommentSectionRef>(null)
 
   const curtainTlRef = useRef<gsap.core.Timeline | null>(null)
   const journeyTlRef = useRef<gsap.core.Timeline | null>(null)
   const bookFlipTlRef = useRef<gsap.core.Timeline | null>(null)
+  const commentTlRef = useRef<gsap.core.Timeline | null>(null)
+  const masterTlRef = useRef<gsap.core.Timeline | null>(null)
 
   const urlsToPreload = useMemo(() => {
     return (
@@ -178,7 +181,8 @@ const MainView = () => {
         !bookFlipWrapper ||
         !curtainRef.current ||
         !journeyRef.current ||
-        !bookFlipRef.current
+        !bookFlipRef.current ||
+        !commentRef.current
       )
         return
 
@@ -235,6 +239,13 @@ const MainView = () => {
       masterTl.add(curtainWrapper)
       masterTl.add(journeyWrapperTl)
       masterTl.add(bookFlipWrapperTl)
+
+      const commentTl = commentRef.current?.getTimeline()
+      if (commentTl) {
+        masterTl.add(commentTl)
+      }
+
+      masterTlRef.current = masterTl
     },
     { scope: mainRef, dependencies: [isLoaded] }
   )
@@ -243,29 +254,35 @@ const MainView = () => {
     const cWrapper = curtainTlRef.current
     const jWrapper = journeyTlRef.current
     const bWrapper = bookFlipTlRef.current
+    const coWrapper = commentTlRef.current
 
     if (
       !cWrapper ||
       !jWrapper ||
       !bWrapper ||
+      !coWrapper ||
       !curtainRef.current ||
       !journeyRef.current ||
-      !bookFlipRef.current
+      !bookFlipRef.current ||
+      !commentRef.current
     )
       return
 
     const savedCProgress = cWrapper.progress()
     const savedJProgress = jWrapper.progress()
     const savedBProgress = bWrapper.progress()
+    const savedCoProgress = coWrapper.progress()
 
     // Kembalikan ke posisi 0 agar DOM kembali bersih dari inline style GSAP lama
     cWrapper.progress(0, true)
     jWrapper.progress(0, true)
     bWrapper.progress(0, true)
+    coWrapper.progress(0, true)
 
     cWrapper.clear()
     jWrapper.clear()
     bWrapper.clear()
+    coWrapper.clear()
 
     const journeyWrap = document.getElementById("journey-wrapper")
     if (journeyWrap) gsap.set(journeyWrap, { clearProps: "all" })
@@ -276,11 +293,12 @@ const MainView = () => {
     const newCurtainTl = curtainRef.current.getTimeline()
     const newJourneyTl = journeyRef.current.getTimeline()
     const newBookFlipTl = bookFlipRef.current.getTimeline()
+    const newCommentTl = commentRef.current.getTimeline()
 
     cWrapper.add(newCurtainTl)
-
     jWrapper.to(journeyWrap, { opacity: 1, duration: 0.2 })
     jWrapper.add(newJourneyTl)
+    coWrapper.add(newCommentTl)
 
     bWrapper.to(
       [journeyWrap, bookFlipWrap],
@@ -297,6 +315,7 @@ const MainView = () => {
     cWrapper.progress(savedCProgress, true)
     jWrapper.progress(savedJProgress, true)
     bWrapper.progress(savedBProgress, true)
+    coWrapper.progress(savedCoProgress, true)
   }, [theme])
 
   if (!mounted) {
@@ -351,7 +370,7 @@ const MainView = () => {
         </div>
       </section>
       <RomanticQuote />
-      <CommentSection />
+      <CommentSection ref={commentRef} />
       <DigitalGift />
       <Footer />
     </main>
