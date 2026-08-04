@@ -31,11 +31,16 @@ const WeddingInput = React.forwardRef<HTMLInputElement, WeddingInputProps>(
           ref={ref}
           data-slot="wedding-input"
           className={cn(
-            "h-auto w-full border-2 border-border bg-transparent px-4 py-3 text-base font-medium shadow-none ring-0 transition-all duration-300 outline-none placeholder:opacity-40",
+            "h-auto w-full bg-transparent px-4 py-3 text-base font-medium shadow-none ring-0 transition-all duration-300 outline-none placeholder:opacity-40",
             className
           )}
           style={{
-            borderColor: focused ? accent : (borderColor ?? "transparent"),
+            borderWidth: "2px",
+            borderStyle: "solid",
+            borderTopColor: focused ? accent : (borderColor ?? "transparent"),
+            borderRightColor: focused ? accent : (borderColor ?? "transparent"),
+            borderBottomColor: focused ? accent : (borderColor ?? "transparent"),
+            borderLeftColor: focused ? accent : (borderColor ?? "transparent"),
           }}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}

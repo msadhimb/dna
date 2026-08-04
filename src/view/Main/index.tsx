@@ -240,11 +240,14 @@ const MainView = () => {
       masterTl.add(journeyWrapperTl)
       masterTl.add(bookFlipWrapperTl)
 
+      const commentWrapperTl = gsap.timeline()
       const commentTl = commentRef.current?.getTimeline()
       if (commentTl) {
-        masterTl.add(commentTl)
+        commentWrapperTl.add(commentTl)
+        masterTl.add(commentWrapperTl)
       }
 
+      commentTlRef.current = commentWrapperTl
       masterTlRef.current = masterTl
     },
     { scope: mainRef, dependencies: [isLoaded] }
@@ -260,7 +263,6 @@ const MainView = () => {
       !cWrapper ||
       !jWrapper ||
       !bWrapper ||
-      !coWrapper ||
       !curtainRef.current ||
       !journeyRef.current ||
       !bookFlipRef.current ||
@@ -271,18 +273,18 @@ const MainView = () => {
     const savedCProgress = cWrapper.progress()
     const savedJProgress = jWrapper.progress()
     const savedBProgress = bWrapper.progress()
-    const savedCoProgress = coWrapper.progress()
+    const savedCoProgress = coWrapper?.progress() ?? 0
 
     // Kembalikan ke posisi 0 agar DOM kembali bersih dari inline style GSAP lama
     cWrapper.progress(0, true)
     jWrapper.progress(0, true)
     bWrapper.progress(0, true)
-    coWrapper.progress(0, true)
+    coWrapper?.progress(0, true)
 
     cWrapper.clear()
     jWrapper.clear()
     bWrapper.clear()
-    coWrapper.clear()
+    coWrapper?.clear()
 
     const journeyWrap = document.getElementById("journey-wrapper")
     if (journeyWrap) gsap.set(journeyWrap, { clearProps: "all" })
@@ -298,7 +300,11 @@ const MainView = () => {
     cWrapper.add(newCurtainTl)
     jWrapper.to(journeyWrap, { opacity: 1, duration: 0.2 })
     jWrapper.add(newJourneyTl)
-    coWrapper.add(newCommentTl)
+
+    if (coWrapper) {
+      coWrapper.add(newCommentTl)
+      coWrapper.progress(savedCoProgress, true)
+    }
 
     bWrapper.to(
       [journeyWrap, bookFlipWrap],
@@ -315,7 +321,6 @@ const MainView = () => {
     cWrapper.progress(savedCProgress, true)
     jWrapper.progress(savedJProgress, true)
     bWrapper.progress(savedBProgress, true)
-    coWrapper.progress(savedCoProgress, true)
   }, [theme])
 
   if (!mounted) {

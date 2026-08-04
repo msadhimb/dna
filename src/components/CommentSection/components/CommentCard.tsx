@@ -26,8 +26,15 @@ export function CommentCard({ name, message, attendance, date, textPrimary, text
       className="cs-card-item flex flex-col gap-5 p-8 transition-all duration-500"
       style={{
         background: surface,
-        border: `1px solid ${border}`,
-        borderTop: `2px solid ${att.color}`,
+        borderTopWidth: "2px",
+        borderRightWidth: "1px",
+        borderBottomWidth: "1px",
+        borderLeftWidth: "1px",
+        borderStyle: "solid",
+        borderTopColor: att.color,
+        borderRightColor: border,
+        borderBottomColor: border,
+        borderLeftColor: border,
         borderRadius: "12px",
       }}
     >

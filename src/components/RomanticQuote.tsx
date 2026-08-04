@@ -85,37 +85,78 @@ const CornerAccent = ({
   position: "tl" | "tr" | "bl" | "br"
   color: string
 }) => {
-  const styles: React.CSSProperties = {
+  const base: React.CSSProperties = {
     position: "absolute",
     width: "16px",
     height: "16px",
-    borderColor: color,
     opacity: 0.4,
   }
 
   if (position === "tl") {
-    styles.top = "14px"
-    styles.left = "14px"
-    styles.borderTop = "1px solid"
-    styles.borderLeft = "1px solid"
+    return (
+      <div
+        style={{
+          ...base,
+          top: "14px",
+          left: "14px",
+          borderTopWidth: "1px",
+          borderTopStyle: "solid",
+          borderTopColor: color,
+          borderLeftWidth: "1px",
+          borderLeftStyle: "solid",
+          borderLeftColor: color,
+        }}
+      />
+    )
   } else if (position === "tr") {
-    styles.top = "14px"
-    styles.right = "14px"
-    styles.borderTop = "1px solid"
-    styles.borderRight = "1px solid"
+    return (
+      <div
+        style={{
+          ...base,
+          top: "14px",
+          right: "14px",
+          borderTopWidth: "1px",
+          borderTopStyle: "solid",
+          borderTopColor: color,
+          borderRightWidth: "1px",
+          borderRightStyle: "solid",
+          borderRightColor: color,
+        }}
+      />
+    )
   } else if (position === "bl") {
-    styles.bottom = "14px"
-    styles.left = "14px"
-    styles.borderBottom = "1px solid"
-    styles.borderLeft = "1px solid"
-  } else if (position === "br") {
-    styles.bottom = "14px"
-    styles.right = "14px"
-    styles.borderBottom = "1px solid"
-    styles.borderRight = "1px solid"
+    return (
+      <div
+        style={{
+          ...base,
+          bottom: "14px",
+          left: "14px",
+          borderBottomWidth: "1px",
+          borderBottomStyle: "solid",
+          borderBottomColor: color,
+          borderLeftWidth: "1px",
+          borderLeftStyle: "solid",
+          borderLeftColor: color,
+        }}
+      />
+    )
+  } else {
+    return (
+      <div
+        style={{
+          ...base,
+          bottom: "14px",
+          right: "14px",
+          borderBottomWidth: "1px",
+          borderBottomStyle: "solid",
+          borderBottomColor: color,
+          borderRightWidth: "1px",
+          borderRightStyle: "solid",
+          borderRightColor: color,
+        }}
+      />
+    )
   }
-
-  return <div style={styles} />
 }
 
 const SplitLine = ({ text }: { text: string }) => {

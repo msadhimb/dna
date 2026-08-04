@@ -34,11 +34,16 @@ const WeddingTextarea = React.forwardRef<
           ref={ref}
           data-slot="wedding-textarea"
           className={cn(
-            "min-h-32 resize-none border-2 border-border bg-transparent p-4 text-base font-medium shadow-none ring-0 transition-all duration-300 outline-none placeholder:opacity-40",
+            "min-h-32 resize-none bg-transparent p-4 text-base font-medium shadow-none ring-0 transition-all duration-300 outline-none placeholder:opacity-40",
             className
           )}
           style={{
-            borderColor: focused ? accent : (borderColor ?? "transparent"),
+            borderWidth: "2px",
+            borderStyle: "solid",
+            borderTopColor: focused ? accent : (borderColor ?? "transparent"),
+            borderRightColor: focused ? accent : (borderColor ?? "transparent"),
+            borderBottomColor: focused ? accent : (borderColor ?? "transparent"),
+            borderLeftColor: focused ? accent : (borderColor ?? "transparent"),
             borderRadius: "12px",
           }}
           onFocus={() => setFocused(true)}
