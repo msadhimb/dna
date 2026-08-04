@@ -56,7 +56,7 @@ export function CommentForm({
   return (
     <FormProvider {...methods}>
       <div
-        className="cs-form-wrap mb-20"
+        className="cs-form-wrap"
         style={{
           background: surface,
           border: `1px solid ${border}`,
@@ -82,7 +82,7 @@ export function CommentForm({
           </span>
         </div>
 
-        <div className="flex flex-col gap-8 p-8">
+        <div className="flex flex-col gap-8 px-8 py-10">
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
             <Controller
               name="name"
@@ -143,15 +143,7 @@ export function CommentForm({
                 if (e.key === "Enter" || e.key === " ") handleSubmit()
               }}
               onClick={handleSubmit}
-              className="cs-submit-btn flex cursor-pointer items-center justify-center px-8 py-3 font-sans text-xs font-bold tracking-[0.3em] uppercase transition-all duration-300"
-              style={{
-                color: accent,
-                border: `1.5px solid ${accent}`,
-                borderRadius: "8px",
-                background: "transparent",
-                opacity: isSubmitting ? 0.5 : 1,
-                pointerEvents: isSubmitting ? "none" : "auto",
-              }}
+              className="cs-submit-btn flex cursor-pointer items-center justify-center rounded-xl px-8 py-3 font-sans text-xs font-bold tracking-[0.3em] uppercase transition-all duration-300 bg-green-800 text-white dark:bg-red-800"
             >
               {isSubmitting
                 ? "Mengirim..."

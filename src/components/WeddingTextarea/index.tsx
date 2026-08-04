@@ -24,7 +24,7 @@ const WeddingTextarea = React.forwardRef<
       <div className="flex flex-col gap-2">
         {label && (
           <label
-            className="font-sans text-sm font-bold tracking-[0.30em] uppercase"
+            className="font-sans text-[11px] font-bold tracking-[0.30em] uppercase"
             style={{ color: labelColor }}
           >
             {label}
@@ -34,26 +34,23 @@ const WeddingTextarea = React.forwardRef<
           ref={ref}
           data-slot="wedding-textarea"
           className={cn(
-            "min-h-32 resize-none bg-transparent p-4 text-base font-medium shadow-none ring-0 transition-all duration-300 outline-none placeholder:opacity-40",
+            "min-h-32 resize-none border-2 bg-transparent p-2 text-sm md:text-base font-medium shadow-none ring-0 transition-all duration-300 outline-none placeholder:opacity-40 rounded-xl focus-visible:dark:border-red-800 focus-visible:dark:ring-red-800/50 focus-visible:border-green-800 focus-visible:ring-green-800/50",
             className
           )}
           style={{
-            borderWidth: "2px",
-            borderStyle: "solid",
             borderTopColor: focused ? accent : (borderColor ?? "transparent"),
             borderRightColor: focused ? accent : (borderColor ?? "transparent"),
-            borderBottomColor: focused ? accent : (borderColor ?? "transparent"),
+            borderBottomColor: focused
+              ? accent
+              : (borderColor ?? "transparent"),
             borderLeftColor: focused ? accent : (borderColor ?? "transparent"),
-            borderRadius: "12px",
           }}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           {...props}
         />
         {error && (
-          <span className="font-sans text-xs" style={{ color: "#EF4444" }}>
-            {error}
-          </span>
+          <span className="font-sans text-xs text-red-500">{error}</span>
         )}
       </div>
     )

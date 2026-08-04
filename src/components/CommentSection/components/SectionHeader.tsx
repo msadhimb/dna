@@ -15,7 +15,7 @@ export function SectionHeader({
   textSecondary,
 }: SectionHeaderProps) {
   return (
-    <div className="mb-20 flex flex-col items-center gap-6 text-center">
+    <div className="flex flex-col items-center gap-6 text-center">
       <p
         className="cs-eyebrow font-sans text-[10px] font-semibold tracking-[0.5em] uppercase"
         style={{ color: textSecondary }}
