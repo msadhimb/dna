@@ -106,10 +106,10 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
       if (e.beta === null || e.gamma === null) return
       if (initialBeta === null) initialBeta = e.beta
       if (initialGamma === null) initialGamma = e.gamma
-      
+
       const deltaBeta = e.beta - initialBeta
       const deltaGamma = e.gamma - initialGamma
-      
+
       targetY.current = Math.max(-30, Math.min(30, deltaBeta))
       targetX.current = Math.max(-30, Math.min(30, deltaGamma))
     }
@@ -158,9 +158,15 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
     observer.observe(card)
 
     const requestPerms = async () => {
-      const DOE = DeviceOrientationEvent as unknown as {
+      if (typeof window === "undefined" || !window.DeviceOrientationEvent) {
+        enableScrollFallback()
+        return
+      }
+
+      const DOE = window.DeviceOrientationEvent as unknown as {
         requestPermission?: () => Promise<string>
       }
+
       if (typeof DOE.requestPermission === "function") {
         try {
           const perm = await DOE.requestPermission()
@@ -169,7 +175,8 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
           } else {
             enableScrollFallback()
           }
-        } catch {
+        } catch (err) {
+          console.error("DeviceOrientation permission error:", err)
           enableScrollFallback()
         }
       } else {
@@ -178,20 +185,20 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
       }
     }
 
-    // KUNCI: minta permission dari dalam user gesture (tap), bukan otomatis
     const onFirstTouch = () => {
       requestPerms()
-      window.removeEventListener("touchstart", onFirstTouch)
+      window.removeEventListener("touchend", onFirstTouch)
       window.removeEventListener("click", onFirstTouch)
     }
-    window.addEventListener("touchstart", onFirstTouch, { once: true })
+    window.addEventListener("touchend", onFirstTouch, { once: true })
     window.addEventListener("click", onFirstTouch, { once: true })
 
-    // Kalau bukan iOS (Android), langsung coba juga tanpa nunggu tap
-    const DOE = DeviceOrientationEvent as unknown as {
-      requestPermission?: () => Promise<string>
-    }
-    if (typeof DOE.requestPermission !== "function") {
+    if (
+      typeof window !== "undefined" &&
+      window.DeviceOrientationEvent &&
+      typeof (window.DeviceOrientationEvent as any).requestPermission !==
+        "function"
+    ) {
       startListening()
     }
 
@@ -202,7 +209,7 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
       if (isListening)
         window.removeEventListener("deviceorientation", handleOrientation)
       if (scrollHandler) window.removeEventListener("scroll", scrollHandler)
-      window.removeEventListener("touchstart", onFirstTouch)
+      window.removeEventListener("touchend", onFirstTouch)
       window.removeEventListener("click", onFirstTouch)
       if (rafRef.current) cancelAnimationFrame(rafRef.current)
     }
