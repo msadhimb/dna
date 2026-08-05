@@ -368,7 +368,7 @@ const MainView = () => {
       <div className="flex flex-col gap-36">
         <RomanticQuote />
         <CommentSection ref={commentRef} />
-        {/* <DigitalGift /> */}
+        <DigitalGift />
         <Footer />
       </div>
     </main>
