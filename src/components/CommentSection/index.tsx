@@ -327,8 +327,12 @@ export const CommentSection = forwardRef<CommentSectionRef>((_, ref) => {
 
       <div
         ref={contentRef}
-        className="relative z-30 mx-auto w-full max-w-5xl px-6 py-24 md:px-10 md:py-36 flex flex-col gap-5 gsap-element"
-        style={{ transformStyle: "preserve-3d", backfaceVisibility: "hidden", willChange: "transform" }}
+        className="relative z-30 mx-auto w-full max-w-5xl px-6 py-10 md:px-10 flex flex-col gap-5 gsap-element"
+        style={{
+          transformStyle: "preserve-3d",
+          backfaceVisibility: "hidden",
+          willChange: "transform",
+        }}
       >
         <SectionHeader
           eyebrow="Kartu Ucapan"

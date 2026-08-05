@@ -49,26 +49,19 @@ const PREVIEW_FRAMES = [
   {
     light: (
       <div className="relative flex h-full w-full flex-col items-center justify-center gap-4 bg-primary px-6 py-10 text-muted md:px-10">
-        {/* Ayat */}
         <p className="max-w-sm text-center font-signature text-2xl leading-relaxed font-bold tracking-wide md:max-w-lg md:text-3xl">
           وَمِنْ آيَاتِهِ أَنْ خَلَقَ لَكُم مِّنْ أَنفُسِكُمْ أَزْوَاجًا
           لِّتَسْكُنُوا إِلَيْهَا وَجَعَلَ بَيْنَكُم مَّوَدَّةً وَرَحْمَةً ۚ
           إِنَّ فِي ذَٰلِكَ لَآيَاتٍ لِّقَوْمٍ يَتَفَكَّرُونَ
         </p>
-
-        {/* Ornamental divider */}
         <div className="flex items-center gap-3 opacity-70">
           <span className="h-px w-8 bg-current" />
           <span className="text-xs">✦</span>
           <span className="h-px w-8 bg-current" />
         </div>
-
-        {/* Reference */}
         <p className="font-sans text-xs tracking-[0.2em] uppercase opacity-80">
           QS. Ar-Rum : 21
         </p>
-
-        {/* Translation */}
         <p className="max-w-sm text-center font-sans text-sm leading-relaxed font-light italic opacity-90 md:max-w-lg">
           &ldquo;Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan
           pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung
@@ -80,25 +73,18 @@ const PREVIEW_FRAMES = [
     ),
     dark: (
       <div className="relative flex h-full w-full flex-col items-center justify-center gap-4 bg-primary px-6 py-10 text-black md:px-10">
-        {/* Ayat */}
         <p className="max-w-sm text-center font-signature text-2xl leading-relaxed font-bold tracking-wide md:max-w-lg md:text-3xl">
-          رَبَّنَا هَبْ لَنَا مِنْ أَزْوَاجِنَا وَذُرِّيَّاتِنَا قُرَّةَ
-          أَعْيُنٍ وَاجْعَلْنَا لِلْمُتَّقِينَ إِمَامًا
+          رَبَّنَا هَبْ لَنَا مِنْ أَزْوَاجِنَا وَذُرِّيَّاتِنَا قُرَّةَ
+          أَعْيُنٍ وَاجْعَلْنَا لِلْمُتَّقِينَ إِمَامًا
         </p>
-
-        {/* Ornamental divider */}
         <div className="flex items-center gap-3 opacity-70">
           <span className="h-px w-8 bg-current" />
           <span className="text-xs">✦</span>
           <span className="h-px w-8 bg-current" />
         </div>
-
-        {/* Reference */}
         <p className="font-sans text-xs tracking-[0.2em] uppercase opacity-80">
           QS. Al-Furqan : 74
         </p>
-
-        {/* Translation */}
         <p className="max-w-sm text-center font-sans text-sm leading-relaxed font-light italic opacity-90 md:max-w-lg">
           &ldquo;Wahai Tuhan kami, anugerahkanlah kepada kami istri-istri kami
           dan keturunan kami sebagai penyejuk mata (bagi kami), dan jadikanlah
@@ -154,7 +140,6 @@ const MainView = () => {
         )
       }
 
-      // Jika content adalah ReactNode (bukan string URL)
       return (
         <div key={i} className="absolute inset-0 h-full w-full">
           {content}
@@ -263,6 +248,7 @@ const MainView = () => {
       !cWrapper ||
       !jWrapper ||
       !bWrapper ||
+      !coWrapper ||
       !curtainRef.current ||
       !journeyRef.current ||
       !bookFlipRef.current ||
@@ -275,7 +261,6 @@ const MainView = () => {
     const savedBProgress = bWrapper.progress()
     const savedCoProgress = coWrapper?.progress() ?? 0
 
-    // Kembalikan ke posisi 0 agar DOM kembali bersih dari inline style GSAP lama
     cWrapper.progress(0, true)
     jWrapper.progress(0, true)
     bWrapper.progress(0, true)
