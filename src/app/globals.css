@@ -283,13 +283,40 @@
 .curtain-bg,
 [class*="photo-bg"],
 [class*="photo-inner"] {
-  will-change: transform;
-  /* backface-visibility: hidden;
-  transform: translateZ(0); */
+  /* will-change removed: browsers handle optimization internally for animated transforms */
 }
 
-/* Kelas utility untuk elemen yang dianimasikan menggunakan GSAP */
-.gsap-animated,
+/* Kelas utility untuk elemen yang dianimasikan menggunakan GSAP — only desktop */
 .gsap-element {
-  will-change: transform;
+  will-change: auto;
+}
+
+/* Mobile: disable hardware acceleration tricks that cause repaints */
+@media (max-width: 768px) {
+  .gsap-element,
+  .curtain-bg,
+  [class*="photo-bg"],
+  [class*="photo-inner"] {
+    will-change: auto !important;
+    -webkit-backface-visibility: auto !important;
+    backface-visibility: auto !important;
+  }
+
+  /* Force hardware compositing only when needed */
+  .gsap-element {
+    transform: translateZ(0);
+  }
+}
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .animate-ken-burns,
+  .animate-fade-up,
+  .animate-fade-in,
+  .animate-gentle-bounce,
+  .gsap-element {
+    animation: none !important;
+    will-change: auto !important;
+    transform: none !important;
+  }
 }

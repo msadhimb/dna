@@ -90,20 +90,21 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
     }
   }, [isMobile])
 
-  // Mobile: device orientation
+  // Mobile: device orientation + scroll fallback
   useEffect(() => {
     if (!isMobile || !cardRef.current) return
 
     const card = cardRef.current
-    const beta = 90
     let initialBeta: number | null = null
+    let isListening = false
 
     const handleOrientation = (e: DeviceOrientationEvent) => {
       if (e.beta === null) return
+      // Capture the FIRST orientation reading as baseline
       if (initialBeta === null) {
         initialBeta = e.beta
       }
-      const delta = beta - initialBeta
+      const delta = e.beta - initialBeta
       const clamped = Math.max(-30, Math.min(30, delta))
       targetY.current = clamped
     }
@@ -121,37 +122,61 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
       rafRef.current = requestAnimationFrame(animate)
     }
 
+    const startListening = () => {
+      window.addEventListener("deviceorientation", handleOrientation)
+      isListening = true
+    }
+
     const requestPerms = async () => {
-      if (
-        typeof DeviceOrientationEvent !== "undefined" &&
-        typeof (
-          DeviceOrientationEvent as unknown as {
-            requestPermission?: () => Promise<string>
-          }
-        ).requestPermission === "function"
-      ) {
+      const DOE = DeviceOrientationEvent as unknown as {
+        requestPermission?: () => Promise<string>
+      }
+      if (typeof DOE.requestPermission === "function") {
         try {
-          const perm = await (
-            DeviceOrientationEvent as unknown as {
-              requestPermission: () => Promise<string>
-            }
-          ).requestPermission()
+          const perm = await DOE.requestPermission()
           if (perm === "granted") {
-            window.addEventListener("deviceorientation", handleOrientation)
+            startListening()
+          } else {
+            // Fallback: use scroll position as tilt proxy
+            enableScrollFallback()
           }
         } catch {
-          // permission denied
+          enableScrollFallback()
         }
       } else {
-        window.addEventListener("deviceorientation", handleOrientation)
+        // Android / older iOS — no permission needed
+        startListening()
       }
+    }
+
+    // Fallback: use scroll position to simulate tilt
+    let scrollHandler: (() => void) | null = null
+    const enableScrollFallback = () => {
+      if (scrollHandler) return
+      let lastScrollY = window.scrollY
+      scrollHandler = () => {
+        const delta = lastScrollY - window.scrollY
+        lastScrollY = window.scrollY
+        const clamped = Math.max(-30, Math.min(30, delta * 2))
+        targetY.current = clamped
+        // Slowly return to center
+        setTimeout(() => {
+          targetY.current = 0
+        }, 150)
+      }
+      window.addEventListener("scroll", scrollHandler, { passive: true })
     }
 
     requestPerms()
     rafRef.current = requestAnimationFrame(animate)
 
     return () => {
-      window.removeEventListener("deviceorientation", handleOrientation)
+      if (isListening) {
+        window.removeEventListener("deviceorientation", handleOrientation)
+      }
+      if (scrollHandler) {
+        window.removeEventListener("scroll", scrollHandler)
+      }
       if (rafRef.current) cancelAnimationFrame(rafRef.current)
     }
   }, [isMobile])

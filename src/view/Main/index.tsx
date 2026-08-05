@@ -156,6 +156,13 @@ const MainView = () => {
     () => {
       if (!isLoaded) return
 
+      // On mobile, skip GSAP master timeline — just fade in normally
+      const isMobile = typeof window !== "undefined" && window.innerWidth < 768
+      if (isMobile) {
+        setIsLoaded(true)
+        return
+      }
+
       const masterTrigger = document.getElementById("master-trigger")
       const journeyWrapper = document.getElementById("journey-wrapper")
       const bookFlipWrapper = document.getElementById("book-flip-wrapper")
@@ -256,6 +263,14 @@ const MainView = () => {
     )
       return
 
+    // Only rebuild if opacity is high enough (prevents wasted rebuilds during transition)
+    const journeyWrap = document.getElementById("journey-wrapper")
+    const bookFlipWrap = document.getElementById("book-flip-wrapper")
+    const journeyOpacity = journeyWrap
+      ? parseFloat(getComputedStyle(journeyWrap).opacity)
+      : 0
+    if (journeyOpacity < 0.5) return
+
     const savedCProgress = cWrapper.progress()
     const savedJProgress = jWrapper.progress()
     const savedBProgress = bWrapper.progress()
@@ -271,10 +286,7 @@ const MainView = () => {
     bWrapper.clear()
     coWrapper?.clear()
 
-    const journeyWrap = document.getElementById("journey-wrapper")
     if (journeyWrap) gsap.set(journeyWrap, { clearProps: "all" })
-
-    const bookFlipWrap = document.getElementById("book-flip-wrapper")
     if (bookFlipWrap) gsap.set(bookFlipWrap, { clearProps: "all" })
 
     const newCurtainTl = curtainRef.current.getTimeline()
@@ -307,6 +319,18 @@ const MainView = () => {
     jWrapper.progress(savedJProgress, true)
     bWrapper.progress(savedBProgress, true)
   }, [theme])
+
+  // Kill all GSAP animations on unmount to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      masterTlRef.current?.kill()
+      curtainTlRef.current?.kill()
+      journeyTlRef.current?.kill()
+      bookFlipTlRef.current?.kill()
+      commentTlRef.current?.kill()
+      ScrollTrigger.getAll().forEach((st) => st.kill())
+    }
+  }, [])
 
   if (!mounted) {
     return (

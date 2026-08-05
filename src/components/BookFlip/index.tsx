@@ -116,25 +116,24 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
             y: 160,
             opacity: 0,
             transformOrigin: "center 80%",
-            force3D: true,
           })
           gsap.set(coverRef.current, {
             rotateY: 0,
             rotateX: 0,
             transformOrigin: "left center",
-            force3D: true,
           })
           gsap.set(page1Ref.current, {
             rotateY: 0,
             rotateX: 0,
             transformOrigin: "left center",
-            force3D: true,
           })
           gsap.set(shadowRef.current, { opacity: 0, scaleX: 0.4 })
           gsap.set(ribbonRef.current, { opacity: 1, y: 0 })
           gsap.set(shadowNodes, { opacity: 0 })
 
           const isDesktop = window.innerWidth >= 768
+          // Reduce Z-depth on mobile to minimize compositing cost
+          const zMultiplier = isDesktop ? 1 : 0.5
 
           tl.to(bookRef.current, {
             opacity: 1,
@@ -193,69 +192,69 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
                 "-=0.4"
               )
           } else {
-            // MOBILE: 2 Flips, Dynamic Journey Sequence
+            // MOBILE: simplified flip — less rotation, less Z-depth, shorter duration
             tl.to(bookRef.current, {
-              rotateY: -15,
-              rotateX: 15,
-              z: 200,
-              x: "10%",
-              duration: 1,
+              rotateY: -8,
+              rotateX: 6,
+              z: 80 * zMultiplier,
+              x: "5%",
+              duration: 0.8,
               ease: "power1.inOut",
             })
               .to(
                 coverRef.current,
-                { rotateY: -180, duration: 1, ease: "power2.inOut" },
+                { rotateY: -180, duration: 0.8, ease: "power2.inOut" },
                 "<"
               )
               .to(
                 [coverFrontShadowRef.current, coverBackShadowRef.current],
-                { opacity: 0.55, duration: 0.5, yoyo: true, repeat: 1 },
+                { opacity: 0.4, duration: 0.4, yoyo: true, repeat: 1 },
                 "<"
               )
-              .set(coverRef.current, { zIndex: 10 }, "<0.5")
+              .set(coverRef.current, { zIndex: 10 }, "<0.4")
               .to(
                 bookRef.current,
                 {
                   rotateY: 0,
                   rotateX: 0,
-                  z: 100, // Zoom in on Date (Page 1 Front)
+                  z: 40 * zMultiplier,
                   x: "0%",
-                  duration: 0.8,
+                  duration: 0.6,
                   ease: "power2.out",
                 },
                 "-=0.2"
               )
-              .to({}, { duration: 0.6 }) // Pause to read date
+              .to({}, { duration: 0.4 }) // pause to read date
               .to(bookRef.current, {
-                rotateY: -15,
-                rotateX: 15,
-                z: 250, // Zoom closer during second flip
-                x: "15%",
-                duration: 1,
+                rotateY: -8,
+                rotateX: 6,
+                z: 60 * zMultiplier,
+                x: "8%",
+                duration: 0.7,
                 ease: "power1.inOut",
               })
               .to(
                 page1Ref.current,
-                { rotateY: -180, duration: 1, ease: "power2.inOut" },
+                { rotateY: -180, duration: 0.7, ease: "power2.inOut" },
                 "<"
               )
               .to(
                 [page1FrontShadowRef.current, page1BackShadowRef.current],
-                { opacity: 0.55, duration: 0.5, yoyo: true, repeat: 1 },
+                { opacity: 0.4, duration: 0.35, yoyo: true, repeat: 1 },
                 "<"
               )
-              .set(page1Ref.current, { zIndex: 30 }, "<0.5")
+              .set(page1Ref.current, { zIndex: 30 }, "<0.35")
               .to(
                 bookRef.current,
                 {
                   rotateY: 0,
                   rotateX: 0,
-                  z: 120, // Zoom in on Map (Page 2)
+                  z: 50 * zMultiplier,
                   x: "0%",
-                  duration: 0.8,
+                  duration: 0.5,
                   ease: "power2.out",
                 },
-                "-=0.2"
+                "-=0.1"
               )
           }
 
@@ -389,7 +388,6 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
             width: dist(width, "min(85vw, 420px)"),
             height: dist(height, "min(70vh, 600px)"),
             transformStyle: "preserve-3d",
-            willChange: "transform, opacity",
           }}
         >
           <div
@@ -431,7 +429,6 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
             style={{
               zIndex: 15,
               transformStyle: "preserve-3d",
-              willChange: "transform",
             }}
           >
             <div
