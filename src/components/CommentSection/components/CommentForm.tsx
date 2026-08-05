@@ -75,65 +75,67 @@ export function CommentForm({
             style={{ background: accent }}
           />
           <span
-            className="font-sans text-sm font-semibold tracking-[0.3em] uppercase"
+            className="font-sans text-[10px] md:text-[11px] font-bold tracking-[0.30em] uppercase"
             style={{ color: textSecondary }}
           >
             Tulis Ucapan
           </span>
         </div>
 
-        <div className="flex flex-col gap-8 px-8 py-10">
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+        <div className="flex flex-col gap-24 px-8 py-10">
+          <div className="flex flex-col gap-5">
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+              <Controller
+                name="name"
+                control={methods.control}
+                render={({ field, fieldState }) => (
+                  <WeddingInput
+                    accent={accent}
+                    borderColor={border}
+                    label="Nama"
+                    labelColor={textSecondary}
+                    error={fieldState.error?.message}
+                    placeholder="Nama lengkap Anda"
+                    style={{ color: textPrimary }}
+                    {...field}
+                  />
+                )}
+              />
+
+              <Controller
+                name="attendance"
+                control={methods.control}
+                render={({ field, fieldState }) => (
+                  <AttendanceToggle
+                    value={field.value}
+                    onChange={field.onChange}
+                    textSecondary={textSecondary}
+                    label="Konfirmasi Kehadiran"
+                    labelColor={textSecondary}
+                    error={fieldState.error?.message}
+                  />
+                )}
+              />
+            </div>
+
             <Controller
-              name="name"
+              name="message"
               control={methods.control}
               render={({ field, fieldState }) => (
-                <WeddingInput
+                <WeddingTextarea
                   accent={accent}
                   borderColor={border}
-                  label="Nama"
+                  label="Ucapan & Doa"
                   labelColor={textSecondary}
                   error={fieldState.error?.message}
-                  placeholder="Nama lengkap Anda"
+                  rows={4}
+                  placeholder="Tulis ucapan atau doa Anda untuk kedua mempelai..."
                   style={{ color: textPrimary }}
                   {...field}
                 />
               )}
             />
-
-            <Controller
-              name="attendance"
-              control={methods.control}
-              render={({ field, fieldState }) => (
-                <AttendanceToggle
-                  value={field.value}
-                  onChange={field.onChange}
-                  textSecondary={textSecondary}
-                  label="Konfirmasi Kehadiran"
-                  labelColor={textSecondary}
-                  error={fieldState.error?.message}
-                />
-              )}
-            />
           </div>
-
-          <Controller
-            name="message"
-            control={methods.control}
-            render={({ field, fieldState }) => (
-              <WeddingTextarea
-                accent={accent}
-                borderColor={border}
-                label="Ucapan & Doa"
-                labelColor={textSecondary}
-                error={fieldState.error?.message}
-                rows={4}
-                placeholder="Tulis ucapan atau doa Anda untuk kedua mempelai..."
-                style={{ color: textPrimary }}
-                {...field}
-              />
-            )}
-          />
 
           <div className="flex items-center justify-center">
             <div
@@ -143,7 +145,7 @@ export function CommentForm({
                 if (e.key === "Enter" || e.key === " ") handleSubmit()
               }}
               onClick={handleSubmit}
-              className="cs-submit-btn flex cursor-pointer items-center justify-center rounded-xl px-8 py-3 font-sans text-xs font-bold tracking-[0.3em] uppercase transition-all duration-300 bg-green-800 text-white dark:bg-red-800"
+              className="cs-submit-btn flex cursor-pointer items-center justify-center rounded-xl px-8 py-3 font-sans text-[10px] md:text-[11px] font-bold tracking-[0.3em] uppercase transition-all duration-300 bg-green-800 text-white dark:bg-red-800"
             >
               {isSubmitting
                 ? "Mengirim..."

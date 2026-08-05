@@ -4,6 +4,7 @@ import { forwardRef, useImperativeHandle, useRef, useEffect } from "react"
 import { useTheme } from "next-themes"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
+import { Separator } from "../ui/separator"
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -97,10 +98,10 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
     const card = cardRef.current
     let initialBeta: number | null = null
     let isListening = false
+    let scrollHandler: (() => void) | null = null
 
     const handleOrientation = (e: DeviceOrientationEvent) => {
       if (e.beta === null) return
-      // Capture the FIRST orientation reading as baseline
       if (initialBeta === null) {
         initialBeta = e.beta
       }
@@ -111,20 +112,34 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
 
     const animate = () => {
       currentY.current = lerp(currentY.current, targetY.current, 0.08)
-
       card.style.transform = `
-        perspective(800px)
-        rotateX(${-currentY.current}deg)
-        rotateY(0deg)
-        translateZ(0)
-      `
-
+      perspective(800px)
+      rotateX(${-currentY.current}deg)
+      rotateY(0deg)
+      translateZ(0)
+    `
       rafRef.current = requestAnimationFrame(animate)
     }
 
     const startListening = () => {
+      if (isListening) return
       window.addEventListener("deviceorientation", handleOrientation)
       isListening = true
+    }
+
+    const enableScrollFallback = () => {
+      if (scrollHandler) return
+      let lastScrollY = window.scrollY
+      scrollHandler = () => {
+        const delta = lastScrollY - window.scrollY
+        lastScrollY = window.scrollY
+        const clamped = Math.max(-30, Math.min(30, delta * 2))
+        targetY.current = clamped
+        setTimeout(() => {
+          targetY.current = 0
+        }, 150)
+      }
+      window.addEventListener("scroll", scrollHandler, { passive: true })
     }
 
     const requestPerms = async () => {
@@ -137,46 +152,42 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
           if (perm === "granted") {
             startListening()
           } else {
-            // Fallback: use scroll position as tilt proxy
             enableScrollFallback()
           }
         } catch {
           enableScrollFallback()
         }
       } else {
-        // Android / older iOS — no permission needed
+        // Android / older iOS — tidak butuh permission
         startListening()
       }
     }
 
-    // Fallback: use scroll position to simulate tilt
-    let scrollHandler: (() => void) | null = null
-    const enableScrollFallback = () => {
-      if (scrollHandler) return
-      let lastScrollY = window.scrollY
-      scrollHandler = () => {
-        const delta = lastScrollY - window.scrollY
-        lastScrollY = window.scrollY
-        const clamped = Math.max(-30, Math.min(30, delta * 2))
-        targetY.current = clamped
-        // Slowly return to center
-        setTimeout(() => {
-          targetY.current = 0
-        }, 150)
-      }
-      window.addEventListener("scroll", scrollHandler, { passive: true })
+    // KUNCI: minta permission dari dalam user gesture (tap), bukan otomatis
+    const onFirstTouch = () => {
+      requestPerms()
+      window.removeEventListener("touchstart", onFirstTouch)
+      window.removeEventListener("click", onFirstTouch)
+    }
+    window.addEventListener("touchstart", onFirstTouch, { once: true })
+    window.addEventListener("click", onFirstTouch, { once: true })
+
+    // Kalau bukan iOS (Android), langsung coba juga tanpa nunggu tap
+    const DOE = DeviceOrientationEvent as unknown as {
+      requestPermission?: () => Promise<string>
+    }
+    if (typeof DOE.requestPermission !== "function") {
+      startListening()
     }
 
-    requestPerms()
     rafRef.current = requestAnimationFrame(animate)
 
     return () => {
-      if (isListening) {
+      if (isListening)
         window.removeEventListener("deviceorientation", handleOrientation)
-      }
-      if (scrollHandler) {
-        window.removeEventListener("scroll", scrollHandler)
-      }
+      if (scrollHandler) window.removeEventListener("scroll", scrollHandler)
+      window.removeEventListener("touchstart", onFirstTouch)
+      window.removeEventListener("click", onFirstTouch)
       if (rafRef.current) cancelAnimationFrame(rafRef.current)
     }
   }, [isMobile])
@@ -225,7 +236,7 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
         style={{ background: bgGradient }}
       />
 
-      <div className="rq-content relative z-10 mx-auto flex w-full max-w-3xl flex-col items-center gap-8 px-6 py-14 md:gap-10 ">
+      <div className="rq-content relative z-10 mx-auto flex w-full max-w-3xl flex-col items-center gap-8 px-6  md:gap-10 ">
         <p
           className="rq-eyebrow font-sans text-[10px] font-semibold tracking-[0.5em] uppercase"
           style={{ color: textSecondary }}
@@ -264,34 +275,20 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
                 background: `radial-gradient(circle 200px at var(--mouse-x) var(--mouse-y), rgba(255,255,255,0.12), transparent 60%)`,
               }}
             />
+            <div className="flex flex-col gap-5">
+              <p className="font-signature  leading-relaxed font-bold text-2xl text-center">
+                &ldquo;Da moram živjeti deset tisuća života,
+                <br />
+                uvijek bih izabrala tebe.&rdquo;
+              </p>
 
-            <p
-              className="font-signature my-5 leading-relaxed font-bold"
-              style={{
-                fontSize: "clamp(1.1rem, 3vw, 1.8rem)",
-                color: textPrimary,
-              }}
-            >
-              &ldquo;Da moram živjeti deset tisuća života,
-              <br />
-              uvijek bih izabrala tebe.&rdquo;
-            </p>
-
-            <p
-              className="font-sans tracking-[0.2em] uppercase"
-              style={{ color: textSecondary, fontSize: "10px" }}
-            >
-              — Rumi
-            </p>
-
-            <p
-              className="font-sans text-sm leading-relaxed"
-              style={{ color: textSecondary, fontStyle: "italic" }}
-            >
-              &ldquo;Jika aku harus menjalani sepuluh ribu kehidupan,
-              <br />
-              aku akan selalu memilihmu.&rdquo;
-            </p>
+              <Separator />
+              <p className="font-sans text-sm leading-relaxed italic text-gray-500 text-center">
+                &ldquo;Jika aku harus menjalani sepuluh ribu kehidupan,
+                <br />
+                aku akan selalu memilihmu.&rdquo;
+              </p>
+            </div>
           </div>
         </div>
       </div>

@@ -32,7 +32,7 @@ export function AttendanceToggle({
     <div className="flex flex-col gap-2">
       {label && (
         <label
-          className="font-sans text-[11px] font-bold tracking-[0.30em] uppercase"
+          className="font-sans text-[10px] md:text-[11px] font-bold tracking-[0.30em] uppercase"
           style={{ color: labelColor }}
         >
           {label}
@@ -49,7 +49,7 @@ export function AttendanceToggle({
                 type="button"
                 onClick={() => onChange(opt)}
                 className={cn(
-                  "flex-1 rounded-lg border-2 py-3.5 font-sans text-[11px] font-bold tracking-[0.15em] uppercase transition-all duration-200",
+                  "flex-1 rounded-lg border-2 py-3.5 font-sans text-[10px] md:text-[11px] font-bold tracking-[0.15em] uppercase transition-all duration-200",
                   isActive
                     ? `border-[${style.color}]`
                     : "dark:border-[#4e4e4eee] border-[#979797ee]"

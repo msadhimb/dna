@@ -1,6 +1,12 @@
 "use client"
 
-import { useState, useRef, forwardRef, useImperativeHandle } from "react"
+import {
+  useState,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+  useEffect,
+} from "react"
 import { useTheme } from "next-themes"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
@@ -63,6 +69,7 @@ export interface CommentSectionRef {
 export const CommentSection = forwardRef<CommentSectionRef>((_, ref) => {
   const { resolvedTheme } = useTheme()
   const isDark = resolvedTheme === "dark"
+  const isFirstRender = useRef(true)
 
   const floatImgBackRef = useRef<HTMLDivElement>(null)
   const floatImgFrontRef = useRef<HTMLDivElement>(null)
@@ -71,7 +78,6 @@ export const CommentSection = forwardRef<CommentSectionRef>((_, ref) => {
   const sectionRef = useRef<HTMLElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
   const floatSTs = useRef<ScrollTrigger[]>([])
-  const floatLineAnimRef = useRef<gsap.core.Tween | null>(null)
 
   const [comments, setComments] = useState<Comment[]>(DUMMY_COMMENTS)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -109,81 +115,57 @@ export const CommentSection = forwardRef<CommentSectionRef>((_, ref) => {
 
       const tl = gsap.timeline()
 
-      // Clean up previous ScrollTriggers before creating new ones
       floatSTs.current.forEach((st) => st.kill())
       floatSTs.current = []
 
-      // Clean up previous float line animation
-      floatLineAnimRef.current?.kill()
-
-      const isMobile = window.innerWidth < 768
-      // Use shorter scrub on mobile for smoother response
-      const scrubValue = isMobile ? 3 : 2
-
-      // Float image 1
-      const st1 = ScrollTrigger.create({
-        trigger: triggerEl,
-        start: "top 85%",
-        end: "bottom 15%",
-        scrub: scrubValue,
-        onUpdate: (self) => {
-          if (floatImgBackRef.current) {
-            gsap.set(floatImgBackRef.current, { y: self.progress * -40 })
-          }
+      gsap.to(floatImgBackRef.current, {
+        y: -40,
+        ease: "none",
+        scrollTrigger: {
+          trigger: triggerEl,
+          start: "top 85%",
+          end: "bottom 15%",
+          scrub: 2,
         },
       })
-      floatSTs.current.push(st1)
 
-      // Float image 2
-      const st2 = ScrollTrigger.create({
-        trigger: triggerEl,
-        start: "top 80%",
-        end: "bottom 20%",
-        scrub: scrubValue,
-        onUpdate: (self) => {
-          if (floatImgFrontRef.current) {
-            gsap.set(floatImgFrontRef.current, { y: self.progress * -160 })
-          }
+      gsap.to(floatImgFrontRef.current, {
+        y: -160,
+        ease: "none",
+        scrollTrigger: {
+          trigger: triggerEl,
+          start: "top 80%",
+          end: "bottom 20%",
+          scrub: 1,
         },
       })
-      floatSTs.current.push(st2)
 
-      // Float image 3
-      const st3 = ScrollTrigger.create({
-        trigger: triggerEl,
-        start: "top 80%",
-        end: "bottom 20%",
-        scrub: scrubValue,
-        onUpdate: (self) => {
-          if (floatImgRightRef.current) {
-            gsap.set(floatImgRightRef.current, { y: self.progress * -120 })
-          }
+      gsap.to(floatImgRightRef.current, {
+        y: -120,
+        ease: "none",
+        scrollTrigger: {
+          trigger: triggerEl,
+          start: "top 80%",
+          end: "bottom 20%",
+          scrub: 1.8,
         },
       })
-      floatSTs.current.push(st3)
 
-      // Float image 4
-      const st4 = ScrollTrigger.create({
-        trigger: triggerEl,
-        start: "top 80%",
-        end: "bottom 20%",
-        scrub: scrubValue,
-        onUpdate: (self) => {
-          if (floatImgRightFrontRef.current) {
-            gsap.set(floatImgRightFrontRef.current, { y: self.progress * -120 })
-          }
+      gsap.to(floatImgRightFrontRef.current, {
+        y: -120,
+        ease: "none",
+        scrollTrigger: {
+          trigger: triggerEl,
+          start: "top 80%",
+          end: "bottom 20%",
+          scrub: 1.8,
         },
       })
-      floatSTs.current.push(st4)
-
-      // Staggered entrance animations — reduced on mobile
-      const entranceStagger = isMobile ? 0.05 : 0.08
-      const entranceDuration = isMobile ? 0.5 : 0.7
 
       tl.fromTo(
         ".cs-eyebrow",
         { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: entranceDuration, ease: "power3.out" }
+        { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }
       )
         .fromTo(
           ".cs-title-word",
@@ -191,8 +173,8 @@ export const CommentSection = forwardRef<CommentSectionRef>((_, ref) => {
           {
             opacity: 1,
             y: 0,
-            duration: entranceDuration + 0.2,
-            stagger: entranceStagger,
+            duration: 0.9,
+            stagger: 0.08,
             ease: "power3.out",
           },
           "-=0.3"
@@ -202,34 +184,34 @@ export const CommentSection = forwardRef<CommentSectionRef>((_, ref) => {
           { scaleX: 0 },
           {
             scaleX: 1,
-            duration: entranceDuration,
+            duration: 1,
             ease: "power3.inOut",
             transformOrigin: "center",
           },
-          "-=0.3"
+          "-=0.4"
         )
         .fromTo(
           ".cs-desc",
           { opacity: 0, y: 16 },
-          { opacity: 1, y: 0, duration: entranceDuration, ease: "power3.out" },
-          "-=0.3"
+          { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" },
+          "-=0.4"
         )
         .fromTo(
           ".cs-form-wrap",
           { opacity: 0, y: 32 },
-          { opacity: 1, y: 0, duration: entranceDuration + 0.2, ease: "power3.out" },
+          { opacity: 1, y: 0, duration: 0.9, ease: "power3.out" },
           "-=0.3"
         )
         .fromTo(
           ".cs-submit-btn",
           { opacity: 0, y: 16 },
-          { opacity: 1, y: 0, duration: entranceDuration, ease: "power3.out" },
+          { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" },
           "-=0.3"
         )
         .fromTo(
           ".cs-count",
           { opacity: 0, y: 12 },
-          { opacity: 1, y: 0, duration: entranceDuration, ease: "power3.out" },
+          { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" },
           "-=0.2"
         )
         .fromTo(
@@ -238,28 +220,64 @@ export const CommentSection = forwardRef<CommentSectionRef>((_, ref) => {
           {
             opacity: 1,
             y: 0,
-            duration: entranceDuration + 0.1,
-            stagger: isMobile ? 0.06 : 0.12,
+            duration: 0.8,
+            stagger: 0.12,
             ease: "power3.out",
           },
-          "-=0.3"
+          "-=0.4"
         )
 
-      // Float line animation — only on desktop to save mobile resources
-      if (!isMobile) {
-        floatLineAnimRef.current = gsap.to(".cs-float-line", {
-          y: -8,
-          duration: 3,
-          ease: "sine.inOut",
-          repeat: -1,
-          yoyo: true,
-          stagger: 0.4,
-        })
-      }
+      gsap.to(".cs-float-line", {
+        y: -8,
+        duration: 3,
+        ease: "sine.inOut",
+        repeat: -1,
+        yoyo: true,
+        stagger: 0.4,
+      })
 
       return tl
     },
   }))
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false
+      return
+    }
+
+    const el = contentRef.current
+    if (!el) return
+
+    const targetScale = parseFloat(
+      (gsap.getProperty(el, "scale") as string) || "1"
+    )
+    const targetRotY = gsap.getProperty(el, "rotateY") as number
+    const targetX = parseFloat((gsap.getProperty(el, "x") as string) || "0")
+    const targetY = parseFloat((gsap.getProperty(el, "y") as string) || "0")
+
+    gsap.killTweensOf(el)
+
+    const tl = gsap.timeline()
+    tl.to(el, { scale: 0.85, duration: 0.4, ease: "power2.in" })
+      .to(
+        el,
+        { scale: 0.85, rotateY: "+=360", duration: 0.8, ease: "power2.inOut" },
+        ">"
+      )
+      .to(
+        el,
+        {
+          scale: targetScale,
+          rotateY: targetRotY + 360,
+          x: targetX,
+          y: targetY,
+          duration: 0.5,
+          ease: "power2.out",
+        },
+        ">"
+      )
+  }, [isDark])
 
   const handleFormSubmit = (data: {
     name: string
@@ -309,7 +327,12 @@ export const CommentSection = forwardRef<CommentSectionRef>((_, ref) => {
 
       <div
         ref={contentRef}
-        className="relative z-30 mx-auto flex w-full max-w-5xl flex-col gap-5 px-6 py-10 md:px-10 gsap-element"
+        className="relative z-30 mx-auto w-full max-w-5xl px-6 py-10 md:px-10 flex flex-col gap-5 gsap-element"
+        style={{
+          transformStyle: "preserve-3d",
+          backfaceVisibility: "hidden",
+          willChange: "transform",
+        }}
       >
         <SectionHeader
           eyebrow="Kartu Ucapan"

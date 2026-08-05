@@ -21,7 +21,7 @@ const WeddingInput = React.forwardRef<HTMLInputElement, WeddingInputProps>(
       <div className="flex flex-col gap-2">
         {label && (
           <label
-            className="font-sans text-[11px] font-bold tracking-[0.30em] uppercase"
+            className="font-sans text-[10px] md:text-[11px] font-bold tracking-[0.30em] uppercase"
             style={{ color: labelColor }}
           >
             {label}
@@ -31,7 +31,7 @@ const WeddingInput = React.forwardRef<HTMLInputElement, WeddingInputProps>(
           ref={ref}
           data-slot="wedding-input"
           className={cn(
-            "h-auto w-full border-2 bg-transparent px-2 py-3 text-sm md:text-base font-medium shadow-none ring-0 transition-all duration-300 outline-none placeholder:opacity-40 focus-visible:dark:border-red-800 focus-visible:dark:ring-red-800/50 focus-visible:border-green-800 focus-visible:ring-green-800/50",
+            "h-auto w-full border-2 bg-transparent p-3 text-xs md:text-base font-medium shadow-none ring-0 transition-all duration-300 outline-none placeholder:opacity-40 focus-visible:dark:border-red-800 focus-visible:dark:ring-red-800/50 focus-visible:border-green-800 focus-visible:ring-green-800/50",
             className
           )}
           style={{
