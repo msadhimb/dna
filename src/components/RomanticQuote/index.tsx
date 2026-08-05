@@ -213,7 +213,7 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
               }}
             />
             <div className="flex flex-col gap-5">
-              <p className="font-signature  leading-relaxed font-bold text-2xl text-center text-green-700 dark:text-primary">
+              <p className="font-signature  leading-relaxed font-bold text-2xl text-center">
                 &ldquo;Da moram živjeti deset tisuća života,
                 <br />
                 uvijek bih izabrala tebe.&rdquo;

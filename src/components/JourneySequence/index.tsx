@@ -280,7 +280,7 @@ export const JourneySequence = forwardRef<
         <span className="font-sans text-[10px] font-semibold tracking-[0.5em] text-[#d4af37]/80 uppercase md:text-xs dark:text-primary/80">
           The Groom
         </span>
-        <h2 className="font-signature text-4xl leading-[1.1] font-bold tracking-wide text-[#f2dfa0] [text-shadow:0_4px_20px_rgba(0,0,0,0.5)] sm:text-4xl md:text-7xl lg:text-8xl dark:text-primary">
+        <h2 className="font-signature text-5xl leading-[1.1] font-bold tracking-wide text-[#f2dfa0] [text-shadow:0_4px_20px_rgba(0,0,0,0.5)] md:text-7xl  dark:text-primary">
           Muhamad Salman Adhim Baqy
         </h2>
         <span className="h-px w-16 bg-gradient-to-l from-[#d4af37] to-transparent md:w-24 dark:from-primary" />
@@ -324,7 +324,7 @@ export const JourneySequence = forwardRef<
         <span className="font-sans text-[10px] font-semibold tracking-[0.5em] text-[#d4af37]/80 uppercase md:text-xs dark:text-primary/80">
           The Bride
         </span>
-        <h2 className="font-signature text-4xl leading-[1.1] font-bold tracking-wide text-[#f2dfa0] [text-shadow:0_4px_20px_rgba(0,0,0,0.5)] sm:text-4xl md:text-7xl lg:text-8xl dark:text-primary">
+        <h2 className="font-signature text-5xl leading-[1.1] font-bold tracking-wide text-[#f2dfa0] [text-shadow:0_4px_20px_rgba(0,0,0,0.5)] md:text-7xl dark:text-primary">
           Devi Yuliana Nurhaliza
         </h2>
         <span className="h-px w-16 bg-gradient-to-r from-[#d4af37] to-transparent md:w-24 dark:from-primary" />
