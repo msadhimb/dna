@@ -315,6 +315,8 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
           },
           0
         )
+          .set(page1Ref.current, { zIndex: 15 }, 0.3)
+          .set(coverRef.current, { zIndex: 25 }, 0.4)
           .to(
             bookRef.current,
             {
@@ -337,6 +339,7 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
             },
             ">"
           )
+          .addLabel("reopen", ">")
           .to(
             [coverRef.current, page1Ref.current],
             {
@@ -346,8 +349,14 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
               ease: "power2.inOut",
               stagger: 0.1,
             },
-            ">"
+            "reopen"
           )
+          .add(() => {
+            if (targetCoverRot < -10) gsap.set(coverRef.current, { zIndex: 10 })
+          }, "reopen+=0.3")
+          .add(() => {
+            if (targetPage1Rot < -10) gsap.set(page1Ref.current, { zIndex: 30 })
+          }, "reopen+=0.4")
           .to(
             bookRef.current,
             {
@@ -359,7 +368,7 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
               duration: 0.6,
               ease: "power2.inOut",
             },
-            "<"
+            "reopen"
           )
       } else {
         if (bookRef.current) {

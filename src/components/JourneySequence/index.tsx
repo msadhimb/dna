@@ -3,10 +3,7 @@
 import Image from "next/image"
 import { useRef, useImperativeHandle, forwardRef } from "react"
 import gsap from "gsap"
-import { Flower, Flower2, Sparkle, Sparkles, Plane } from "lucide-react"
-import { useScreenWidth } from "@/hooks/useScreenWidth"
 import { cn } from "@/lib/utils"
-import FloralOrnament from "../Icon/FloralOrnament"
 import useResponsive from "@/hooks/useResponsive"
 
 interface JourneySequenceProps {
@@ -20,9 +17,6 @@ export interface JourneySequenceRef {
 const CLIP_RECT =
   "polygon(0% 0%, 33% 0%, 66% 0%, 100% 0%, 100% 50%, 100% 100%, 66% 100%, 33% 100%, 0% 100%, 0% 50%, 0% 25%, 0% 75%)"
 
-const CLIP_PLANE =
-  "polygon(50% 0%, 55% 35%, 95% 45%, 58% 55%, 65% 100%, 50% 60%, 35% 100%, 42% 55%, 5% 45%, 45% 35%, 48% 20%, 52% 20%)"
-
 export const JourneySequence = forwardRef<
   JourneySequenceRef,
   JourneySequenceProps
@@ -33,7 +27,6 @@ export const JourneySequence = forwardRef<
   const groomBioRef = useRef<HTMLDivElement>(null)
   const brideBioRef = useRef<HTMLDivElement>(null)
   const textContainerRef = useRef<HTMLDivElement>(null)
-  const paperPlaneRef = useRef<HTMLDivElement>(null)
   const { dist, isMobile } = useResponsive()
 
   useImperativeHandle(
@@ -231,39 +224,29 @@ export const JourneySequence = forwardRef<
 
   return (
     <div className="relative flex h-screen w-full flex-col items-center justify-center overflow-hidden">
-      <div className="pointer-events-none absolute inset-0 z-40 text-[#d4af37]/70 dark:text-primary/70">
-        <Flower className="absolute top-1/2 left-2 hidden h-16 w-6 -translate-y-1/2 drop-shadow-lg sm:block md:left-4 md:h-24 md:w-8" />
-        <Flower className="absolute top-1/2 right-2 hidden h-16 w-6 -translate-y-1/2 drop-shadow-lg sm:block md:right-4 md:h-24 md:w-8" />
-      </div>
-
       <div
         ref={textContainerRef}
         id="journey-text-container"
-        className="gsap-element absolute top-50 z-10 flex flex-col items-center gap-2 text-center md:top-48 md:gap-4"
+        className="gsap-element absolute top-40 z-10 flex flex-col items-center gap-4 text-center md:gap-6"
       >
-        <div className="flex gap-3 whitespace-nowrap md:gap-4">
+        <span className="font-sans text-[9px] font-medium tracking-[0.55em] text-[#d4af37]/70 uppercase md:text-xs dark:text-primary/70">
+          Our Story
+        </span>
+        <div className="flex gap-3 whitespace-nowrap md:gap-5">
           <h1
             ref={textLeftRef}
             id="journey-text-left"
-            className="gsap-element inline-block font-signature text-2xl font-bold tracking-[0.2em] text-muted drop-shadow-lg sm:text-3xl md:text-7xl md:tracking-[0.3em] dark:text-primary"
+            className="gsap-element inline-block bg-gradient-to-b from-[#f2dfa0] via-[#d4af37] to-[#a1811f] bg-clip-text font-signature text-4xl font-bold tracking-[0.15em] text-transparent [text-shadow:0_2px_12px_rgba(0,0,0,0.25)]  md:text-5xl md:tracking-[0.2em] dark:from-primary dark:via-primary dark:to-primary/70"
           >
             {theme === "light" ? "Forever" : "Eternal"}
           </h1>
           <h1
             ref={textRightRef}
             id="journey-text-right"
-            className="gsap-element inline-block font-signature text-2xl font-bold tracking-[0.2em] text-muted drop-shadow-lg sm:text-3xl md:text-7xl md:tracking-[0.3em] dark:text-primary"
+            className="gsap-element inline-block bg-gradient-to-b from-[#f2dfa0] via-[#d4af37] to-[#a1811f] bg-clip-text font-signature text-4xl font-bold tracking-[0.15em] text-transparent [text-shadow:0_2px_12px_rgba(0,0,0,0.25)]  md:text-5xl md:tracking-[0.2em] dark:from-primary dark:via-primary dark:to-primary/70"
           >
             {theme === "light" ? "Begins" : "Vows"}
           </h1>
-        </div>
-        <div className="flex items-center gap-2">
-          <FloralOrnament className="h-4 w-14 text-[#d4af37] opacity-80 md:h-6 md:w-24 dark:text-primary" />
-          <Flower
-            className="h-4 w-4 text-[#d4af37] opacity-90 md:h-5 md:w-5 dark:text-primary"
-            strokeWidth={1.25}
-          />
-          <FloralOrnament className="h-4 w-14 rotate-180 text-[#d4af37] opacity-80 md:h-6 md:w-24 dark:text-primary" />
         </div>
       </div>
 
@@ -286,61 +269,93 @@ export const JourneySequence = forwardRef<
           className="journey-inner-img object-cover"
         />
       </div>
+
       {/* Groom Bio Overlay (Left Side) */}
       <div
         ref={groomBioRef}
         className={cn(
-          "gsap-element absolute inset-y-0 right-0 z-50 flex w-screen flex-col items-end justify-center gap-2 bg-linear-to-l from-black/80 via-black/40 to-transparent p-6 text-right opacity-0 sm:p-8 md:w-1/2 md:p-12"
+          "gsap-element absolute inset-y-0 right-0 z-50 flex w-screen flex-col items-end justify-center gap-3 bg-linear-to-l from-black/85 via-black/45 to-transparent p-6 text-right opacity-0 sm:p-8 md:w-1/2 md:p-12"
         )}
       >
-        <h2 className="font-signature text-4xl font-bold tracking-wide text-[#d4af37] drop-shadow-xl sm:text-4xl md:text-6xl lg:text-8xl dark:text-primary">
+        <span className="font-sans text-[10px] font-semibold tracking-[0.5em] text-[#d4af37]/80 uppercase md:text-xs dark:text-primary/80">
+          The Groom
+        </span>
+        <h2 className="font-signature text-4xl leading-[1.1] font-bold tracking-wide text-[#f2dfa0] [text-shadow:0_4px_20px_rgba(0,0,0,0.5)] sm:text-4xl md:text-7xl lg:text-8xl dark:text-primary">
           Muhamad Salman Adhim Baqy
         </h2>
-        <div className="flex items-center gap-2">
-          <FloralOrnament className="h-4 w-12 text-[#d4af37] md:h-5 md:w-20 dark:text-primary" />
-          <Flower
-            className="h-4 w-4 text-[#d4af37] md:h-5 md:w-5 dark:text-primary"
-            strokeWidth={1.25}
-          />
+        <span className="h-px w-16 bg-gradient-to-l from-[#d4af37] to-transparent md:w-24 dark:from-primary" />
+
+        <div className="mt-2 flex flex-col items-end gap-2">
+          <p className="font-serif text-[11px] font-normal tracking-[0.4em] text-[#e9cf7a] italic uppercase md:text-xs">
+            Putra dari
+          </p>
+
+          <div className="flex flex-col items-end gap-0.5">
+            <p className="font-serif text-base leading-snug font-medium tracking-[0.03em] text-white md:text-xl">
+              Suprapto Wibowo
+            </p>
+            <p className="font-sans text-[10px] font-light tracking-[0.3em] text-white/60 uppercase md:text-[11px]">
+              Bapak
+            </p>
+          </div>
+
+          <span className="font-signature my-0.5 text-2xl leading-none text-[#e9cf7a] md:text-3xl">
+            &
+          </span>
+
+          <div className="flex flex-col items-end gap-0.5">
+            <p className="font-serif text-base leading-snug font-medium tracking-[0.03em] text-white md:text-xl">
+              Christiana Sri Budhi Handayaniningsih
+            </p>
+            <p className="font-sans text-[10px] font-light tracking-[0.3em] text-white/60 uppercase md:text-[11px]">
+              Ibu
+            </p>
+          </div>
         </div>
-        <p className="text-md font-serif text-sm leading-relaxed font-light tracking-widest text-white drop-shadow-md">
-          Putra dari Bapak Suprapto Wibowo <br /> & Ibu Christiana Sri Budhi
-          Handayaniningsih
-        </p>
       </div>
 
       {/* Bride Bio Overlay (Right Side) */}
       <div
         ref={brideBioRef}
         className={cn(
-          "gsap-element absolute inset-y-0 left-0 z-50 flex w-screen flex-col items-start justify-center gap-2 bg-linear-to-r from-black/80 via-black/40 to-transparent p-6 text-left opacity-0 sm:p-8 md:w-1/2 md:p-12"
+          "gsap-element absolute inset-y-0 left-0 z-50 flex w-screen flex-col items-start justify-center gap-3 bg-linear-to-r from-black/85 via-black/45 to-transparent p-6 text-left opacity-0 sm:p-8 md:w-1/2 md:p-12"
         )}
       >
-        <h2 className="font-signature text-4xl font-bold tracking-wide text-[#d4af37] drop-shadow-xl sm:text-4xl md:text-6xl lg:text-8xl dark:text-primary">
+        <span className="font-sans text-[10px] font-semibold tracking-[0.5em] text-[#d4af37]/80 uppercase md:text-xs dark:text-primary/80">
+          The Bride
+        </span>
+        <h2 className="font-signature text-4xl leading-[1.1] font-bold tracking-wide text-[#f2dfa0] [text-shadow:0_4px_20px_rgba(0,0,0,0.5)] sm:text-4xl md:text-7xl lg:text-8xl dark:text-primary">
           Devi Yuliana Nurhaliza
         </h2>
-        <div className="flex items-center gap-2">
-          <Flower
-            className="h-4 w-4 text-[#d4af37] md:h-5 md:w-5 dark:text-primary"
-            strokeWidth={1.25}
-          />
-          <FloralOrnament className="h-4 w-12 text-[#d4af37] md:h-5 md:w-20 dark:text-primary" />
-        </div>
-        <p className="text-md font-serif text-sm leading-relaxed font-light tracking-widest text-white drop-shadow-md sm:text-base">
-          Putri dari Bapak Deden Herman Kuriawan <br /> & Ibu Selvia Agustina
-          Damayanti
-        </p>
-      </div>
+        <span className="h-px w-16 bg-gradient-to-r from-[#d4af37] to-transparent md:w-24 dark:from-primary" />
 
-      <div
-        ref={paperPlaneRef}
-        className="pointer-events-none absolute top-1/2 left-1/2 z-50 -translate-x-1/2 -translate-y-1/2 text-[#d4af37] opacity-0 dark:text-primary"
-      >
-        <Plane
-          className="h-16 w-16 md:h-28 md:w-28"
-          strokeWidth={1}
-          fill="currentColor"
-        />
+        <div className="mt-2 flex flex-col items-start gap-2">
+          <p className="font-serif text-[11px] font-normal tracking-[0.4em] text-[#e9cf7a] italic uppercase md:text-xs">
+            Putri dari
+          </p>
+
+          <div className="flex flex-col items-start gap-0.5">
+            <p className="font-serif text-base leading-snug font-medium tracking-[0.03em] text-white md:text-xl">
+              Deden Herman Kuriawan
+            </p>
+            <p className="font-sans text-[10px] font-light tracking-[0.3em] text-white/60 uppercase md:text-[11px]">
+              Bapak
+            </p>
+          </div>
+
+          <span className="font-signature my-0.5 text-2xl leading-none text-[#e9cf7a] md:text-3xl">
+            &
+          </span>
+
+          <div className="flex flex-col items-start gap-0.5">
+            <p className="font-serif text-base leading-snug font-medium tracking-[0.03em] text-white md:text-xl">
+              Selvia Agustina Damayanti
+            </p>
+            <p className="font-sans text-[10px] font-light tracking-[0.3em] text-white/60 uppercase md:text-[11px]">
+              Ibu
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   )

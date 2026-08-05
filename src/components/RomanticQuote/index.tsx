@@ -91,127 +91,41 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
     }
   }, [isMobile])
 
-  // Mobile: device orientation + scroll fallback
+  // Mobile: auto smooth sway kiri-kanan (tidak pakai device orientation)
   useEffect(() => {
     if (!isMobile || !cardRef.current) return
 
     const card = cardRef.current
-    let initialBeta: number | null = null
-    let initialGamma: number | null = null
-    let isListening = false
-    let scrollHandler: (() => void) | null = null
     let isVisible = false
-
-    const handleOrientation = (e: DeviceOrientationEvent) => {
-      if (e.beta === null || e.gamma === null) return
-      if (initialBeta === null) initialBeta = e.beta
-      if (initialGamma === null) initialGamma = e.gamma
-
-      const deltaBeta = e.beta - initialBeta
-      const deltaGamma = e.gamma - initialGamma
-
-      targetY.current = Math.max(-30, Math.min(30, deltaBeta))
-      targetX.current = Math.max(-30, Math.min(30, deltaGamma))
-    }
-
-    const animate = () => {
-      if (isVisible) {
-        currentY.current = lerp(currentY.current, targetY.current, 0.08)
-        currentX.current = lerp(currentX.current, targetX.current, 0.08)
-        card.style.transform = `
-        perspective(800px)
-        rotateX(${-currentY.current}deg)
-        rotateY(${currentX.current}deg)
-        translateZ(0)
-      `
-      }
-      rafRef.current = requestAnimationFrame(animate)
-    }
-
-    const startListening = () => {
-      if (isListening) return
-      window.addEventListener("deviceorientation", handleOrientation)
-      isListening = true
-    }
-
-    const enableScrollFallback = () => {
-      if (scrollHandler) return
-      let lastScrollY = window.scrollY
-      scrollHandler = () => {
-        const delta = lastScrollY - window.scrollY
-        lastScrollY = window.scrollY
-        const clamped = Math.max(-30, Math.min(30, delta * 2))
-        targetY.current = clamped
-        setTimeout(() => {
-          targetY.current = 0
-        }, 150)
-      }
-      window.addEventListener("scroll", scrollHandler, { passive: true })
-    }
+    let tween: gsap.core.Tween | null = null
 
     const observer = new IntersectionObserver(
       (entries) => {
         isVisible = entries[0].isIntersecting
+        if (isVisible) {
+          tween?.play()
+        } else {
+          tween?.pause()
+        }
       },
       { threshold: 0 }
     )
     observer.observe(card)
 
-    const requestPerms = async () => {
-      if (typeof window === "undefined" || !window.DeviceOrientationEvent) {
-        enableScrollFallback()
-        return
-      }
+    // set state awal supaya matrix transform-nya konsisten dgn gsap punya
+    gsap.set(card, { transformPerspective: 800, rotationY: -10 })
 
-      const DOE = window.DeviceOrientationEvent as unknown as {
-        requestPermission?: () => Promise<string>
-      }
-
-      if (typeof DOE.requestPermission === "function") {
-        try {
-          const perm = await DOE.requestPermission()
-          if (perm === "granted") {
-            startListening()
-          } else {
-            enableScrollFallback()
-          }
-        } catch (err) {
-          console.error("DeviceOrientation permission error:", err)
-          enableScrollFallback()
-        }
-      } else {
-        // Android / older iOS — tidak butuh permission
-        startListening()
-      }
-    }
-
-    const onFirstTouch = () => {
-      requestPerms()
-      window.removeEventListener("touchend", onFirstTouch)
-      window.removeEventListener("click", onFirstTouch)
-    }
-    window.addEventListener("touchend", onFirstTouch, { once: true })
-    window.addEventListener("click", onFirstTouch, { once: true })
-
-    if (
-      typeof window !== "undefined" &&
-      window.DeviceOrientationEvent &&
-      typeof (window.DeviceOrientationEvent as any).requestPermission !==
-        "function"
-    ) {
-      startListening()
-    }
-
-    rafRef.current = requestAnimationFrame(animate)
+    tween = gsap.to(card, {
+      rotationY: 10,
+      duration: 2.8,
+      ease: "sine.inOut",
+      yoyo: true,
+      repeat: -1,
+    })
 
     return () => {
       observer.disconnect()
-      if (isListening)
-        window.removeEventListener("deviceorientation", handleOrientation)
-      if (scrollHandler) window.removeEventListener("scroll", scrollHandler)
-      window.removeEventListener("touchend", onFirstTouch)
-      window.removeEventListener("click", onFirstTouch)
-      if (rafRef.current) cancelAnimationFrame(rafRef.current)
+      tween?.kill()
     }
   }, [isMobile])
 
@@ -259,7 +173,7 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
         style={{ background: bgGradient }}
       />
 
-      <div className="rq-content relative z-10 mx-auto flex w-full max-w-3xl flex-col items-center gap-8 px-6  md:gap-10 ">
+      <div className="rq-content relative z-10 mx-auto flex w-full max-w-3xl flex-col items-center gap-8 p-14 md:gap-10 ">
         <p
           className="rq-eyebrow font-sans text-[10px] font-semibold tracking-[0.5em] uppercase"
           style={{ color: textSecondary }}
@@ -270,7 +184,7 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
         {/* Perspective wrapper */}
         <div
           ref={wrapperRef}
-          className="relative flex w-full items-center justify-center"
+          className="relative flex w-[90vw] md:w-full items-center justify-center"
           style={{ perspective: "1000px" }}
         >
           <div
@@ -299,7 +213,7 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
               }}
             />
             <div className="flex flex-col gap-5">
-              <p className="font-signature  leading-relaxed font-bold text-2xl text-center">
+              <p className="font-signature  leading-relaxed font-bold text-2xl text-center text-green-700 dark:text-primary">
                 &ldquo;Da moram živjeti deset tisuća života,
                 <br />
                 uvijek bih izabrala tebe.&rdquo;

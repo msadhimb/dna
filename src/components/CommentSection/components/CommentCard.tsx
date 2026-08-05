@@ -18,53 +18,59 @@ const ATTENDANCE = {
   tidak_hadir: { label: "TIDAK HADIR", color: "#EF4444" },
 } as const
 
-export function CommentCard({ name, message, attendance, date, textPrimary, textSecondary, textMuted, surface, border }: CommentCardProps) {
+export function CommentCard({
+  name,
+  message,
+  attendance,
+  date,
+  textPrimary,
+  textSecondary,
+  textMuted,
+  surface,
+  border,
+}: CommentCardProps) {
   const att = ATTENDANCE[attendance]
 
   return (
     <div
-      className="cs-card-item flex flex-col gap-5 p-8 transition-all duration-500"
+      className="cs-card-item flex flex-col gap-5 rounded-xl border p-8 transition-all duration-500"
       style={{
         background: surface,
         borderTopWidth: "2px",
-        borderRightWidth: "1px",
-        borderBottomWidth: "1px",
-        borderLeftWidth: "1px",
-        borderStyle: "solid",
         borderTopColor: att.color,
         borderRightColor: border,
         borderBottomColor: border,
         borderLeftColor: border,
-        borderRadius: "12px",
       }}
     >
-      <div className="flex items-start justify-between gap-4">
-        <h3 className="font-signature text-2xl leading-tight font-bold" style={{ color: textPrimary }}>
+      <div className="flex flex-col items-start gap-2">
+        <h3
+          className="font-signature text-2xl leading-tight font-bold"
+          style={{ color: textPrimary }}
+        >
           {name}
         </h3>
         <Badge
-          style={{
-            borderColor: att.color,
-            color: att.color,
-            background: "transparent",
-            fontSize: "9px",
-            fontWeight: 700,
-            letterSpacing: "0.2em",
-            borderRadius: "6px",
-            padding: "2px 10px",
-          }}
+          className="rounded-md border bg-transparent px-2.5 py-0.5 text-[9px] font-bold tracking-[0.2em]"
+          style={{ borderColor: att.color, color: att.color }}
         >
           {att.label}
         </Badge>
       </div>
 
-      <p className="font-sans text-sm leading-relaxed" style={{ color: textSecondary }}>
+      <p
+        className="font-sans text-xs leading-relaxed md:text-sm"
+        style={{ color: textSecondary }}
+      >
         {message}
       </p>
 
       <div className="mt-auto flex items-center gap-3">
         <span className="h-px flex-1" style={{ background: border }} />
-        <span className="font-sans text-[9px] font-semibold tracking-[0.3em] uppercase" style={{ color: textMuted }}>
+        <span
+          className="font-sans text-[9px] font-semibold tracking-[0.3em] uppercase"
+          style={{ color: textMuted }}
+        >
           {date}
         </span>
       </div>
