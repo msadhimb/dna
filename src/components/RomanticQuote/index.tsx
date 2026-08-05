@@ -97,27 +97,34 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
 
     const card = cardRef.current
     let initialBeta: number | null = null
+    let initialGamma: number | null = null
     let isListening = false
     let scrollHandler: (() => void) | null = null
+    let isVisible = false
 
     const handleOrientation = (e: DeviceOrientationEvent) => {
-      if (e.beta === null) return
-      if (initialBeta === null) {
-        initialBeta = e.beta
-      }
-      const delta = e.beta - initialBeta
-      const clamped = Math.max(-30, Math.min(30, delta))
-      targetY.current = clamped
+      if (e.beta === null || e.gamma === null) return
+      if (initialBeta === null) initialBeta = e.beta
+      if (initialGamma === null) initialGamma = e.gamma
+      
+      const deltaBeta = e.beta - initialBeta
+      const deltaGamma = e.gamma - initialGamma
+      
+      targetY.current = Math.max(-30, Math.min(30, deltaBeta))
+      targetX.current = Math.max(-30, Math.min(30, deltaGamma))
     }
 
     const animate = () => {
-      currentY.current = lerp(currentY.current, targetY.current, 0.08)
-      card.style.transform = `
-      perspective(800px)
-      rotateX(${-currentY.current}deg)
-      rotateY(0deg)
-      translateZ(0)
-    `
+      if (isVisible) {
+        currentY.current = lerp(currentY.current, targetY.current, 0.08)
+        currentX.current = lerp(currentX.current, targetX.current, 0.08)
+        card.style.transform = `
+        perspective(800px)
+        rotateX(${-currentY.current}deg)
+        rotateY(${currentX.current}deg)
+        translateZ(0)
+      `
+      }
       rafRef.current = requestAnimationFrame(animate)
     }
 
@@ -141,6 +148,14 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
       }
       window.addEventListener("scroll", scrollHandler, { passive: true })
     }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        isVisible = entries[0].isIntersecting
+      },
+      { threshold: 0 }
+    )
+    observer.observe(card)
 
     const requestPerms = async () => {
       const DOE = DeviceOrientationEvent as unknown as {
@@ -183,6 +198,7 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
     rafRef.current = requestAnimationFrame(animate)
 
     return () => {
+      observer.disconnect()
       if (isListening)
         window.removeEventListener("deviceorientation", handleOrientation)
       if (scrollHandler) window.removeEventListener("scroll", scrollHandler)

@@ -24,6 +24,10 @@ import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { useGSAP } from "@gsap/react"
 
 gsap.registerPlugin(ScrollTrigger)
+ScrollTrigger.config({
+  ignoreMobileResize: true,
+  autoRefreshEvents: "visibilitychange,DOMContentLoaded,load",
+})
 
 const PREVIEW_FRAMES = [
   {
@@ -216,7 +220,6 @@ const MainView = () => {
           end: `+=${totalScrollHeight}%`,
           pin: true,
           pinSpacing: true,
-          anticipatePin: 1,
           scrub: 1,
         },
       })
