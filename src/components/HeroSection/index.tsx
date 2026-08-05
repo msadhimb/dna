@@ -3,26 +3,13 @@
 import { useEffect, useState, useRef } from "react"
 import { useTheme } from "next-themes"
 import { Countdown } from "@/components/CountDown"
-import { ChevronDown, Heart } from "lucide-react"
+import { ChevronDown, Heart, Moon, Sun, Volume2, VolumeX } from "lucide-react"
 import Image from "next/image"
+import { Switch } from "../ui/switch"
 
 const HeroSection = () => {
-  const { resolvedTheme, setTheme } = useTheme()
+  const { resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
-  const [isPlaying, setIsPlaying] = useState(false)
-  const audioRef = useRef<HTMLAudioElement | null>(null)
-
-  const toggleTheme = (checked: boolean) => setTheme(checked ? "dark" : "light")
-
-  const togglePlay = () => {
-    if (!audioRef.current) return
-    if (isPlaying) {
-      audioRef.current.pause()
-    } else {
-      audioRef.current.play().catch(() => {})
-    }
-    setIsPlaying(!isPlaying)
-  }
 
   const isDark = resolvedTheme === "dark"
   const heroImage = isDark
@@ -43,31 +30,6 @@ const HeroSection = () => {
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-background text-foreground selection:bg-foreground/10">
-      {/* <audio ref={audioRef} loop />
-      <div className="fixed top-5 right-5 z-50 flex items-center gap-2">
-        <button
-          onClick={togglePlay}
-          className="flex h-9 w-9 items-center justify-center rounded-full bg-muted/30 text-white/70 backdrop-blur-md transition-all duration-300 hover:bg-muted/40 hover:text-white"
-          aria-label="Toggle Music"
-        >
-          {isPlaying ? (
-            <Volume2 className="h-4 w-4" />
-          ) : (
-            <VolumeX className="h-4 w-4" />
-          )}
-        </button>
-
-        <div className="flex items-center gap-1.5 rounded-full bg-muted/30 px-2.5 py-1.5 backdrop-blur-md">
-          <Sun className="h-3.5 w-3.5 text-white/50" />
-          <Switch
-            checked={isDark}
-            onCheckedChange={toggleTheme}
-            aria-label="Toggle Theme"
-          />
-          <Moon className="h-3.5 w-3.5 text-white/50" />
-        </div>
-      </div> */}
-
       <header
         id="hero-section"
         className="relative h-screen w-full overflow-hidden"

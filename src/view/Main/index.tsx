@@ -22,6 +22,7 @@ import Image from "next/image"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { useGSAP } from "@gsap/react"
+import { Tools } from "@/components/Tools"
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger)
@@ -323,6 +324,7 @@ const MainView = () => {
 
   return (
     <main ref={mainRef}>
+      <Tools />
       {!isLoaded && (
         <LoadingScreen
           imageUrls={urlsToPreload}
