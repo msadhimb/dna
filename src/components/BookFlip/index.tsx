@@ -39,7 +39,6 @@ export interface BookFlipProps {
   location: string
   dateLabel?: string
   locationLabel?: string
-  mapUrl?: string
   className?: string
   theme?: "light" | "dark"
   cover?: BookFlipLayer
@@ -55,7 +54,6 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
       location,
       dateLabel = "Hari Pernikahan",
       locationLabel = "Lokasi",
-      mapUrl,
       className,
       theme,
       cover,
@@ -413,24 +411,8 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
             <span className="font-signature text-[clamp(1.1rem,2.5vw,1.8rem)] leading-tight text-[#1e1a14] dark:text-[#e0d8d0]">
               {location}
             </span>
-            {mapUrl ? (
-              <div className="max-h-55 min-h-35 w-full flex-1 overflow-hidden rounded-md border border-[#c9a227]/30 dark:border-[#d4af37]/30">
-                <iframe
-                  src={mapUrl}
-                  className={cn(
-                    "block h-full w-full border-0",
-                    isDark &&
-                      "brightness-75 hue-rotate-180 invert-[0.9] saturate-50"
-                  )}
-                  allowFullScreen
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  title={`Map of ${location}`}
-                />
-              </div>
-            ) : (
-              <Ornament color={isDark ? "#d4af37" : "#c9a227"} flip />
-            )}
+
+            <Ornament color={isDark ? "#d4af37" : "#c9a227"} flip />
           </div>
 
           {/* PAGE — flipping page (front & back configurable via `page` prop), mobile only */}
@@ -564,20 +546,8 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
             </div>
           </div>
 
-          {/* spine */}
           <div
-            className="absolute top-[4px] bottom-[4px] left-0 w-[22px] origin-right -translate-x-[16px] -rotate-y-90"
-            style={{
-              zIndex: 4,
-              background: !coverThemeIsGreen
-                ? "linear-gradient(to right, #3d0c09, #8a1f1a)"
-                : "linear-gradient(to right, #0a1810, #1c3d22)",
-              boxShadow: "inset -4px 0 8px -2px rgba(0,0,0,0.6)",
-            }}
-          />
-
-          <div
-            className="absolute top-[6px] -right-[3px] bottom-[6px] w-[6px] -translate-z-[2px] rounded-[0_3px_3px_0]"
+            className="absolute top-1.5 -right-0.75 bottom-1.5 w-1.5 -translate-z-0.5 rounded-[0_3px_3px_0]"
             style={{
               zIndex: 3,
               background: isDark
