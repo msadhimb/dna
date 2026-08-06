@@ -1,0 +1,6 @@
+export { WaxSeal } from "./WaxSeal"
+export { OrnamentalDivider } from "./OrnamentalDivider"
+export { EnvelopeIllustration } from "./EnvelopeIllustration"
+export { FooterFrame } from "./FooterFrame"
+export { TopBorder } from "./TopBorder"
+export { default as FloralOrnament } from "./FloralOrnament"

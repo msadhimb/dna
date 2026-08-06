@@ -444,6 +444,7 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
                   <span className="font-serif text-[10px] tracking-[0.4em] text-[#9a865a] uppercase dark:text-[#a38d53]">
                     {dateLabel}
                   </span>
+                  <span>tet</span>
                   <span className="font-signature text-[clamp(1.8rem,4vw,3rem)] leading-tight text-[#1e1a14] dark:text-[#e0d8d0]">
                     {date}
                   </span>

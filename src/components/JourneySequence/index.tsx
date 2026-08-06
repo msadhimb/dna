@@ -286,7 +286,7 @@ export const JourneySequence = forwardRef<
         <span className="h-px w-16 bg-gradient-to-l from-[#d4af37] to-transparent md:w-24 dark:from-primary" />
 
         <div className="mt-2 flex flex-col items-end gap-2">
-          <p className="font-serif text-[11px] font-normal tracking-[0.4em] text-[#e9cf7a] italic uppercase md:text-xs">
+          <p className="font-serif text-[11px] font-normal tracking-[0.4em] text-[#e9cf7a] dark:text-white italic uppercase md:text-xs">
             Putra dari
           </p>
 
@@ -299,13 +299,13 @@ export const JourneySequence = forwardRef<
             </p>
           </div>
 
-          <span className="font-signature my-0.5 text-2xl leading-none text-[#e9cf7a] md:text-3xl">
+          <span className="font-signature my-0.5 text-2xl leading-none text-[#e9cf7a] dark:text-white md:text-3xl">
             &
           </span>
 
           <div className="flex flex-col items-end gap-0.5">
             <p className="font-serif text-base leading-snug font-medium tracking-[0.03em] text-white md:text-xl">
-              Christiana Sri Budhi Handayaniningsih
+              Christiana Sri Budhi H.
             </p>
             <p className="font-sans text-[10px] font-light tracking-[0.3em] text-white/60 uppercase md:text-[11px]">
               Ibu
@@ -330,26 +330,26 @@ export const JourneySequence = forwardRef<
         <span className="h-px w-16 bg-gradient-to-r from-[#d4af37] to-transparent md:w-24 dark:from-primary" />
 
         <div className="mt-2 flex flex-col items-start gap-2">
-          <p className="font-serif text-[11px] font-normal tracking-[0.4em] text-[#e9cf7a] italic uppercase md:text-xs">
+          <p className="font-serif text-[11px] font-normal tracking-[0.4em] text-[#e9cf7a] dark:text-white italic uppercase md:text-xs">
             Putri dari
           </p>
 
           <div className="flex flex-col items-start gap-0.5">
             <p className="font-serif text-base leading-snug font-medium tracking-[0.03em] text-white md:text-xl">
-              Deden Herman Kuriawan
+              Deden Herman K.
             </p>
             <p className="font-sans text-[10px] font-light tracking-[0.3em] text-white/60 uppercase md:text-[11px]">
               Bapak
             </p>
           </div>
 
-          <span className="font-signature my-0.5 text-2xl leading-none text-[#e9cf7a] md:text-3xl">
+          <span className="font-signature my-0.5 text-2xl leading-none text-[#e9cf7a] dark:text-white md:text-3xl">
             &
           </span>
 
           <div className="flex flex-col items-start gap-0.5">
             <p className="font-serif text-base leading-snug font-medium tracking-[0.03em] text-white md:text-xl">
-              Selvia Agustina Damayanti
+              Selvia A. D.
             </p>
             <p className="font-sans text-[10px] font-light tracking-[0.3em] text-white/60 uppercase md:text-[11px]">
               Ibu
