@@ -59,26 +59,30 @@ export const CurtainTransition = forwardRef<
       })
 
       // Curtain muncul: titik kecil → garis vertikal → melebar penuh
-      tl.to(".curtain-bg", {
-        scaleX: 0.008,
-        scaleY: 0.013,
-        duration: 0.4,
-        ease: "power2.in",
-        delay: 0.5,
-      })
-        .to(".curtain-bg", { scaleY: 1, duration: 0.7, ease: "power3.out" })
-        .to(".curtain-bg", { scaleX: 1, duration: 0.6, ease: "expo.inOut" })
+      // Gunakan keyframes agar transisi antar fase mulus tanpa discontinuity
+      tl.to(
+        ".curtain-bg",
+        {
+          keyframes: [
+            { scaleX: 0.008, scaleY: 0.013, duration: 0.4, ease: "power2.in" },
+            { scaleY: 1, duration: 0.7, ease: "power3.out" },
+            { scaleX: 1, duration: 0.6, ease: "expo.inOut" },
+          ],
+          force3D: true,
+        },
+        ">0.5"
+      )
 
       // Frame photos slideIn satu per satu
       frames.forEach((_, i) => {
         const pos = i === 0 ? "-=0.3" : `-=${FRAME_DUR - STAGGER}`
         tl.to(
           `.photo-bg-${i}`,
-          { scale: 1, duration: FRAME_DUR, ease: "power2.out" },
+          { scale: 1, duration: FRAME_DUR, ease: "power2.out", force3D: true },
           pos
         ).to(
           `.photo-inner-${i}`,
-          { y: "0%", duration: IMAGE_DUR, ease: "power3.out" },
+          { y: "0%", duration: IMAGE_DUR, ease: "power3.out", force3D: true },
           "<"
         )
       })
@@ -110,14 +114,6 @@ export const CurtainTransition = forwardRef<
       return tl
     },
   }))
-
-  useEffect(() => {
-    console.log("Curtain mount")
-
-    return () => {
-      console.log("Curtain unmount")
-    }
-  }, [])
 
   const contentJSX = (
     <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
@@ -165,7 +161,7 @@ export const CurtainTransition = forwardRef<
   )
 
   return (
-    <div className="pointer-events-none fixed inset-0 z-50 flex">
+    <div className="pointer-events-none absolute inset-0 z-50 flex">
       <div ref={leftHalfRef} className="relative h-full w-1/2 overflow-hidden">
         <div className="absolute top-0 left-0 h-full w-screen">
           {contentJSX}

@@ -53,8 +53,6 @@ const MainView = () => {
   const commentTlRef = useRef<gsap.core.Timeline | null>(null)
   const masterTlRef = useRef<gsap.core.Timeline | null>(null)
 
-  console.log(imageUrl)
-
   const PREVIEW_FRAMES = [
     {
       light: imageUrl.light?.[1]?.link,
@@ -219,7 +217,9 @@ const MainView = () => {
           end: `+=${totalScrollHeight}%`,
           pin: true,
           pinSpacing: true,
-          scrub: 1,
+          scrub: 0.4,
+          fastScrollEnd: true,
+          invalidateOnRefresh: true,
         },
       })
 
