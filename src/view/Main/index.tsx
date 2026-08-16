@@ -210,6 +210,9 @@ const MainView = () => {
 
       bookFlipTlRef.current = bookFlipWrapperTl
 
+      // Scrub mobile lebih tinggi agar smooth dengan inertia scroll,
+      // desktop lebih rendah agar animasi terasa tight & responsif
+      const isMobile = window.innerWidth < 768
       const masterTl = gsap.timeline({
         scrollTrigger: {
           trigger: masterTrigger,
@@ -217,8 +220,7 @@ const MainView = () => {
           end: `+=${totalScrollHeight}%`,
           pin: true,
           pinSpacing: true,
-          scrub: 0.4,
-          fastScrollEnd: true,
+          scrub: isMobile ? 1.2 : 0.4,
           invalidateOnRefresh: true,
         },
       })
