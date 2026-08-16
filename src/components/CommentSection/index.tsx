@@ -17,6 +17,7 @@ import {
   CommentList,
   CounterBadge,
 } from "./components"
+import { useImageUrl } from "@/store/useImageUrl"
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -68,9 +69,10 @@ export interface CommentSectionRef {
 
 export const CommentSection = forwardRef<CommentSectionRef>((_, ref) => {
   const { resolvedTheme } = useTheme()
+  const { imageUrl } = useImageUrl()
   const isDark = resolvedTheme === "dark"
-  const isFirstRender = useRef(true)
 
+  const isFirstRender = useRef(true)
   const floatImgBackRef = useRef<HTMLDivElement>(null)
   const floatImgFrontRef = useRef<HTMLDivElement>(null)
   const floatImgRightRef = useRef<HTMLDivElement>(null)
@@ -96,17 +98,17 @@ export const CommentSection = forwardRef<CommentSectionRef>((_, ref) => {
     : "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(212,175,55,0.06), transparent)"
 
   const imgBack = isDark
-    ? "/asset/pre-wed/image/dark/2.jpg"
-    : "/asset/pre-wed/image/light/2.jpg"
+    ? (imageUrl as any)?.dark?.[1].link
+    : (imageUrl as any)?.light?.[1].link
   const imgFront = isDark
-    ? "/asset/pre-wed/image/dark/1.jpg"
-    : "/asset/pre-wed/image/light/1.jpg"
+    ? (imageUrl as any)?.dark?.[0].link
+    : (imageUrl as any)?.light?.[0].link
   const imgRight = isDark
-    ? "/asset/pre-wed/image/dark/3.jpg"
-    : "/asset/pre-wed/image/light/3.jpg"
+    ? (imageUrl as any)?.dark?.[2].link
+    : (imageUrl as any)?.light?.[2].link
   const imgRightFront = isDark
-    ? "/asset/pre-wed/image/dark/4.jpg"
-    : "/asset/pre-wed/image/light/4.jpg"
+    ? (imageUrl as any)?.dark?.[3].link
+    : (imageUrl as any)?.light?.[3].link
 
   useImperativeHandle(ref, () => ({
     getTimeline: () => {

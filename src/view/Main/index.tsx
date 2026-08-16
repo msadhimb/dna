@@ -23,6 +23,7 @@ import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { useGSAP } from "@gsap/react"
 import { Tools } from "@/components/Tools"
+import { useImageUrl } from "@/store/useImageUrl"
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger)
@@ -32,78 +33,10 @@ if (typeof window !== "undefined") {
   })
 }
 
-const PREVIEW_FRAMES = [
-  {
-    light: "/asset/pre-wed/image/light/2.jpg",
-    dark: "/asset/pre-wed/image/dark/2.jpg",
-  },
-  {
-    light: "/asset/pre-wed/image/light/3.jpg",
-    dark: "/asset/pre-wed/image/dark/3.jpg",
-  },
-  {
-    light: "/asset/pre-wed/image/light/4.jpg",
-    dark: "/asset/pre-wed/image/dark/4.jpg",
-  },
-  {
-    light: "/asset/pre-wed/image/light/5.jpg",
-    dark: "/asset/pre-wed/image/dark/5.jpg",
-  },
-  {
-    light: "/asset/pre-wed/image/light/6.jpg",
-    dark: "/asset/pre-wed/image/dark/6.jpg",
-  },
-  {
-    light: (
-      <div className="relative flex h-full w-full flex-col items-center justify-center gap-4 bg-primary px-6 py-10 text-muted md:px-10">
-        <p className="max-w-sm text-center font-signature text-2xl leading-relaxed font-bold tracking-wide md:max-w-lg md:text-3xl">
-          وَمِنْ آيَاتِهِ أَنْ خَلَقَ لَكُم مِّنْ أَنفُسِكُمْ أَزْوَاجًا
-          لِّتَسْكُنُوا إِلَيْهَا وَجَعَلَ بَيْنَكُم مَّوَدَّةً وَرَحْمَةً ۚ
-          إِنَّ فِي ذَٰلِكَ لَآيَاتٍ لِّقَوْمٍ يَتَفَكَّرُونَ
-        </p>
-        <div className="flex items-center gap-3 opacity-70">
-          <span className="h-px w-8 bg-current" />
-          <span className="text-xs">✦</span>
-          <span className="h-px w-8 bg-current" />
-        </div>
-        <p className="font-sans text-xs tracking-[0.2em] uppercase opacity-80">
-          QS. Ar-Rum : 21
-        </p>
-        <p className="max-w-sm text-center font-sans text-sm leading-relaxed font-light italic opacity-90 md:max-w-lg">
-          &ldquo;Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan
-          pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung
-          dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa
-          kasih dan sayang. Sesungguhnya pada yang demikian itu benar-benar
-          terdapat tanda-tanda bagi kaum yang berpikir.&rdquo;
-        </p>
-      </div>
-    ),
-    dark: (
-      <div className="relative flex h-full w-full flex-col items-center justify-center gap-4 bg-primary px-6 py-10 text-black md:px-10">
-        <p className="max-w-sm text-center font-signature text-2xl leading-relaxed font-bold tracking-wide md:max-w-lg md:text-3xl">
-          رَبَّنَا هَبْ لَنَا مِنْ أَزْوَاجِنَا وَذُرِّيَّاتِنَا قُرَّةَ
-          أَعْيُنٍ وَاجْعَلْنَا لِلْمُتَّقِينَ إِمَامًا
-        </p>
-        <div className="flex items-center gap-3 opacity-70">
-          <span className="h-px w-8 bg-current" />
-          <span className="text-xs">✦</span>
-          <span className="h-px w-8 bg-current" />
-        </div>
-        <p className="font-sans text-xs tracking-[0.2em] uppercase opacity-80">
-          QS. Al-Furqan : 74
-        </p>
-        <p className="max-w-sm text-center font-sans text-sm leading-relaxed font-light italic opacity-90 md:max-w-lg">
-          &ldquo;Wahai Tuhan kami, anugerahkanlah kepada kami istri-istri kami
-          dan keturunan kami sebagai penyejuk mata (bagi kami), dan jadikanlah
-          kami imam bagi orang-orang yang bertakwa.&rdquo;
-        </p>
-      </div>
-    ),
-  },
-]
-
 const MainView = () => {
   const { resolvedTheme } = useTheme()
+  const { imageUrl } = useImageUrl()
+
   const [mounted, setMounted] = useState(false)
   const [isLoaded, setIsLoaded] = useState(false)
 
@@ -114,24 +47,87 @@ const MainView = () => {
   const journeyRef = useRef<JourneySequenceRef>(null)
   const bookFlipRef = useRef<BookFlipRef>(null)
   const commentRef = useRef<CommentSectionRef>(null)
-
   const curtainTlRef = useRef<gsap.core.Timeline | null>(null)
   const journeyTlRef = useRef<gsap.core.Timeline | null>(null)
   const bookFlipTlRef = useRef<gsap.core.Timeline | null>(null)
   const commentTlRef = useRef<gsap.core.Timeline | null>(null)
   const masterTlRef = useRef<gsap.core.Timeline | null>(null)
 
-  const urlsToPreload = useMemo(() => {
-    return (
-      theme === "dark"
-        ? PREVIEW_FRAMES.map((f) => f.dark)
-        : PREVIEW_FRAMES.map((f) => f.light)
-    ).filter((content) => typeof content === "string") as string[]
-  }, [theme])
+  console.log(imageUrl)
+
+  const PREVIEW_FRAMES = [
+    {
+      light: imageUrl.light?.[1]?.link,
+      dark: imageUrl.dark?.[1]?.link,
+    },
+    {
+      light: imageUrl.light?.[2]?.link,
+      dark: imageUrl.dark?.[2]?.link,
+    },
+    {
+      light: imageUrl.light?.[3]?.link,
+      dark: imageUrl.dark?.[3]?.link,
+    },
+    {
+      light: imageUrl.light?.[4]?.link,
+      dark: imageUrl.dark?.[4]?.link,
+    },
+    {
+      light: imageUrl.light?.[5]?.link,
+      dark: imageUrl.dark?.[5]?.link,
+    },
+    {
+      light: (
+        <div className="relative flex h-full w-full flex-col items-center justify-center gap-4 bg-primary px-6 py-10 text-muted md:px-10">
+          <p className="max-w-sm text-center font-signature text-2xl leading-relaxed font-bold tracking-wide md:max-w-lg md:text-3xl">
+            وَمِنْ آيَاتِهِ أَنْ خَلَقَ لَكُم مِّنْ أَنفُسِكُمْ أَزْوَاجًا
+            لِّتَسْكُنُوا إِلَيْهَا وَجَعَلَ بَيْنَكُم مَّوَدَّةً وَرَحْمَةً ۚ
+            إِنَّ فِي ذَٰلِكَ لَآيَاتٍ لِّقَوْمٍ يَتَفَكَّرُونَ
+          </p>
+          <div className="flex items-center gap-3 opacity-70">
+            <span className="h-px w-8 bg-current" />
+            <span className="text-xs">✦</span>
+            <span className="h-px w-8 bg-current" />
+          </div>
+          <p className="font-sans text-xs tracking-[0.2em] uppercase opacity-80">
+            QS. Ar-Rum : 21
+          </p>
+          <p className="max-w-sm text-center font-sans text-sm leading-relaxed font-light italic opacity-90 md:max-w-lg">
+            &ldquo;Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan
+            pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung
+            dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa
+            kasih dan sayang. Sesungguhnya pada yang demikian itu benar-benar
+            terdapat tanda-tanda bagi kaum yang berpikir.&rdquo;
+          </p>
+        </div>
+      ),
+      dark: (
+        <div className="relative flex h-full w-full flex-col items-center justify-center gap-4 bg-primary px-6 py-10 text-black md:px-10">
+          <p className="max-w-sm text-center font-signature text-2xl leading-relaxed font-bold tracking-wide md:max-w-lg md:text-3xl">
+            رَبَّنَا هَبْ لَنَا مِنْ أَزْوَاجِنَا وَذُرِّيَّاتِنَا قُرَّةَ
+            أَعْيُنٍ وَاجْعَلْنَا لِلْمُتَّقِينَ إِمَامًا
+          </p>
+          <div className="flex items-center gap-3 opacity-70">
+            <span className="h-px w-8 bg-current" />
+            <span className="text-xs">✦</span>
+            <span className="h-px w-8 bg-current" />
+          </div>
+          <p className="font-sans text-xs tracking-[0.2em] uppercase opacity-80">
+            QS. Al-Furqan : 74
+          </p>
+          <p className="max-w-sm text-center font-sans text-sm leading-relaxed font-light italic opacity-90 md:max-w-lg">
+            &ldquo;Wahai Tuhan kami, anugerahkanlah kepada kami istri-istri kami
+            dan keturunan kami sebagai penyejuk mata (bagi kami), dan jadikanlah
+            kami imam bagi orang-orang yang bertakwa.&rdquo;
+          </p>
+        </div>
+      ),
+    },
+  ]
 
   const frames = useMemo(() => {
     return PREVIEW_FRAMES.map((frame, i) => {
-      const content = theme === "dark" ? frame.dark : frame.light
+      const content: any = theme === "dark" ? frame.dark : frame.light
 
       if (typeof content === "string") {
         return (
@@ -153,7 +149,7 @@ const MainView = () => {
         </div>
       )
     })
-  }, [theme])
+  }, [theme, imageUrl])
 
   useEffect(() => {
     setMounted(true)
@@ -325,12 +321,7 @@ const MainView = () => {
   return (
     <main ref={mainRef}>
       <Tools />
-      {!isLoaded && (
-        <LoadingScreen
-          imageUrls={urlsToPreload}
-          onComplete={() => setIsLoaded(true)}
-        />
-      )}
+      {!isLoaded && <LoadingScreen onComplete={() => setIsLoaded(true)} />}
 
       <WelcomeSection />
 

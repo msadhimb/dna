@@ -1,3 +1,4 @@
+import { useImageUrl } from "@/store/useImageUrl"
 import Image from "next/image"
 import React from "react"
 
@@ -8,6 +9,8 @@ interface CoverProps {
 }
 
 const Cover = ({ isDark, gold, ribbonRef }: CoverProps) => {
+  const { imageUrl } = useImageUrl()
+
   return (
     <>
       {" "}
@@ -42,7 +45,7 @@ const Cover = ({ isDark, gold, ribbonRef }: CoverProps) => {
           }}
         >
           <Image
-            src={"/asset/icon/garuda.png"}
+            src={(imageUrl as any)?.icon?.[0].link}
             alt="Emblem"
             width={200}
             height={200}

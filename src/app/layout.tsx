@@ -8,6 +8,7 @@ import {
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils"
+import ClientProviders from "@/components/ClientProviders"
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" })
 
@@ -47,7 +48,9 @@ export default function RootLayout({
       )}
     >
       <body>
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <ClientProviders>{children}</ClientProviders>
+        </ThemeProvider>
       </body>
     </html>
   )

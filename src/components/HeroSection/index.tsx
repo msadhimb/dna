@@ -1,20 +1,21 @@
 "use client"
 
-import { useEffect, useState, useRef } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { useTheme } from "next-themes"
 import { Countdown } from "@/components/CountDown"
-import { ChevronDown, Heart, Moon, Sun, Volume2, VolumeX } from "lucide-react"
+import { ChevronDown, Heart } from "lucide-react"
 import Image from "next/image"
-import { Switch } from "../ui/switch"
+import { useImageUrl } from "@/store/useImageUrl"
 
 const HeroSection = () => {
   const { resolvedTheme } = useTheme()
+  const { imageUrl } = useImageUrl()
   const [mounted, setMounted] = useState(false)
 
   const isDark = resolvedTheme === "dark"
-  const heroImage = isDark
-    ? "/asset/pre-wed/image/dark/1.jpg"
-    : "/asset/pre-wed/image/light/1.jpg"
+  const heroImage: any = isDark
+    ? imageUrl.dark?.[0].link
+    : imageUrl.light?.[0].link
 
   useEffect(() => {
     setMounted(true)
@@ -37,6 +38,7 @@ const HeroSection = () => {
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 md:-translate-x-10 md:scale-125 dark:md:-translate-x-40">
             <Image
+              key={heroImage}
               src={heroImage}
               alt="Devi & Adhim"
               fill

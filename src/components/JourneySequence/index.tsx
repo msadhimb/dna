@@ -5,6 +5,7 @@ import { useRef, useImperativeHandle, forwardRef } from "react"
 import gsap from "gsap"
 import { cn } from "@/lib/utils"
 import useResponsive from "@/hooks/useResponsive"
+import { useImageUrl } from "@/store/useImageUrl"
 
 interface JourneySequenceProps {
   theme: string
@@ -28,6 +29,7 @@ export const JourneySequence = forwardRef<
   const brideBioRef = useRef<HTMLDivElement>(null)
   const textContainerRef = useRef<HTMLDivElement>(null)
   const { dist, isMobile } = useResponsive()
+  const { imageUrl } = useImageUrl()
 
   useImperativeHandle(
     ref,
@@ -236,14 +238,14 @@ export const JourneySequence = forwardRef<
           <h1
             ref={textLeftRef}
             id="journey-text-left"
-            className="gsap-element inline-block bg-gradient-to-b from-[#f2dfa0] via-[#d4af37] to-[#a1811f] bg-clip-text font-signature text-4xl font-bold tracking-[0.15em] text-transparent [text-shadow:0_2px_12px_rgba(0,0,0,0.25)]  md:text-5xl md:tracking-[0.2em] dark:from-primary dark:via-primary dark:to-primary/70"
+            className="gsap-element inline-block bg-linear-to-b from-[#f2dfa0] via-[#d4af37] to-[#a1811f] bg-clip-text font-signature text-4xl font-bold tracking-[0.15em] text-transparent [text-shadow:0_2px_12px_rgba(0,0,0,0.25)]  md:text-5xl md:tracking-[0.2em] dark:from-primary dark:via-primary dark:to-primary/70"
           >
             {theme === "light" ? "Forever" : "Eternal"}
           </h1>
           <h1
             ref={textRightRef}
             id="journey-text-right"
-            className="gsap-element inline-block bg-gradient-to-b from-[#f2dfa0] via-[#d4af37] to-[#a1811f] bg-clip-text font-signature text-4xl font-bold tracking-[0.15em] text-transparent [text-shadow:0_2px_12px_rgba(0,0,0,0.25)]  md:text-5xl md:tracking-[0.2em] dark:from-primary dark:via-primary dark:to-primary/70"
+            className="gsap-element inline-block bg-linear-to-b from-[#f2dfa0] via-[#d4af37] to-[#a1811f] bg-clip-text font-signature text-4xl font-bold tracking-[0.15em] text-transparent [text-shadow:0_2px_12px_rgba(0,0,0,0.25)]  md:text-5xl md:tracking-[0.2em] dark:from-primary dark:via-primary dark:to-primary/70"
           >
             {theme === "light" ? "Begins" : "Vows"}
           </h1>
@@ -256,10 +258,15 @@ export const JourneySequence = forwardRef<
         style={{ borderRadius: "24px", clipPath: CLIP_RECT }}
       >
         <Image
+          key={
+            theme === "dark"
+              ? (imageUrl as any).dark?.[5]?.link
+              : (imageUrl as any).light?.[3]?.link
+          }
           src={
             theme === "dark"
-              ? "/asset/pre-wed/image/dark/6.jpg"
-              : "/asset/pre-wed/image/light/4.jpg"
+              ? (imageUrl as any).dark?.[5]?.link
+              : (imageUrl as any).light?.[3]?.link
           }
           fill
           alt="Journey"
