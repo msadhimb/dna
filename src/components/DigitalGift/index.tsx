@@ -54,7 +54,6 @@ function BankAccountCard({
     <div
       className="dg-card group relative flex flex-col items-center gap-3 px-8 py-7 text-center transition-all duration-300"
       style={{
-        background: surface,
         border: `1px solid ${borderAccent}`,
         borderRadius: "12px",
         boxShadow: isDark
@@ -85,19 +84,15 @@ function BankAccountCard({
       </div>
 
       {/* Bank name */}
-      <p
-        className="font-sans text-[9px] font-semibold tracking-[0.45em] uppercase"
-        style={{ color: textSecondary }}
-      >
+      <p className="font-sans text-[9px] font-semibold tracking-[0.45em] text-muted uppercase">
         {bank}
       </p>
 
       {/* Account number */}
       <p
-        className="font-signature font-bold tracking-[0.08em]"
+        className="font-signature font-bold tracking-[0.08em] text-muted dark:text-secondary"
         style={{
           fontSize: "clamp(1.3rem, 3vw, 1.8rem)",
-          color: textPrimary,
         }}
       >
         {accountNumber}
@@ -114,10 +109,7 @@ function BankAccountCard({
       </div>
 
       {/* Account name */}
-      <p
-        className="font-sans text-[10px] tracking-[0.2em] uppercase"
-        style={{ color: textMuted }}
-      >
+      <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-muted">
         a.n. {accountName}
       </p>
 
@@ -318,7 +310,6 @@ export const DigitalGift = () => {
         <div
           className="dg-message relative w-full max-w-lg px-8 py-8 text-center md:px-12 md:py-10"
           style={{
-            background: surface2,
             border: `1px solid ${border}`,
             borderRadius: "16px",
             boxShadow: isDark
