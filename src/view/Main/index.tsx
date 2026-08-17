@@ -182,8 +182,7 @@ const MainView = () => {
       const cDur = curtainTl.totalDuration() || 1
       const jDur = journeyTl.totalDuration() || 1
       const bDur = bookFlipTl.totalDuration() || 1
-      const totalScrollHeight =
-        ((cDur + jDur + bDur) / (cDur + jDur + bDur)) * 500
+      const totalScrollHeight = (cDur + jDur + bDur) * 55
 
       const curtainWrapper = gsap.timeline()
       curtainWrapper.add(curtainTl)
@@ -210,8 +209,8 @@ const MainView = () => {
 
       bookFlipTlRef.current = bookFlipWrapperTl
 
-      // Scrub mobile lebih tinggi agar smooth dengan inertia scroll,
-      // desktop lebih rendah agar animasi terasa tight & responsif
+      // Scrub lebih tinggi = animasi lebih smooth mengikuti scroll (mengurangi jank)
+      // Hindari scrub < 1 karena akan terasa patah saat scroll cepat
       const isMobile = window.innerWidth < 768
       const masterTl = gsap.timeline({
         scrollTrigger: {
@@ -220,7 +219,7 @@ const MainView = () => {
           end: `+=${totalScrollHeight}%`,
           pin: true,
           pinSpacing: true,
-          scrub: isMobile ? 1.2 : 0.4,
+          scrub: isMobile ? 2 : 1.5,
           invalidateOnRefresh: true,
         },
       })

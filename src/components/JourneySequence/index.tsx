@@ -50,7 +50,12 @@ export const JourneySequence = forwardRef<
         }
 
         tl.set([groomBioRef.current, brideBioRef.current], { opacity: 0 }, 0)
-        tl.set(journeyImgElement, { scale: 1, x: 0, y: 0 }, 0)
+        // force-promote ke GPU compositor layer sejak awal agar scale tidak trigger repaint
+        tl.set(
+          journeyImgElement,
+          { scale: 1, x: 0, y: 0, z: 0.01, force3D: true },
+          0
+        )
 
         tl.to(journeyImageRef.current, {
           width: dist("85vw", "60vw"),
@@ -84,8 +89,9 @@ export const JourneySequence = forwardRef<
             width: dist("200vw", "100vw"),
             height: "100vh",
             borderRadius: "0px",
+            clipPath: "none",
             x: theme === "dark" ? 0 : dist("-30vw", "0"),
-            y: dist("50", "90"),
+            y: dist("50", "110"),
             duration: 1,
             ease: "power2.inOut",
           },
@@ -94,7 +100,7 @@ export const JourneySequence = forwardRef<
           .to(
             textLeftRef.current,
             {
-              x: dist("-18vw", "-30vw"),
+              x: dist("-18vw", "-25vw"),
               duration: 1,
               ease: "power2.inOut",
             },
@@ -103,7 +109,7 @@ export const JourneySequence = forwardRef<
           .to(
             textRightRef.current,
             {
-              x: dist("18vw", "30vw"),
+              x: dist("18vw", "25vw"),
               duration: 1,
               ease: "power2.inOut",
             },
@@ -229,25 +235,26 @@ export const JourneySequence = forwardRef<
       <div
         ref={textContainerRef}
         id="journey-text-container"
-        className="gsap-element absolute top-40 z-10 flex flex-col items-center gap-4 text-center md:gap-6"
+        className="gsap-element absolute top-44 z-10 flex flex-col items-center gap-4 text-center md:gap-6"
+        style={{ willChange: "transform" }}
       >
-        <span className="font-sans text-[9px] font-medium tracking-[0.55em] text-[#d4af37]/70 uppercase md:text-xs dark:text-primary/70">
+        <span className="font-sans text-[9px] font-medium tracking-[0.55em] text-muted uppercase md:text-xs">
           Our Story
         </span>
         <div className="flex gap-3 whitespace-nowrap md:gap-5">
           <h1
             ref={textLeftRef}
             id="journey-text-left"
-            className="gsap-element inline-block bg-linear-to-b from-[#f2dfa0] via-[#d4af37] to-[#a1811f] bg-clip-text font-signature text-4xl font-bold tracking-[0.15em] text-transparent [text-shadow:0_2px_12px_rgba(0,0,0,0.25)]  md:text-5xl md:tracking-[0.2em] dark:from-primary dark:via-primary dark:to-primary/70"
+            className="gsap-element inline-block text-muted font-sans text-4xl font-bold tracking-[0.15em] md:text-7xl md:tracking-[0.2em]"
           >
-            {theme === "light" ? "Forever" : "Eternal"}
+            {theme === "light" ? "FOREVER" : "ETERNAL"}
           </h1>
           <h1
             ref={textRightRef}
             id="journey-text-right"
-            className="gsap-element inline-block bg-linear-to-b from-[#f2dfa0] via-[#d4af37] to-[#a1811f] bg-clip-text font-signature text-4xl font-bold tracking-[0.15em] text-transparent [text-shadow:0_2px_12px_rgba(0,0,0,0.25)]  md:text-5xl md:tracking-[0.2em] dark:from-primary dark:via-primary dark:to-primary/70"
+            className="gsap-element inline-block text-muted font-sans text-4xl font-bold tracking-[0.15em]  md:text-7xl  dark:from-primary dark:via-primary dark:to-primary/70"
           >
-            {theme === "light" ? "Begins" : "Vows"}
+            {theme === "light" ? "BEGINS" : "VOWS"}
           </h1>
         </div>
       </div>
@@ -255,7 +262,10 @@ export const JourneySequence = forwardRef<
       <div
         ref={journeyImageRef}
         className="gsap-element relative z-0 h-[42vh] w-[85vw] overflow-hidden rounded-2xl md:h-[40vh] md:w-[40vw] md:rounded-3xl"
-        style={{ borderRadius: "24px", clipPath: CLIP_RECT }}
+        style={{
+          borderRadius: "24px",
+          willChange: "transform",
+        }}
       >
         <Image
           key={
@@ -274,6 +284,7 @@ export const JourneySequence = forwardRef<
           quality={100}
           priority
           className="journey-inner-img object-cover"
+          style={{ willChange: "transform", transform: "translateZ(0)" }}
         />
       </div>
 
@@ -284,7 +295,7 @@ export const JourneySequence = forwardRef<
           "gsap-element absolute inset-y-0 right-0 z-50 flex w-screen flex-col items-end justify-center gap-3 bg-linear-to-l from-black/85 via-black/45 to-transparent p-6 text-right opacity-0 sm:p-8 md:w-1/2 md:p-12"
         )}
       >
-        <span className="font-sans text-[10px] font-semibold tracking-[0.5em] text-[#d4af37]/80 uppercase md:text-xs dark:text-primary/80">
+        <span className="font-sans text-[10px] font-semibold tracking-[0.5em] text-[#d4af37]/80 uppercase md:text-xs dark:text-muted">
           The Groom
         </span>
         <h2 className="font-signature text-5xl leading-[1.1] font-bold tracking-wide text-[#f2dfa0] [text-shadow:0_4px_20px_rgba(0,0,0,0.5)] md:text-7xl  dark:text-primary">
@@ -327,8 +338,9 @@ export const JourneySequence = forwardRef<
         className={cn(
           "gsap-element absolute inset-y-0 left-0 z-50 flex w-screen flex-col items-start justify-center gap-3 bg-linear-to-r from-black/85 via-black/45 to-transparent p-6 text-left opacity-0 sm:p-8 md:w-1/2 md:p-12"
         )}
+        style={{ willChange: "transform" }}
       >
-        <span className="font-sans text-[10px] font-semibold tracking-[0.5em] text-[#d4af37]/80 uppercase md:text-xs dark:text-primary/80">
+        <span className="font-sans text-[10px] font-semibold tracking-[0.5em] text-[#d4af37]/80 uppercase md:text-xs dark:text-muted">
           The Bride
         </span>
         <h2 className="font-signature text-5xl leading-[1.1] font-bold tracking-wide text-[#f2dfa0] [text-shadow:0_4px_20px_rgba(0,0,0,0.5)] md:text-7xl dark:text-primary">
