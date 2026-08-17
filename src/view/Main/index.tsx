@@ -182,7 +182,8 @@ const MainView = () => {
       const cDur = curtainTl.totalDuration() || 1
       const jDur = journeyTl.totalDuration() || 1
       const bDur = bookFlipTl.totalDuration() || 1
-      const totalScrollHeight = (cDur + jDur + bDur) * 55
+      const totalScrollHeight =
+        ((cDur + jDur + bDur) / (cDur + jDur + bDur)) * 500
 
       const curtainWrapper = gsap.timeline()
       curtainWrapper.add(curtainTl)

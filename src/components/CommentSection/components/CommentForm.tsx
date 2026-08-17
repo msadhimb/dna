@@ -4,6 +4,7 @@ import * as yup from "yup"
 import { WeddingInput } from "@/components/WeddingInput"
 import { WeddingTextarea } from "@/components/WeddingTextarea"
 import { AttendanceToggle } from "./AttendanceToggle"
+import { Button } from "@/components/Button"
 
 interface FormValues {
   name: string
@@ -138,21 +139,17 @@ export function CommentForm({
           </div>
 
           <div className="flex items-center justify-center">
-            <div
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") handleSubmit()
-              }}
+            <Button
+              type="button"
               onClick={handleSubmit}
-              className="cs-submit-btn flex cursor-pointer items-center justify-center rounded-xl px-8 py-3 font-sans text-[10px] md:text-[11px] font-bold tracking-[0.3em] uppercase transition-all duration-300 bg-green-800 text-white dark:bg-red-800"
+              className="cs-submit-btn flex cursor-pointer items-center justify-center rounded-xl px-8 py-6 font-sans text-[10px] md:text-[11px] font-bold tracking-[0.3em] uppercase transition-all duration-300 bg-green-800 text-white hover:bg-green-700 dark:bg-red-800 dark:hover:bg-red-700"
             >
               {isSubmitting
                 ? "Mengirim..."
                 : submitted
                   ? "Terkirim"
                   : "Kirim Ucapan"}
-            </div>
+            </Button>
           </div>
         </div>
       </div>

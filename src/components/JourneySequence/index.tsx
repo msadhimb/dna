@@ -235,7 +235,7 @@ export const JourneySequence = forwardRef<
       <div
         ref={textContainerRef}
         id="journey-text-container"
-        className="gsap-element absolute top-54 md:top-44 z-10 flex flex-col items-center gap-4 text-center md:gap-6"
+        className="gsap-element absolute top-52 md:top-44 z-10 flex flex-col items-center gap-4 text-center md:gap-6"
         style={{ willChange: "transform" }}
       >
         <span className="font-sans text-[9px] font-medium tracking-[0.55em] text-muted uppercase md:text-xs">
@@ -245,14 +245,14 @@ export const JourneySequence = forwardRef<
           <h1
             ref={textLeftRef}
             id="journey-text-left"
-            className="gsap-element inline-block text-muted font-sans text-4xl font-bold tracking-[0.15em] md:text-7xl md:tracking-[0.2em]"
+            className="gsap-element inline-block text-muted font-sans text-3xl font-bold tracking-[0.15em] md:text-7xl md:tracking-[0.2em]"
           >
             {theme === "light" ? "FOREVER" : "ETERNAL"}
           </h1>
           <h1
             ref={textRightRef}
             id="journey-text-right"
-            className="gsap-element inline-block text-muted font-sans text-4xl font-bold tracking-[0.15em]  md:text-7xl  dark:from-primary dark:via-primary dark:to-primary/70"
+            className="gsap-element inline-block text-muted font-sans text-3xl font-bold tracking-[0.15em]  md:text-7xl  dark:from-primary dark:via-primary dark:to-primary/70"
           >
             {theme === "light" ? "BEGINS" : "VOWS"}
           </h1>
@@ -292,23 +292,27 @@ export const JourneySequence = forwardRef<
       <div
         ref={groomBioRef}
         className={cn(
-          "gsap-element absolute inset-y-0 right-0 z-50 flex w-screen flex-col items-end justify-center gap-3 bg-linear-to-l from-black/85 via-black/45 to-transparent p-6 text-right opacity-0 sm:p-8 md:w-1/2 md:p-12"
+          "gsap-element absolute inset-x-0 bottom-0 z-50 flex w-screen flex-col gap-3 opacity-0",
+          // Mobile: full-width panel sliding from bottom, gradient from bottom, centered text
+          "items-center justify-end text-center bg-gradient-to-t from-black/90 via-black/60 to-transparent pt-24 pb-12 px-6",
+          // Desktop: right-side panel, gradient from left, right-aligned text
+          "md:inset-y-0 md:bottom-auto md:right-0 md:left-auto md:h-full md:w-1/2 md:items-end md:justify-center md:text-right md:bg-gradient-to-l md:from-black/85 md:via-black/45 md:pt-0 md:pb-0 md:px-12"
         )}
       >
-        <span className="font-sans text-[10px] font-semibold tracking-[0.5em] text-[#d4af37]/80 uppercase md:text-xs dark:text-muted">
+        <span className="font-sans text-[10px] font-semibold tracking-[0.5em] text-[#f2dfa0] uppercase md:text-xs dark:text-muted">
           The Groom
         </span>
         <h2 className="font-signature text-5xl leading-[1.1] font-bold tracking-wide text-[#f2dfa0] [text-shadow:0_4px_20px_rgba(0,0,0,0.5)] md:text-7xl  dark:text-primary">
           Muhamad Salman Adhim Baqy
         </h2>
-        <span className="h-px w-16 bg-gradient-to-l from-[#d4af37] to-transparent md:w-24 dark:from-primary" />
+        <span className="h-px w-16 bg-gradient-to-r from-transparent via-[#d4af37] to-transparent md:bg-gradient-to-l md:from-[#d4af37] md:via-transparent md:to-transparent md:w-24 dark:via-primary md:dark:from-primary" />
 
-        <div className="mt-2 flex flex-col items-end gap-2">
+        <div className="mt-2 flex flex-col items-center gap-2 md:items-end">
           <p className="font-serif text-[11px] font-normal tracking-[0.4em] text-[#e9cf7a] dark:text-white italic uppercase md:text-xs">
             Putra dari
           </p>
 
-          <div className="flex flex-col items-end gap-0.5">
+          <div className="flex flex-col items-center gap-0.5 md:items-end">
             <p className="font-serif text-base leading-snug font-medium tracking-[0.03em] text-white md:text-xl">
               Suprapto Wibowo
             </p>
@@ -321,7 +325,7 @@ export const JourneySequence = forwardRef<
             &
           </span>
 
-          <div className="flex flex-col items-end gap-0.5">
+          <div className="flex flex-col items-center md:items-end gap-0.5">
             <p className="font-serif text-base leading-snug font-medium tracking-[0.03em] text-white md:text-xl">
               Christiana Sri Budhi H.
             </p>
@@ -336,24 +340,28 @@ export const JourneySequence = forwardRef<
       <div
         ref={brideBioRef}
         className={cn(
-          "gsap-element absolute inset-y-0 left-0 z-50 flex w-screen flex-col items-start justify-center gap-3 bg-linear-to-r from-black/85 via-black/45 to-transparent p-6 text-left opacity-0 sm:p-8 md:w-1/2 md:p-12"
+          "gsap-element absolute inset-x-0 bottom-0 z-50 flex w-screen flex-col gap-3 opacity-0",
+          // Mobile: full-width panel sliding from bottom, gradient from bottom, centered text
+          "items-center justify-end text-center bg-gradient-to-t from-black/90 via-black/60 to-transparent pt-24 pb-12 px-6",
+          // Desktop: left-side panel, gradient from right, left-aligned text
+          "md:inset-y-0 md:bottom-auto md:left-0 md:right-auto md:h-full md:w-1/2 md:items-start md:justify-center md:text-left md:bg-gradient-to-r md:from-black/85 md:via-black/45 md:pt-0 md:pb-0 md:px-12"
         )}
         style={{ willChange: "transform" }}
       >
-        <span className="font-sans text-[10px] font-semibold tracking-[0.5em] text-[#d4af37]/80 uppercase md:text-xs dark:text-muted">
+        <span className="font-sans text-[10px] font-semibold tracking-[0.5em] text-[#f2dfa0] uppercase md:text-xs dark:text-muted">
           The Bride
         </span>
         <h2 className="font-signature text-5xl leading-[1.1] font-bold tracking-wide text-[#f2dfa0] [text-shadow:0_4px_20px_rgba(0,0,0,0.5)] md:text-7xl dark:text-primary">
           Devi Yuliana Nurhaliza
         </h2>
-        <span className="h-px w-16 bg-gradient-to-r from-[#d4af37] to-transparent md:w-24 dark:from-primary" />
+        <span className="h-px w-16 bg-gradient-to-r from-transparent via-[#d4af37] to-transparent md:bg-gradient-to-r md:from-[#d4af37] md:via-transparent md:to-transparent md:w-24 dark:via-primary md:dark:from-primary" />
 
-        <div className="mt-2 flex flex-col items-start gap-2">
+        <div className="mt-2 flex flex-col items-center gap-2 md:items-start">
           <p className="font-serif text-[11px] font-normal tracking-[0.4em] text-[#e9cf7a] dark:text-white italic uppercase md:text-xs">
             Putri dari
           </p>
 
-          <div className="flex flex-col items-start gap-0.5">
+          <div className="flex flex-col items-center gap-0.5 md:items-start">
             <p className="font-serif text-base leading-snug font-medium tracking-[0.03em] text-white md:text-xl">
               Deden Herman K.
             </p>
@@ -366,7 +374,7 @@ export const JourneySequence = forwardRef<
             &
           </span>
 
-          <div className="flex flex-col items-start gap-0.5">
+          <div className="flex flex-col items-center md:items-start gap-0.5">
             <p className="font-serif text-base leading-snug font-medium tracking-[0.03em] text-white md:text-xl">
               Selvia A. D.
             </p>

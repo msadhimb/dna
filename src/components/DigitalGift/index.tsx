@@ -4,12 +4,14 @@ import React, { useRef, useState } from "react"
 import { useTheme } from "next-themes"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
+import { Button } from "@/components/Button"
 import { useGSAP } from "@gsap/react"
 import {
   WaxSeal,
   OrnamentalDivider,
   EnvelopeIllustration,
 } from "@/components/Icon"
+import { CopyCheck, CopyIcon } from "lucide-react"
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -114,54 +116,23 @@ function BankAccountCard({
       </p>
 
       {/* Copy button */}
-      <button
+      <Button
         onClick={handleCopy}
-        className="mt-2 flex items-center gap-2 px-5 py-2 text-[10px] font-bold tracking-[0.2em] uppercase transition-all duration-200"
-        style={{
-          border: `1px solid ${accent}`,
-          color: copied ? "#ffffff" : accent,
-          background: copied ? accent : "transparent",
-          borderRadius: "6px",
-        }}
+        size="sm"
+        className="mt-2 flex items-center gap-2 px-5 py-2 text-[10px] font-bold tracking-[0.2em] uppercase transition-all duration-200 text-muted dark:text-white"
       >
         {copied ? (
           <>
-            <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor">
-              <path
-                d="M1.5 5 L4 7.5 L8.5 2.5"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <CopyCheck />
             Tersalin
           </>
         ) : (
           <>
-            <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor">
-              <rect
-                x="3"
-                y="3"
-                width="6"
-                height="6"
-                rx="1"
-                stroke="currentColor"
-                strokeWidth="1"
-                fill="none"
-              />
-              <path
-                d="M7 3 V2 a1 1 0 0 0-1-1 H2 a1 1 0 0 0-1 1 v4 a1 1 0 0 0 1 1 h1"
-                stroke="currentColor"
-                strokeWidth="1"
-                fill="none"
-              />
-            </svg>
-            Salin Nomor
+            <CopyIcon />
+            Salin No. Rek
           </>
         )}
-      </button>
+      </Button>
     </div>
   )
 }
@@ -377,7 +348,7 @@ export const DigitalGift = () => {
         <div className="dg-cards-wrapper grid w-full grid-cols-1 gap-5 md:grid-cols-2 md:gap-6">
           <BankAccountCard
             bank="Bank Central Asia"
-            accountNumber="1234567890"
+            accountNumber="1819801119"
             accountName="Salman Adhim"
             accent={accent}
             textPrimary={textPrimary}
@@ -390,7 +361,7 @@ export const DigitalGift = () => {
           />
           <BankAccountCard
             bank="Bank Mandiri"
-            accountNumber="0987654321"
+            accountNumber="7296154554"
             accountName="Devi Yuliana"
             accent={accent}
             textPrimary={textPrimary}
