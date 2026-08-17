@@ -68,7 +68,7 @@ export const JourneySequence = forwardRef<
         tl.to(
           textLeftRef.current,
           {
-            x: dist("-6vw", "-12vw"),
+            x: dist("-5vw", "-12vw"),
             duration: 1,
             ease: "power2.inOut",
           },
@@ -76,7 +76,7 @@ export const JourneySequence = forwardRef<
         ).to(
           textRightRef.current,
           {
-            x: dist("6vw", "12vw"),
+            x: dist("5vw", "12vw"),
             duration: 1,
             ease: "power2.inOut",
           },
@@ -91,7 +91,7 @@ export const JourneySequence = forwardRef<
             borderRadius: "0px",
             clipPath: "none",
             x: theme === "dark" ? 0 : dist("-30vw", "0"),
-            y: dist("50", "110"),
+            y: dist("0", "110"),
             duration: 1,
             ease: "power2.inOut",
           },
@@ -100,7 +100,7 @@ export const JourneySequence = forwardRef<
           .to(
             textLeftRef.current,
             {
-              x: dist("-18vw", "-25vw"),
+              x: dist("-5vw", "-25vw"),
               duration: 1,
               ease: "power2.inOut",
             },
@@ -109,7 +109,7 @@ export const JourneySequence = forwardRef<
           .to(
             textRightRef.current,
             {
-              x: dist("18vw", "25vw"),
+              x: dist("5vw", "25vw"),
               duration: 1,
               ease: "power2.inOut",
             },
@@ -235,7 +235,7 @@ export const JourneySequence = forwardRef<
       <div
         ref={textContainerRef}
         id="journey-text-container"
-        className="gsap-element absolute top-44 z-10 flex flex-col items-center gap-4 text-center md:gap-6"
+        className="gsap-element absolute top-54 md:top-44 z-10 flex flex-col items-center gap-4 text-center md:gap-6"
         style={{ willChange: "transform" }}
       >
         <span className="font-sans text-[9px] font-medium tracking-[0.55em] text-muted uppercase md:text-xs">

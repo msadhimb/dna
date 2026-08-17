@@ -391,12 +391,11 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
       >
         <div
           ref={bookRef}
-          className="relative max-w-full"
+          className="relative max-w-full pointer-events-auto"
           style={{
             width: dist(width, "min(85vw, 420px)"),
             height: dist(height, "min(70vh, 600px)"),
             transformStyle: "preserve-3d",
-            willChange: "transform, opacity",
           }}
         >
           <div
@@ -408,9 +407,18 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
             <span className="font-serif text-[10px] tracking-[0.4em] text-[#9a865a] uppercase dark:text-[#a38d53]">
               {locationLabel}
             </span>
-            <span className="font-signature text-[clamp(1.1rem,2.5vw,1.8rem)] leading-tight text-[#1e1a14] dark:text-[#e0d8d0]">
+            <span className="font-signature text-3xl leading-tight text-[#1e1a14] dark:text-[#e0d8d0]">
               {location}
             </span>
+
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.645103116751!2d106.6326327!3d-6.178238399999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f8d465b9f9c5%3A0x880e353b4abebf2f!2sDPD%20KNPI%20Tangerang!5e0!3m2!1sen!2sid!4v1786944064704!5m2!1sen!2sid"
+              width="600"
+              height="250"
+              className="w-full max-w-sm overflow-hidden rounded-lg"
+              loading="lazy"
+              referrerPolicy="strict-origin-when-cross-origin"
+            />
 
             <Ornament color={isDark ? "#d4af37" : "#c9a227"} flip />
           </div>
@@ -422,7 +430,6 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
             style={{
               zIndex: 15,
               transformStyle: "preserve-3d",
-              willChange: "transform",
             }}
           >
             <div
@@ -444,10 +451,13 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
                   <span className="font-serif text-[10px] tracking-[0.4em] text-[#9a865a] uppercase dark:text-[#a38d53]">
                     {dateLabel}
                   </span>
-                  <span>tet</span>
-                  <span className="font-signature text-[clamp(1.8rem,4vw,3rem)] leading-tight text-[#1e1a14] dark:text-[#e0d8d0]">
+                  <span className="font-signature text-5xl leading-tight text-[#1e1a14] dark:text-[#e0d8d0]">
                     {date}
                   </span>
+                  <span className="font-serif text-[clamp(1.1rem,2.5vw,1.8rem)] leading-tight text-[#1e1a14] dark:text-[#e0d8d0]">
+                    9.00 AM - 3.00 PM
+                  </span>
+
                   <Ornament color={isDark ? "#d4af37" : "#c9a227"} flip />
                 </>
               )}
@@ -483,7 +493,7 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
             style={{
               zIndex: 25,
               transformStyle: "preserve-3d",
-              willChange: "transform",
+              pointerEvents: "none",
             }}
           >
             {/* Front of cover */}
@@ -499,6 +509,7 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
                 backfaceVisibility: "hidden",
                 WebkitBackfaceVisibility: "hidden",
                 boxShadow: "inset 0 0 40px rgba(0,0,0,0.45)",
+                pointerEvents: "auto", // re-enable untuk front face
                 ...coverFront?.style,
               }}
             >
@@ -523,6 +534,7 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
                 backfaceVisibility: "hidden",
                 WebkitBackfaceVisibility: "hidden",
                 borderColor: `${gold}30`,
+                pointerEvents: "auto",
                 ...coverBack?.style,
               }}
             >
@@ -535,6 +547,9 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
                   </span>
                   <span className="font-signature text-[clamp(1.8rem,4vw,3rem)] leading-tight text-[#1e1a14] dark:text-[#e0d8d0]">
                     {date}
+                  </span>
+                  <span className="font-serif text-[#1e1a14] dark:text-[#e0d8d0]">
+                    9.00 AM - 3.00 PM
                   </span>
                   <Ornament color={isDark ? "#d4af37" : "#c9a227"} flip />
                 </div>
@@ -564,7 +579,7 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
         {/* floor shadow */}
         <div
           ref={shadowRef}
-          className="pointer-events-none mt-[-6px] h-[32px] w-[60%] origin-top blur-[10px]"
+          className="pointer-events-none mt-[-6px] h-[32px] w-[60%] origin-top"
           style={{
             background: isDark
               ? "radial-gradient(ellipse at center, rgba(0,0,0,0.8), transparent 70%)"
