@@ -235,7 +235,7 @@ export const JourneySequence = forwardRef<
       <div
         ref={textContainerRef}
         id="journey-text-container"
-        className="gsap-element absolute top-52 md:top-44 z-10 flex flex-col items-center gap-4 text-center md:gap-6"
+        className="gsap-element absolute top-40 md:top-44 z-10 flex flex-col items-center gap-4 text-center md:gap-6"
         style={{ willChange: "transform" }}
       >
         <span className="font-sans text-[9px] font-medium tracking-[0.55em] text-muted uppercase md:text-xs">
