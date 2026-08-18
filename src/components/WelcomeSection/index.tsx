@@ -30,7 +30,7 @@ export const WelcomeSection = () => {
       scrollTrigger: {
         trigger: container,
         start: "top top",
-        end: "+=100%",
+        end: isMobile ? "+=50%" : "+=100%",
         scrub: isMobile ? 2.5 : 1.5,
         pin: true,
         pinSpacing: true, // pakai true agar tidak ada layout-jump ke section berikutnya
