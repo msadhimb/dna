@@ -1,78 +1,64 @@
-import React, { useEffect, useRef } from "react"
-import { gsap } from "gsap"
-import { ScrollTrigger } from "gsap/ScrollTrigger"
+"use client"
+import React, { useRef, useImperativeHandle, forwardRef } from "react"
+import gsap from "gsap"
 
-if (typeof window !== "undefined") {
-  gsap.registerPlugin(ScrollTrigger)
+export interface WelcomeSectionRef {
+  getTimeline: () => gsap.core.Timeline
 }
 
-export const WelcomeSection = () => {
+export const WelcomeSection = forwardRef<WelcomeSectionRef>((_, ref) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const textRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-    const container = containerRef.current
-    const text = textRef.current
+  useImperativeHandle(ref, () => ({
+    getTimeline: () => {
+      const tl = gsap.timeline()
+      if (!containerRef.current || !textRef.current) return tl
 
-    if (!container || !text) return
+      // Set awal: full visible
+      gsap.set(containerRef.current, {
+        transformOrigin: "top center",
+        scaleY: 1,
+        force3D: true,
+      })
+      gsap.set(textRef.current, { y: 0, opacity: 1, force3D: true })
 
-    const isMobile = window.innerWidth < 768
-
-    // Gunakan transform-based exit (GPU composited) bukan clipPath
-    // clipPath menyebabkan repaint per-frame di mobile → jank
-    // scaleY + transformOrigin adalah compositor-only → smooth
-    gsap.set(container, {
-      transformOrigin: "top center",
-      force3D: true,
-    })
-
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: container,
-        start: "top top",
-        end: isMobile ? "+=50%" : "+=100%",
-        scrub: isMobile ? 2.5 : 1.5,
-        pin: true,
-        pinSpacing: true,
-        anticipatePin: 1, // Cegah pin jump saat masuk ke section berikutnya
-        invalidateOnRefresh: true,
-      },
-    })
-
-    // 1. Text fade out + slide up
-    tl.to(text, {
-      y: -60,
-      opacity: 0,
-      duration: 0.4,
-      ease: "none",
-      force3D: true,
-    })
-    // 2. Container wipe up via scaleY (GPU composited)
-    tl.to(
-      container,
-      {
-        scaleY: 0,
-        duration: 0.6,
+      // 1. Text fade out + slide up (GPU composited)
+      tl.to(textRef.current, {
+        y: -60,
+        opacity: 0,
+        duration: 0.4,
         ease: "none",
         force3D: true,
-      },
-      "-=0.1"
-    )
+      })
 
-    return () => {
-      tl.kill()
-    }
-  }, [])
+      // 2. Container wipe ke atas via scaleY (compositor-only, zero repaint)
+      tl.to(
+        containerRef.current,
+        {
+          scaleY: 0,
+          duration: 0.6,
+          ease: "none",
+          force3D: true,
+        },
+        "-=0.1"
+      )
+
+      return tl
+    },
+  }))
 
   return (
-    <section
+    // Absolute overlay di dalam master-trigger — tidak ada pin terpisah,
+    // tidak ada handoff antara dua ScrollTrigger = tidak ada hero glitch
+    <div
       ref={containerRef}
-      className="gsap-element relative z-10 flex h-screen w-full flex-col items-center justify-center overflow-hidden bg-background"
+      className="absolute inset-0 z-50 flex h-full w-full flex-col items-center justify-center overflow-hidden bg-background"
       style={{ willChange: "transform", transformOrigin: "top center" }}
     >
       <div
         ref={textRef}
-        className="gsap-element flex w-full max-w-screen-lg flex-col items-center justify-center px-4 text-center"
+        className="flex w-full max-w-screen-lg flex-col items-center justify-center px-4 text-center"
         style={{ willChange: "transform, opacity" }}
       >
         <h1 className="mb-4 font-serif text-5xl font-bold tracking-widest text-foreground md:text-7xl">
@@ -82,6 +68,8 @@ export const WelcomeSection = () => {
           To Our Wedding
         </p>
       </div>
-    </section>
+    </div>
   )
-}
+})
+
+WelcomeSection.displayName = "WelcomeSection"

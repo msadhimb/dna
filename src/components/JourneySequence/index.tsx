@@ -62,7 +62,7 @@ export const JourneySequence = forwardRef<
           height: dist("42vh", "60vh"),
           duration: 1,
           y: isMobile ? 0 : 100,
-          ease: "power1.inOut",
+          ease: "none",
         })
 
         tl.to(
@@ -70,7 +70,7 @@ export const JourneySequence = forwardRef<
           {
             x: dist("-5vw", "-12vw"),
             duration: 1,
-            ease: "power2.inOut",
+            ease: "none",
           },
           "journeySplit"
         ).to(
@@ -78,7 +78,7 @@ export const JourneySequence = forwardRef<
           {
             x: dist("5vw", "12vw"),
             duration: 1,
-            ease: "power2.inOut",
+            ease: "none",
           },
           "journeySplit"
         )
@@ -93,7 +93,7 @@ export const JourneySequence = forwardRef<
             x: theme === "dark" ? 0 : dist("-30vw", "0"),
             y: dist("0", "110"),
             duration: 1,
-            ease: "power2.inOut",
+            ease: "none",
           },
           "up"
         )
@@ -102,7 +102,7 @@ export const JourneySequence = forwardRef<
             {
               x: dist("-5vw", "-25vw"),
               duration: 1,
-              ease: "power2.inOut",
+              ease: "none",
             },
             "up"
           )
@@ -111,7 +111,7 @@ export const JourneySequence = forwardRef<
             {
               x: dist("5vw", "25vw"),
               duration: 1,
-              ease: "power2.inOut",
+              ease: "none",
             },
             "up"
           )
@@ -120,7 +120,7 @@ export const JourneySequence = forwardRef<
             {
               y: dist("-190", "-180"),
               duration: 1,
-              ease: "power2.inOut",
+              ease: "none",
             },
             "up"
           )
@@ -131,7 +131,7 @@ export const JourneySequence = forwardRef<
             y: 0,
             borderRadius: "0px",
             duration: 1,
-            ease: "power2.inOut",
+            ease: "none",
           },
           "gone"
         ).to(
@@ -139,7 +139,7 @@ export const JourneySequence = forwardRef<
           {
             y: -300,
             duration: 1,
-            ease: "power2.inOut",
+            ease: "none",
           },
           "gone"
         )
@@ -155,7 +155,7 @@ export const JourneySequence = forwardRef<
                 : dist("-55vw", "-50vw"),
             y: theme === "dark" ? dist("-15vh", "20vh") : dist("20vh", "50vh"),
             duration: 1.5,
-            ease: "power1.inOut",
+            ease: "none",
           },
           "zoomGroom"
         ).to(
@@ -163,7 +163,7 @@ export const JourneySequence = forwardRef<
           {
             opacity: 1,
             duration: 1,
-            ease: "power2.out",
+            ease: "none",
           },
           "zoomGroom+=0.5"
         )
@@ -173,7 +173,7 @@ export const JourneySequence = forwardRef<
           {
             opacity: 0,
             duration: 0.8,
-            ease: "power2.in",
+            ease: "none",
           },
           "zoomOut"
         ).to(
@@ -183,7 +183,7 @@ export const JourneySequence = forwardRef<
             x: "0vw",
             y: "0vh",
             duration: 1.5,
-            ease: "power1.inOut",
+            ease: "none",
           },
           "zoomOut"
         )
@@ -195,7 +195,7 @@ export const JourneySequence = forwardRef<
             x: theme === "dark" ? dist("35vw", "25vw") : dist("30vw", "20vw"),
             y: theme === "dark" ? dist("-15vh", "5vh") : dist("20vh", "40vh"),
             duration: 1.5,
-            ease: "power1.inOut",
+            ease: "none",
           },
           "zoomBride"
         ).to(
@@ -203,7 +203,7 @@ export const JourneySequence = forwardRef<
           {
             opacity: 1,
             duration: 1,
-            ease: "power2.out",
+            ease: "none",
           },
           "zoomBride+=0.5"
         )
@@ -213,13 +213,13 @@ export const JourneySequence = forwardRef<
         tl.to(brideBioRef.current, {
           opacity: 0,
           duration: 0.5,
-          ease: "power2.in",
+          ease: "none",
         }).to(journeyImgElement, {
           x: "0vw",
           y: "0vh",
           scale: 1,
           duration: 1.5,
-          ease: "power1.inOut",
+          ease: "none",
         })
 
         tl.to({}, { duration: 1 })

@@ -142,16 +142,16 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
             scale: 1,
             y: 0,
             duration: 2,
-            ease: "expo.out",
+            ease: "none",
           })
             .to(
               shadowRef.current,
-              { opacity: 0.5, scaleX: 1, duration: 1.6, ease: "power2.out" },
+              { opacity: 0.5, scaleX: 1, duration: 1.6, ease: "none" },
               "<"
             )
             .to(
               ribbonRef.current,
-              { y: 24, opacity: 0, duration: 0.5, ease: "back.in(2)" },
+              { y: 24, opacity: 0, duration: 0.5, ease: "none" },
               "-=0.5"
             )
             .to({}, { duration: 0.4 })
@@ -165,11 +165,11 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
               scale: 1.05,
               x: "50%",
               duration: 1.2,
-              ease: "power1.inOut",
+              ease: "none",
             })
               .to(
                 coverRef.current,
-                { rotateY: -180, duration: 1.2, ease: "power2.inOut" },
+                { rotateY: -180, duration: 1.2, ease: "none" },
                 "<"
               )
               .to(
@@ -186,7 +186,7 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
                   z: 50,
                   scale: 1,
                   duration: 0.8,
-                  ease: "power2.out",
+                  ease: "none",
                 },
                 "-=0.4"
               )
@@ -198,11 +198,11 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
               z: 200,
               x: "10%",
               duration: 1,
-              ease: "power1.inOut",
+              ease: "none",
             })
               .to(
                 coverRef.current,
-                { rotateY: -180, duration: 1, ease: "power2.inOut" },
+                { rotateY: -180, duration: 1, ease: "none" },
                 "<"
               )
               .to(
@@ -219,7 +219,7 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
                   z: 100, // Zoom in on Date (Page 1 Front)
                   x: "0%",
                   duration: 0.8,
-                  ease: "power2.out",
+                  ease: "none",
                 },
                 "-=0.2"
               )
@@ -230,11 +230,11 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
                 z: 250, // Zoom closer during second flip
                 x: "15%",
                 duration: 1,
-                ease: "power1.inOut",
+                ease: "none",
               })
               .to(
                 page1Ref.current,
-                { rotateY: -180, duration: 1, ease: "power2.inOut" },
+                { rotateY: -180, duration: 1, ease: "none" },
                 "<"
               )
               .to(
@@ -251,7 +251,7 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
                   z: 120, // Zoom in on Map (Page 2)
                   x: "0%",
                   duration: 0.8,
-                  ease: "power2.out",
+                  ease: "none",
                 },
                 "-=0.2"
               )

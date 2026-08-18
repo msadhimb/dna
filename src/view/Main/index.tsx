@@ -12,7 +12,7 @@ import JourneySequence, {
   JourneySequenceRef,
 } from "@/components/JourneySequence"
 import BookFlip, { BookFlipRef } from "@/components/BookFlip"
-import { WelcomeSection } from "../../components/WelcomeSection"
+import { WelcomeSection, WelcomeSectionRef } from "../../components/WelcomeSection"
 import { LoadingScreen } from "@/components/LoadingScreen"
 import RomanticQuote from "@/components/RomanticQuote"
 import DigitalGift from "@/components/DigitalGift"
@@ -43,6 +43,7 @@ const MainView = () => {
   const theme = resolvedTheme === "dark" ? "dark" : "light"
 
   const mainRef = useRef<HTMLElement>(null)
+  const welcomeRef = useRef<WelcomeSectionRef>(null)
   const curtainRef = useRef<CurtainTransitionRef>(null)
   const journeyRef = useRef<JourneySequenceRef>(null)
   const bookFlipRef = useRef<BookFlipRef>(null)
@@ -165,6 +166,7 @@ const MainView = () => {
         !masterTrigger ||
         !journeyWrapper ||
         !bookFlipWrapper ||
+        !welcomeRef.current ||
         !curtainRef.current ||
         !journeyRef.current ||
         !bookFlipRef.current ||
@@ -191,11 +193,17 @@ const MainView = () => {
       const journeyTl = journeyRef.current.getTimeline()
       const bookFlipTl = bookFlipRef.current.getTimeline()
 
+      // Welcome exit timeline — dijalankan pertama sebelum curtain
+      // WelcomeSection ada di dalam master-trigger sebagai overlay z-50
+      const welcomeTl = welcomeRef.current.getTimeline()
+
+      const wDur = welcomeTl.totalDuration() || 1
       const cDur = curtainTl.totalDuration() || 1
       const jDur = journeyTl.totalDuration() || 1
       const bDur = bookFlipTl.totalDuration() || 1
+      // 500% adalah base scroll distance; welcome menambah proporsi ekstra
       const totalScrollHeight =
-        ((cDur + jDur + bDur) / (cDur + jDur + bDur)) * 500
+        ((wDur + cDur + jDur + bDur) / (cDur + jDur + bDur)) * 500
 
       const curtainWrapper = gsap.timeline()
       curtainWrapper.add(curtainTl)
@@ -237,11 +245,13 @@ const MainView = () => {
           pin: true,
           pinSpacing: true,
           scrub: isMobileSetup ? 2.5 : 1.5,
-          anticipatePin: 1, // Cegah pin jump: GSAP mulai hitung posisi sebelum trigger
+          anticipatePin: 1,
           invalidateOnRefresh: true,
         },
       })
 
+      // Welcome exit → curtain → journey → bookflip (satu master pin, zero handoff)
+      masterTl.add(welcomeTl)
       masterTl.add(curtainWrapper)
       masterTl.add(journeyWrapperTl)
       masterTl.add(bookFlipWrapperTl)
@@ -344,8 +354,6 @@ const MainView = () => {
       <Tools />
       {!isLoaded && <LoadingScreen onComplete={() => setIsLoaded(true)} />}
 
-      <WelcomeSection />
-
       <section
         id="master-trigger"
         className="gsap-element relative h-screen w-full overflow-hidden bg-background"
@@ -354,6 +362,10 @@ const MainView = () => {
         <div className="absolute inset-0 z-0">
           <HeroSection />
         </div>
+
+        {/* WelcomeSection sebagai absolute overlay z-50 di dalam master-trigger
+            — tidak ada pin terpisah, sehingga tidak ada pin-handoff glitch */}
+        <WelcomeSection ref={welcomeRef} />
 
         <div className="pointer-events-none absolute inset-0 z-30">
           <CurtainTransition ref={curtainRef} frames={frames} />
