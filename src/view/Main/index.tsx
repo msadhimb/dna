@@ -172,8 +172,20 @@ const MainView = () => {
       )
         return
 
-      gsap.set(journeyWrapper, { opacity: 0 })
-      gsap.set(bookFlipWrapper, { opacity: 0, y: "100%" })
+      const isMobileSetup = window.innerWidth < 768
+
+      // Promote kedua wrapper ke GPU compositor layer sejak awal
+      gsap.set(journeyWrapper, {
+        opacity: 0,
+        force3D: true,
+        willChange: "transform, opacity",
+      })
+      gsap.set(bookFlipWrapper, {
+        opacity: 0,
+        y: "100%",
+        force3D: true,
+        willChange: "transform, opacity",
+      })
 
       const curtainTl = curtainRef.current.getTimeline()
       const journeyTl = journeyRef.current.getTimeline()
@@ -195,14 +207,19 @@ const MainView = () => {
 
       journeyTlRef.current = journeyWrapperTl
 
+      // Di mobile, gunakan durasi lebih panjang agar animasi tidak terasa
+      // patah saat scrub lag (scrub: 2 = 2 detik untuk menyesuaikan)
+      const transitionDuration = isMobileSetup ? 1.2 : 0.6
+
       const bookFlipWrapperTl = gsap.timeline()
       bookFlipWrapperTl.to(
         [journeyWrapper, bookFlipWrapper],
         {
           y: (i) => (i === 0 ? "-100%" : "0%"),
           opacity: 1,
-          duration: 0.6,
-          ease: "power2.inOut",
+          duration: transitionDuration,
+          ease: "none", // linear lebih smooth untuk scrub vs power2
+          force3D: true,
         },
         "<"
       )
@@ -212,7 +229,6 @@ const MainView = () => {
 
       // Scrub lebih tinggi = animasi lebih smooth mengikuti scroll (mengurangi jank)
       // Hindari scrub < 1 karena akan terasa patah saat scroll cepat
-      const isMobile = window.innerWidth < 768
       const masterTl = gsap.timeline({
         scrollTrigger: {
           trigger: masterTrigger,
@@ -220,7 +236,7 @@ const MainView = () => {
           end: `+=${totalScrollHeight}%`,
           pin: true,
           pinSpacing: true,
-          scrub: isMobile ? 2 : 1.5,
+          scrub: isMobileSetup ? 2.5 : 1.5,
           invalidateOnRefresh: true,
         },
       })
@@ -295,13 +311,15 @@ const MainView = () => {
       coWrapper.progress(savedCoProgress, true)
     }
 
+    const isMobileTheme = window.innerWidth < 768
     bWrapper.to(
       [journeyWrap, bookFlipWrap],
       {
         y: (i) => (i === 0 ? "-100%" : "0%"),
         opacity: 1,
-        duration: 0.6,
-        ease: "power2.inOut",
+        duration: isMobileTheme ? 1.2 : 0.6,
+        ease: "none", // linear = konsisten dengan setup utama (scrub-friendly)
+        force3D: true,
       },
       "<"
     )
@@ -330,6 +348,7 @@ const MainView = () => {
       <section
         id="master-trigger"
         className="gsap-element relative h-screen w-full overflow-hidden bg-background"
+        style={{ willChange: "transform" }}
       >
         <div className="absolute inset-0 z-0">
           <HeroSection />

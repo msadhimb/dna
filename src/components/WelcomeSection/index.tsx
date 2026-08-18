@@ -16,24 +16,46 @@ export const WelcomeSection = () => {
 
     if (!container || !text) return
 
+    const isMobile = window.innerWidth < 768
+
+    // Gunakan transform-based exit (GPU composited) bukan clipPath
+    // clipPath menyebabkan repaint per-frame di mobile → jank
+    // scaleY + transformOrigin adalah compositor-only → smooth
+    gsap.set(container, {
+      transformOrigin: "top center",
+      force3D: true,
+    })
+
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: container,
         start: "top top",
-        end: "+=120%", // Slightly longer for a smoother transition
-        scrub: 1.5,
+        end: "+=100%",
+        scrub: isMobile ? 2.5 : 1.5,
         pin: true,
-        pinSpacing: false,
+        pinSpacing: true, // pakai true agar tidak ada layout-jump ke section berikutnya
+        invalidateOnRefresh: true,
       },
     })
 
-    tl.to(text, { y: -100, opacity: 0, duration: 0.5, ease: "power2.in" })
-
-    tl.fromTo(
+    // 1. Text fade out + slide up
+    tl.to(text, {
+      y: -60,
+      opacity: 0,
+      duration: 0.4,
+      ease: "none",
+      force3D: true,
+    })
+    // 2. Container wipe up via scaleY (GPU composited)
+    tl.to(
       container,
-      { clipPath: "inset(0% 0% 0% 0%)" },
-      { clipPath: "inset(0% 0% 100% 0%)", duration: 0.8, ease: "power2.inOut" },
-      "-=0.3" // Starts wiping while text is finishing its fade
+      {
+        scaleY: 0,
+        duration: 0.6,
+        ease: "none",
+        force3D: true,
+      },
+      "-=0.1"
     )
 
     return () => {
@@ -44,12 +66,13 @@ export const WelcomeSection = () => {
   return (
     <section
       ref={containerRef}
-      className="gsap-element relative z-10 flex h-screen w-full flex-col items-center justify-center overflow-hidden bg-background will-change-transform"
-      style={{ willChange: "transform, clip-path" }}
+      className="gsap-element relative z-10 flex h-screen w-full flex-col items-center justify-center overflow-hidden bg-background"
+      style={{ willChange: "transform", transformOrigin: "top center" }}
     >
       <div
         ref={textRef}
-        className="gsap-element flex w-full max-w-screen-lg flex-col items-center justify-center px-4 text-center will-change-transform"
+        className="gsap-element flex w-full max-w-screen-lg flex-col items-center justify-center px-4 text-center"
+        style={{ willChange: "transform, opacity" }}
       >
         <h1 className="mb-4 font-serif text-5xl font-bold tracking-widest text-foreground md:text-7xl">
           Welcome
