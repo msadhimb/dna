@@ -237,6 +237,7 @@ const MainView = () => {
           pin: true,
           pinSpacing: true,
           scrub: isMobileSetup ? 2.5 : 1.5,
+          anticipatePin: 1, // Cegah pin jump: GSAP mulai hitung posisi sebelum trigger
           invalidateOnRefresh: true,
         },
       })

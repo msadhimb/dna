@@ -33,7 +33,8 @@ export const WelcomeSection = () => {
         end: isMobile ? "+=50%" : "+=100%",
         scrub: isMobile ? 2.5 : 1.5,
         pin: true,
-        pinSpacing: true, // pakai true agar tidak ada layout-jump ke section berikutnya
+        pinSpacing: true,
+        anticipatePin: 1, // Cegah pin jump saat masuk ke section berikutnya
         invalidateOnRefresh: true,
       },
     })
