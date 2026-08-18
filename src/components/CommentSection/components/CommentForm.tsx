@@ -1,3 +1,4 @@
+import { useEffect } from "react"
 import { useForm, FormProvider, Controller } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
@@ -19,9 +20,10 @@ interface CommentFormProps {
   textPrimary: string
   isDark: boolean
   surface: string
-  onSubmit: (data: FormValues) => void
+  onSubmit: (data: FormValues) => Promise<void>
   isSubmitting: boolean
   submitted: boolean
+  guestName?: string
 }
 
 const schema = yup.object({
@@ -43,14 +45,19 @@ export function CommentForm({
   onSubmit,
   isSubmitting,
   submitted,
+  guestName,
 }: CommentFormProps) {
   const methods = useForm<FormValues>({
     resolver: yupResolver(schema),
-    defaultValues: { name: "", message: "", attendance: "hadir" },
+    defaultValues: { name: guestName ?? "", message: "", attendance: "hadir" },
   })
 
-  const handleSubmit = methods.handleSubmit((data) => {
-    onSubmit(data)
+  useEffect(() => {
+    if (guestName) methods.setValue("name", guestName)
+  }, [guestName, methods])
+
+  const handleSubmit = methods.handleSubmit(async (data) => {
+    await onSubmit(data)
     methods.reset()
   })
 

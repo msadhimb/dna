@@ -1,5 +1,5 @@
-import MainView from "@/view/Main"
+import NotFound from "./not-found"
 
 export default function Page() {
-  return <MainView />
+  return <NotFound />
 }

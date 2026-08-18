@@ -6,7 +6,10 @@ export interface WelcomeSectionRef {
   getTimeline: () => gsap.core.Timeline
 }
 
-export const WelcomeSection = forwardRef<WelcomeSectionRef>((_, ref) => {
+export const WelcomeSection = forwardRef<
+  WelcomeSectionRef,
+  { guestName?: string }
+>(({ guestName }, ref) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const textRef = useRef<HTMLDivElement>(null)
 
@@ -61,11 +64,14 @@ export const WelcomeSection = forwardRef<WelcomeSectionRef>((_, ref) => {
         className="flex w-full max-w-screen-lg flex-col items-center justify-center px-4 text-center"
         style={{ willChange: "transform, opacity" }}
       >
-        <h1 className="mb-4 font-serif text-5xl font-bold tracking-widest text-foreground md:text-7xl">
-          Welcome
+        <p className="mb-5 font-serif text-[10px] font-semibold tracking-[0.55em] text-foreground/55 uppercase md:text-xs">
+          {guestName ? "Kepada Tamu Kehormatan" : "You Are Invited"}
+        </p>
+        <h1 className="mb-5 max-w-[90vw] break-words font-serif text-4xl leading-tight font-semibold tracking-[0.03em] text-foreground md:max-w-4xl md:text-6xl">
+          {guestName ? `Selamat Datang, ${guestName}` : "Welcome"}
         </h1>
-        <p className="text-lg font-light tracking-[0.2em] text-foreground/70 uppercase md:text-xl">
-          To Our Wedding
+        <p className="font-serif text-base font-medium tracking-[0.28em] text-foreground/65 uppercase md:text-xl md:tracking-[0.38em]">
+          {guestName ? "Di Pernikahan Kami" : "To Our Wedding"}
         </p>
       </div>
     </div>

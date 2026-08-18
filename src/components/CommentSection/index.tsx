@@ -18,6 +18,9 @@ import {
   CounterBadge,
 } from "./components"
 import { useImageUrl } from "@/store/useImageUrl"
+import { useComments } from "@/hooks/useComments"
+import { useToast } from "@/hooks/use-toast"
+import type { Attendance } from "@/types/comment"
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -25,7 +28,7 @@ interface Comment {
   id: string
   name: string
   message: string
-  attendance: "hadir" | "tidak_hadir" | "ragu"
+  attendance: Attendance
   date: string
 }
 
@@ -67,7 +70,10 @@ export interface CommentSectionRef {
   getTimeline: () => gsap.core.Timeline
 }
 
-export const CommentSection = forwardRef<CommentSectionRef>((_, ref) => {
+export const CommentSection = forwardRef<
+  CommentSectionRef,
+  { guestId?: string; guestName?: string }
+>(({ guestId, guestName }, ref) => {
   const { resolvedTheme } = useTheme()
   const { imageUrl } = useImageUrl()
   const isDark = resolvedTheme === "dark"
@@ -81,9 +87,26 @@ export const CommentSection = forwardRef<CommentSectionRef>((_, ref) => {
   const contentRef = useRef<HTMLDivElement>(null)
   const floatSTs = useRef<ScrollTrigger[]>([])
 
-  const [comments, setComments] = useState<Comment[]>(DUMMY_COMMENTS)
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const {
+    data: remoteComments = [],
+    createComment,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = useComments(guestId)
+  const { toast } = useToast()
   const [submitted, setSubmitted] = useState(false)
+  const comments: Comment[] = remoteComments.map((comment) => ({
+    id: comment.id,
+    name: comment.name,
+    message: comment.comment,
+    attendance: comment.attendance,
+    date: new Intl.DateTimeFormat("id-ID", {
+      dateStyle: "medium",
+      timeStyle: "short",
+    }).format(new Date(comment.created_at)),
+  }))
+  const isSubmitting = createComment.isPending
 
   const accent = isDark ? "#FF2D55" : "#16A34A"
   const dot = isDark ? "rgba(255,45,85,0.06)" : "rgba(212,175,55,0.06)"
@@ -281,21 +304,40 @@ export const CommentSection = forwardRef<CommentSectionRef>((_, ref) => {
       )
   }, [isDark])
 
-  const handleFormSubmit = (data: {
+  const handleFormSubmit = async (data: {
     name: string
     message: string
-    attendance: "hadir" | "tidak_hadir" | "ragu"
+    attendance: Attendance
   }) => {
-    setIsSubmitting(true)
-    setTimeout(() => {
-      setComments([
-        { id: Date.now().toString(), ...data, date: "Baru saja" },
-        ...comments,
-      ])
-      setIsSubmitting(false)
+    if (!guestId) return
+
+    const loadingToast = toast({
+      title: "Mengirim ucapan...",
+      description: "Mohon tunggu sebentar.",
+    })
+
+    try {
+      await createComment.mutateAsync({
+        name: data.name,
+        comment: data.message,
+        attendance: data.attendance,
+      })
+      loadingToast.dismiss()
+      toast({
+        title: "Ucapan terkirim",
+        description: "Terima kasih atas doa dan harapannya.",
+      })
       setSubmitted(true)
       setTimeout(() => setSubmitted(false), 3000)
-    }, 700)
+    } catch (submitError) {
+      loadingToast.dismiss()
+      toast({
+        title: "Ucapan gagal dikirim",
+        description:
+          submitError instanceof Error ? submitError.message : "Silakan coba lagi.",
+      })
+      throw submitError
+    }
   }
 
   return (
@@ -355,6 +397,7 @@ export const CommentSection = forwardRef<CommentSectionRef>((_, ref) => {
           onSubmit={handleFormSubmit}
           isSubmitting={isSubmitting}
           submitted={submitted}
+          guestName={guestName}
         />
 
         <CounterBadge
@@ -370,6 +413,9 @@ export const CommentSection = forwardRef<CommentSectionRef>((_, ref) => {
           textPrimary={textPrimary}
           textSecondary={textSecondary}
           textMuted={textMuted}
+          hasMore={Boolean(hasNextPage)}
+          isLoadingMore={isFetchingNextPage}
+          onLoadMore={() => fetchNextPage()}
         />
       </div>
     </section>

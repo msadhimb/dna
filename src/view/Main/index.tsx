@@ -12,7 +12,10 @@ import JourneySequence, {
   JourneySequenceRef,
 } from "@/components/JourneySequence"
 import BookFlip, { BookFlipRef } from "@/components/BookFlip"
-import { WelcomeSection, WelcomeSectionRef } from "../../components/WelcomeSection"
+import {
+  WelcomeSection,
+  WelcomeSectionRef,
+} from "../../components/WelcomeSection"
 import { LoadingScreen } from "@/components/LoadingScreen"
 import RomanticQuote from "@/components/RomanticQuote"
 import DigitalGift from "@/components/DigitalGift"
@@ -33,7 +36,13 @@ if (typeof window !== "undefined") {
   })
 }
 
-const MainView = () => {
+const MainView = ({
+  guestId,
+  guestName,
+}: {
+  guestId?: string
+  guestName?: string
+}) => {
   const { resolvedTheme } = useTheme()
   const { imageUrl } = useImageUrl()
 
@@ -365,7 +374,7 @@ const MainView = () => {
 
         {/* WelcomeSection sebagai absolute overlay z-50 di dalam master-trigger
             — tidak ada pin terpisah, sehingga tidak ada pin-handoff glitch */}
-        <WelcomeSection ref={welcomeRef} />
+        <WelcomeSection ref={welcomeRef} guestName={guestName} />
 
         <div className="pointer-events-none absolute inset-0 z-30">
           <CurtainTransition ref={curtainRef} frames={frames} />
@@ -392,7 +401,11 @@ const MainView = () => {
       </section>
       <div className="flex flex-col gap-36">
         <RomanticQuote />
-        <CommentSection ref={commentRef} />
+        <CommentSection
+        ref={commentRef}
+        guestId={guestId}
+        guestName={guestName}
+      />
         <DigitalGift />
         <Footer />
       </div>
