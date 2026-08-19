@@ -1,10 +1,10 @@
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
 import { Field, FieldGroup } from "@/components/ui/field"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { FormInput } from "@/components/Form/FormInput"
 import { createClient } from "@/utils/supabase/client"
+import { Button } from "@/components/Button"
 
 const Login = ({ className, ...props }: React.ComponentProps<"form">) => {
   const router = useRouter()

@@ -30,7 +30,7 @@ export function NavMain({
                 tooltip={item.title}
                 className={`${
                   pathname === item.url
-                    ? "bg-primary text-white hover:bg-primary/90 hover:text-white"
+                    ? "bg-primary text-muted dark:text-white hover:bg-primary/90 hover:text-muted hover:dark:text-white"
                     : "data-active:bg-transparent data-active:text-sidebar-foreground/70"
                 }`}
                 isActive={false}

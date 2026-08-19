@@ -22,7 +22,7 @@ const CommentListView = () => {
       header: "Nama Tamu",
       accessorFn: (row) => row.guest?.full_name || "-",
       cell: ({ row }) => (
-        <span className="font-semibold text-white">
+        <span className="font-semibold text-muted dark:text-white">
           {row.original.name || "-"}
         </span>
       ),
