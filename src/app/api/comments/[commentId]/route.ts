@@ -49,7 +49,9 @@ export async function PATCH(
 ) {
   const { commentId } = await params
   const guestId = request.nextUrl.searchParams.get("guest_id")
-  if (!guestId) return error("guest_id wajib diisi")
+  const client = createClient(await cookies())
+  const { data: claims } = await client.auth.getClaims()
+  if (!guestId && !claims?.claims) return error("guest_id wajib diisi", 401)
 
   const body = await request.json().catch(() => null)
   const updates: Record<string, string> = {}
@@ -71,12 +73,12 @@ export async function PATCH(
   }
   if (!Object.keys(updates).length) return error("Tidak ada data untuk diubah")
 
-  const client = createClient(await cookies())
-  const { data, error: dbError } = await client
+  let updateQuery = client
     .from("comments")
     .update(updates)
     .eq("id", commentId)
-    .eq("guest_id", guestId)
+  if (guestId) updateQuery = updateQuery.eq("guest_id", guestId)
+  const { data, error: dbError } = await updateQuery
     .select("id, guest_id, name, comment, attendance, created_at, updated_at")
     .maybeSingle()
 
@@ -91,14 +93,15 @@ export async function DELETE(
 ) {
   const { commentId } = await params
   const guestId = request.nextUrl.searchParams.get("guest_id")
-  if (!guestId) return error("guest_id wajib diisi")
-
   const client = createClient(await cookies())
-  const query = client
+  const { data: claims } = await client.auth.getClaims()
+  if (!guestId && !claims?.claims) return error("guest_id wajib diisi", 401)
+
+  let query = client
     .from("comments")
     .delete()
     .eq("id", commentId)
-    .eq("guest_id", guestId)
+  if (guestId) query = query.eq("guest_id", guestId)
   const { error: dbError } = await query
 
   if (dbError) return error(dbError.message, 500)

@@ -5,7 +5,6 @@ import {
 } from "@tanstack/react-query"
 import type { Comment, CommentInput } from "@/types/comment"
 
-const commentsKey = ["comments", "all"] as const
 const PAGE_SIZE = 10
 
 async function request<T>(url: string, options?: RequestInit): Promise<T> {
@@ -21,12 +20,16 @@ async function request<T>(url: string, options?: RequestInit): Promise<T> {
 
 export function useComments(guestId: string | undefined) {
   const queryClient = useQueryClient()
+  const commentsKey = ["comments", guestId] as const
 
   const comments = useInfiniteQuery<Comment[]>({
     queryKey: commentsKey,
+    enabled: Boolean(guestId),
     initialPageParam: 0,
     queryFn: ({ pageParam }) =>
-      request(`/api/comments?limit=${PAGE_SIZE}&offset=${pageParam}`),
+      request(
+        `/api/comments?guest_id=${encodeURIComponent(guestId ?? "")}&limit=${PAGE_SIZE}&offset=${pageParam}`
+      ),
     getNextPageParam: (lastPage, allPages) =>
       lastPage.length === PAGE_SIZE ? allPages.length * PAGE_SIZE : undefined,
   })

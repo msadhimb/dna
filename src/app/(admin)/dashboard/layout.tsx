@@ -1,12 +1,19 @@
 import { SiteHeader } from "@/components/site-header"
+import { createClient } from "@/utils/supabase/server"
+import { cookies } from "next/headers"
+import { redirect } from "next/navigation"
 import { AppSidebar } from "@/components/ui/app-sidebar"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const supabase = createClient(await cookies())
+  const { data } = await supabase.auth.getClaims()
+  if (!data?.claims) redirect("/login")
+
   return (
     <div className="font-manrope">
       <SidebarProvider

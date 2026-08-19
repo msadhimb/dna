@@ -1,8 +1,5 @@
-export default function DashboardPage() {
-  return (
-    <div>
-      <h1 className="text-2xl font-bold">Dashboard</h1>
-      <p className="text-muted-foreground mt-2">Selamat datang di halaman dashboard.</p>
-    </div>
-  )
+import LinkGeneratorForm from "@/view/Admin/LinkGeneartor"
+
+export default function LinkGeneratorPage() {
+  return <LinkGeneratorForm />
 }

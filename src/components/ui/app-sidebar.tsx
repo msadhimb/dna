@@ -51,7 +51,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <div className="font-serif text-white text-4xl text-center text-balance w-full py-5 border-b border-white/25">
-              I & A
+              D & A
             </div>
           </SidebarMenuItem>
         </SidebarMenu>

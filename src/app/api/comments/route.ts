@@ -20,6 +20,7 @@ async function supabase() {
 
 export async function GET(request: NextRequest) {
   const guestId = request.nextUrl.searchParams.get("guest_id")
+  const isAdminQuery = request.nextUrl.searchParams.has("page")
   const limit = Math.min(
     Math.max(Number(request.nextUrl.searchParams.get("limit") ?? "10"), 1),
     50
@@ -34,6 +35,41 @@ export async function GET(request: NextRequest) {
 
   if (guestId) query = query.eq("guest_id", guestId)
 
+  if (isAdminQuery) {
+    const { data: claims } = await client.auth.getClaims()
+    if (!claims?.claims) return error("Unauthorized", 401)
+    const page = Math.max(Number(request.nextUrl.searchParams.get("page") ?? "1"), 1)
+    const pageSize = Math.min(Math.max(Number(request.nextUrl.searchParams.get("pageSize") ?? "20"), 1), 100)
+    const search = request.nextUrl.searchParams.get("search")?.trim() ?? ""
+    const requestedSort = request.nextUrl.searchParams.get("sortBy") ?? "created_at"
+    const sortBy = ["created_at", "updated_at", "name", "comment", "attendance"].includes(requestedSort) ? requestedSort : "created_at"
+    const ascending = request.nextUrl.searchParams.get("sortDir") === "asc"
+    let adminQuery = client
+      .from("comments")
+      .select("id, guest_id, name, comment, attendance, created_at, updated_at", { count: "exact" })
+      .order(sortBy, { ascending })
+    if (search) adminQuery = adminQuery.or(`name.ilike.%${search}%,comment.ilike.%${search}%`)
+    const from = (page - 1) * pageSize
+    const { data, error: adminError, count } = await adminQuery.range(from, from + pageSize - 1)
+    if (adminError) return error(adminError.message, 500)
+
+    const guestIds = [...new Set((data ?? []).map((item) => item.guest_id).filter(Boolean))]
+    const guestsById = new Map<string, { id: string; full_name: string | null }>()
+    if (guestIds.length) {
+      const { data: guests, error: guestsError } = await client.from("guests").select("id, full_name").in("id", guestIds)
+      if (guestsError) return error(guestsError.message, 500)
+      guests?.forEach((guest) => guestsById.set(guest.id, guest))
+    }
+    const comments = (data ?? []).map((item) => ({
+      ...item,
+      guest: guestsById.get(item.guest_id) ?? null,
+      arrival_status: item.attendance === "attend" ? "attending" : item.attendance === "absence" ? "not_attending" : "maybe",
+    }))
+    const totalItems = count ?? 0
+    return NextResponse.json({ data: { comments }, pagination: { page, pageSize, totalItems, totalPages: Math.max(1, Math.ceil(totalItems / pageSize)) } })
+  }
+
+  if (!guestId) return error("guest_id wajib diisi")
   const { data, error: dbError } = await query
 
   if (dbError) return error(dbError.message, 500)

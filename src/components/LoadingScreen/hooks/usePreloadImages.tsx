@@ -19,14 +19,21 @@ const usePreloadImages = (
     onProgressRef.current = onProgress
   })
 
-  return useQuery<{ data: ImageData }>({
+  const query = useQuery<{ data: ImageData }>({
     queryKey: ["images", "pre-wed"],
+    retry: 1,
     queryFn: async () => {
       const res = await axios.get("/api/get-image")
-      const resIcon = await axios.get("/api/get-image?folder=image-icon")
+      let imageIcon: { link: string }[] = []
+      try {
+        const resIcon = await axios.get("/api/get-image?folder=image-icon")
+        imageIcon = resIcon.data?.data?.["image-icon"] ?? []
+      } catch {
+        // Icon images are optional; they must not block the invitation animation.
+      }
 
-      const { "image-icon": imageIcon } = resIcon.data.data
-      const { dark, light } = res.data.data
+      const dark = res.data?.data?.dark ?? []
+      const light = res.data?.data?.light ?? []
 
       const urls = [
         ...dark.map((img: { link: string }) => img.link),
@@ -45,6 +52,16 @@ const usePreloadImages = (
       return res.data
     },
   })
+
+  useEffect(() => {
+    if (query.isError && !hasStarted.current) {
+      hasStarted.current = true
+      setImageUrlRef.current({ dark: [], light: [], icon: [] })
+      onDoneRef.current()
+    }
+  }, [query.isError])
+
+  return query
 }
 
 export default usePreloadImages

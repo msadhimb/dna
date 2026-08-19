@@ -39,15 +39,19 @@ const HeroSection = () => {
           className="absolute inset-0 md:-translate-x-10 md:scale-125 dark:md:-translate-x-40"
           style={{ willChange: "transform" }}
         >
-          <Image
-            key={heroImage}
-            src={heroImage}
-            alt="Devi & Adhim"
-            fill
-            priority
-            className="object-cover object-[80%_70%] dark:object-[60%_0%]"
-            sizes="(max-width: 768px) 400vw, 220vw"
-          />
+          {heroImage ? (
+            <Image
+              key={heroImage}
+              src={heroImage}
+              alt="Devi & Adhim"
+              fill
+              priority
+              className="object-cover object-[80%_70%] dark:object-[60%_0%]"
+              sizes="(max-width: 768px) 400vw, 220vw"
+            />
+          ) : (
+            <div className="size-full bg-background" aria-hidden="true" />
+          )}
         </div>
         {/* Overlays */}
         <div className="absolute inset-0 bg-black/60" />
