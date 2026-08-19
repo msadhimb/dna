@@ -2,15 +2,18 @@
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import React, { useState } from "react"
-import { Toaster } from "@/components/ui/toaster"
 import { TooltipProvider } from "../ui/tooltip"
+import { Toaster } from "../ui/toaster"
+import { useTheme } from "next-themes"
 
 const ClientProviders = ({ children }: { children: React.ReactNode }) => {
   const [queryClient] = useState(() => new QueryClient())
+  const { resolvedTheme } = useTheme()
+  const theme = resolvedTheme === "dark" ? "dark" : "light"
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>{children}</TooltipProvider>
-      <Toaster />
+      <Toaster position="top-right" theme={theme} />
     </QueryClientProvider>
   )
 }

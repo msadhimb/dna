@@ -1,37 +1,45 @@
 "use client"
 
-import { X } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
+import { useTheme } from "next-themes"
+import { Toaster as Sonner, type ToasterProps } from "sonner"
+import {
+  CircleCheckIcon,
+  InfoIcon,
+  TriangleAlertIcon,
+  OctagonXIcon,
+  Loader2Icon,
+} from "lucide-react"
 
-export function Toaster() {
-  const { toasts, dismiss } = useToast()
+const Toaster = ({ ...props }: ToasterProps) => {
+  const { theme = "system" } = useTheme()
 
   return (
-    <div className="pointer-events-none fixed right-4 bottom-4 z-[100] flex w-[calc(100%-2rem)] max-w-sm flex-col gap-3">
-      {toasts.map((item) => (
-        <div
-          key={item.id}
-          role="status"
-          className="pointer-events-auto rounded-lg border border-border bg-background p-4 text-foreground shadow-lg"
-        >
-          <div className="flex items-start gap-3">
-            <div className="min-w-0 flex-1">
-              {item.title && <p className="text-sm font-semibold">{item.title}</p>}
-              {item.description && (
-                <p className="mt-1 text-sm text-muted-foreground">{item.description}</p>
-              )}
-            </div>
-            <button
-              type="button"
-              aria-label="Tutup notifikasi"
-              className="rounded p-1 text-muted-foreground hover:text-foreground"
-              onClick={() => dismiss(item.id)}
-            >
-              <X className="size-4" />
-            </button>
-          </div>
-        </div>
-      ))}
-    </div>
+    <Sonner
+      theme={theme as ToasterProps["theme"]}
+      className="toaster group"
+      icons={{
+        success: <CircleCheckIcon className="size-4" />,
+        info: <InfoIcon className="size-4" />,
+        warning: <TriangleAlertIcon className="size-4" />,
+        error: <OctagonXIcon className="size-4" />,
+        loading: <Loader2Icon className="size-4 animate-spin" />,
+      }}
+      style={
+        {
+          "--normal-bg": "var(--popover)",
+          "--normal-text": "var(--popover-foreground)",
+          "--normal-border": "var(--border)",
+          "--border-radius": "var(--radius)",
+        } as React.CSSProperties
+      }
+      toastOptions={{
+        classNames: {
+          toast: "cn-toast",
+        },
+      }}
+      {...props}
+    />
   )
 }
+
+export { Toaster }
