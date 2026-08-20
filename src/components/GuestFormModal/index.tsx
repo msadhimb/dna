@@ -13,6 +13,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
 import { FormInput } from "@/components/Form/FormInput"
 import { toast } from "sonner"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
@@ -117,11 +118,9 @@ const GuestFormModal = (props: GuestFormModalProps) => {
   useEffect(() => {
     if (isEdit && openState && "guest" in props) {
       form.reset({
-        guest_name: props.guest.guest_name,
-        akad_status: props.guest.akad_status,
+        full_name: props.guest.full_name,
         mantu_status: props.guest.mantu_status,
         unduh_mantu_status: props.guest.unduh_mantu_status,
-        guest_knock_status: props.guest.guest_knock_status,
       })
       setGeneratedLink(`${origin}/${props.guest.id}`)
     } else if (!isEdit && openState) {
@@ -160,7 +159,7 @@ const GuestFormModal = (props: GuestFormModalProps) => {
       {/* Guest Name */}
       <Controller
         control={form.control}
-        name="guest_name"
+        name="full_name"
         render={({ field, fieldState }) => (
           <div className="flex flex-col gap-1">
             <FormInput
@@ -174,6 +173,45 @@ const GuestFormModal = (props: GuestFormModalProps) => {
           </div>
         )}
       />
+
+      <div className="flex flex-col sm:flex-row gap-4">
+        <Controller
+          control={form.control}
+          name="mantu_status"
+          render={({ field }) => (
+            <div className="flex flex-row items-center justify-between rounded-lg border border-input p-3 flex-1 bg-transparent">
+              <div className="space-y-0.5">
+                <Label className="font-sans text-[10px] md:text-[11px] font-bold tracking-[0.30em] uppercase">
+                  Mantu
+                </Label>
+              </div>
+              <Switch
+                checked={field.value}
+                onCheckedChange={field.onChange}
+                disabled={isLoading}
+              />
+            </div>
+          )}
+        />
+        <Controller
+          control={form.control}
+          name="unduh_mantu_status"
+          render={({ field }) => (
+            <div className="flex flex-row items-center justify-between rounded-lg border border-input p-3 flex-1 bg-transparent">
+              <div className="space-y-0.5">
+                <Label className="font-sans text-[10px] md:text-[11px] font-bold tracking-[0.30em] uppercase">
+                  Unduh Mantu
+                </Label>
+              </div>
+              <Switch
+                checked={field.value}
+                onCheckedChange={field.onChange}
+                disabled={isLoading}
+              />
+            </div>
+          )}
+        />
+      </div>
 
       {/* Generated or Existing Link */}
       {generatedLink && (

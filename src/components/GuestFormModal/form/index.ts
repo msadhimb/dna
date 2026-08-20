@@ -1,7 +1,7 @@
 export const defaultGuestValues = {
-  guest_name: "",
-  akad_status: false,
+  full_name: "",
+
   mantu_status: false,
   unduh_mantu_status: false,
-  guest_knock_status: false,
+
 }

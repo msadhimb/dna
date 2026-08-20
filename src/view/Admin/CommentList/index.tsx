@@ -19,7 +19,7 @@ const CommentListView = () => {
 
   const columns: ColumnDef<any>[] = [
     {
-      id: "guest_name",
+      id: "full_name",
       header: "Nama Tamu",
       accessorFn: (row) => row.guest?.full_name || "-",
       cell: ({ row }) => (
