@@ -30,7 +30,6 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
 import {
   Select,
   SelectContent,
@@ -47,8 +46,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
-import { DataTableViewOptions } from "./components/DataTableViewOptions"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Button } from "../Button"
 
 export type ActionItem<TData> = {
   label: string
@@ -76,7 +75,6 @@ export function DataTable<TData>({
   columns,
   queryKey,
   fetcher,
-  filterColumn = "name",
   filterPlaceholder = "Search...",
   actions,
 }: DataTableProps<TData>) {
@@ -193,7 +191,7 @@ export function DataTable<TData>({
                   <DropdownMenuItem
                     onClick={() => action.onClick(row.original)}
                     className={cn(
-                      "flex items-center gap-2 cursor-pointer",
+                      "flex items-center gap-2 cursor-pointer ",
                       action.destructive
                         ? "text-red-500 focus:text-red-500 focus:bg-red-50/10"
                         : ""
@@ -306,7 +304,7 @@ export function DataTable<TData>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  className="hover:!bg-border/25"
+                  className="hover:bg-border/25! data-[state=selected]:bg-border/25! has-aria-expanded:bg-border/25!"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell

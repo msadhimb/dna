@@ -39,7 +39,6 @@ export type GuestFormModalProps = {
 const HEADER_TITLE = "Buat Link Undangan"
 const HEADER_DESCRIPTION =
   "Isi form berikut untuk membuat link undangan personal."
-const CONTENT_PADDING_X = "px-5"
 
 const GuestFormModal = (props: GuestFormModalProps) => {
   const { mode, isModal = true } = props
@@ -96,6 +95,7 @@ const GuestFormModal = (props: GuestFormModalProps) => {
       } else if ("onSuccess" in props && id) {
         props.onSuccess?.(id, `${origin}/${id}`)
       }
+      if (isModal) props.onOpenChange?.(false)
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Gagal menyimpan data tamu",

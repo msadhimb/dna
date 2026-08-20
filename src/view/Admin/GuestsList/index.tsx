@@ -185,10 +185,10 @@ const GuestsListView = () => {
       {/* Header Section */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-border pb-5">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">
+          <h1 className="text-3xl font-bold font-sans text-foreground tracking-[0.2em] uppercase">
             Daftar Tamu Undangan
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="text-md text-muted-foreground mt-1">
             Kelola data tamu undangan pernikahan, salin link undangan personal,
             dan import data massal dari Excel.
           </p>
