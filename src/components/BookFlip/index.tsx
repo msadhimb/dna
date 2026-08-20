@@ -399,7 +399,9 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
           }}
         >
           <div
-            className="absolute inset-0 flex flex-col items-center justify-center gap-4 overflow-hidden rounded-[4px_8px_8px_4px] border border-[#c9a227]/30 bg-[#f7f2e8] px-7 py-9 text-center dark:border-[#d4af37]/30 dark:bg-[#0f0f0f]"
+            className={cn(
+              "absolute inset-0 flex flex-col items-center justify-center gap-4 overflow-hidden rounded-[4px_8px_8px_4px] border bg-[#f7f2e8] px-7 py-9 text-center dark:bg-[#0f0f0f] border-border"
+            )}
             style={{ zIndex: 5 }}
           >
             <CornerFlourishes color={isDark ? "#d4af37" : "#c9a227"} />
@@ -434,7 +436,8 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
           >
             <div
               className={cn(
-                "absolute inset-0 flex flex-col items-center justify-center gap-4 overflow-hidden rounded-[4px_8px_8px_4px] border border-[#c9a227]/30 bg-[#fdf8f0] px-7 py-9 text-center dark:border-[#d4af37]/30 dark:bg-[#141414]",
+                "absolute inset-0 flex flex-col items-center justify-center gap-4 overflow-hidden rounded-[4px_8px_8px_4px] border bg-[#fdf8f0] px-7 py-9 text-center dark:bg-[#141414] border-border",
+
                 pageFront?.className
               )}
               style={{
@@ -468,7 +471,7 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
             </div>
             <div
               className={cn(
-                "absolute inset-0 rounded-[8px_4px_4px_8px] border border-[#c9a227]/30 bg-[#f7f2e8] dark:border-[#d4af37]/30 dark:bg-[#0f0f0f]",
+                "absolute inset-0 rounded-[8px_4px_4px_8px] border bg-[#f7f2e8] dark:bg-[#0f0f0f] border-border",
                 pageBack?.className
               )}
               style={{
@@ -499,13 +502,12 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
             {/* Front of cover */}
             <div
               className={cn(
-                "absolute inset-0 flex flex-col items-center justify-between overflow-hidden rounded-[4px_8px_8px_4px] border-2 px-7 py-8 text-center",
+                "absolute inset-0 flex flex-col items-center justify-between overflow-hidden rounded-[4px_8px_8px_4px] border-2 px-7 py-8 text-center border-border",
                 coverFront?.className
               )}
               style={{
                 transform: "translateZ(1px)",
                 background: coverGradient,
-                borderColor: `${gold}55`,
                 backfaceVisibility: "hidden",
                 WebkitBackfaceVisibility: "hidden",
                 boxShadow: "inset 0 0 40px rgba(0,0,0,0.45)",

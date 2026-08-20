@@ -21,12 +21,13 @@ export const DigitalGift = () => {
   const isDark = resolvedTheme === "dark"
   const sectionRef = useRef<HTMLElement>(null)
 
-  const accent = isDark ? "#A0280A" : "#8B6914"
-  const dot = isDark ? "rgba(160,40,10,0.05)" : "rgba(139,105,20,0.05)"
-  const textPrimary = isDark ? "#FFFFFF" : "#1A1714"
-  const textSecondary = isDark ? "#888888" : "#6B5F50"
-  const border = isDark ? "rgba(255,255,255,0.06)" : "rgba(139,105,20,0.12)"
-  const borderAccent = isDark ? "rgba(160,40,10,0.3)" : "rgba(139,105,20,0.3)"
+  // Keep Digital Gift in the same visual language as RomanticQuote.
+  const accent = isDark ? "#FF2D55" : "#16A34A"
+  const dot = isDark ? "rgba(255,45,85,0.06)" : "rgba(22,163,74,0.06)"
+  const textPrimary = isDark ? "#FFFFFF" : "#111111"
+  const textSecondary = isDark ? "#888888" : "#555555"
+  const border = isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)"
+  const borderAccent = isDark ? "rgba(255,45,85,0.25)" : "rgba(22,163,74,0.25)"
   const bgGradient = isDark
     ? "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(255,45,85,0.06), transparent)"
     : "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(22,163,74,0.06), transparent)"

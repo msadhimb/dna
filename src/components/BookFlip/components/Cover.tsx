@@ -29,9 +29,8 @@ const Cover = ({ isDark, gold, ribbonRef }: CoverProps) => {
       {/* title block */}
       <div className="relative z-10 mt-3 flex flex-col items-center gap-[2px]">
         <span
-          className="font-serif text-[2rem] font-bold"
+          className="font-serif text-[2rem] font-bold text-white"
           style={{
-            color: gold,
             textShadow: "0 1px 1px rgba(0,0,0,0.5)",
           }}
         >
@@ -62,18 +61,16 @@ const Cover = ({ isDark, gold, ribbonRef }: CoverProps) => {
       {/* bottom block */}
       <div className="relative z-10 mb-2 flex flex-col items-center gap-[2px]">
         <span
-          className="font-serif text-[1.8rem] font-bold"
+          className="font-serif text-[1.8rem] font-bold text-white"
           style={{
-            color: gold,
             textShadow: "0 1px 1px rgba(0,0,0,0.5)",
           }}
         >
           DEPARTEMEN AGAMA
         </span>
         <span
-          className="font-serif text-[1.8rem] font-bold"
+          className="font-serif text-[1.8rem] font-bold text-white"
           style={{
-            color: gold,
             textShadow: "0 1px 1px rgba(0,0,0,0.5)",
           }}
         >
