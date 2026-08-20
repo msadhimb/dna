@@ -32,19 +32,10 @@ const FormTextArea = React.forwardRef<HTMLTextAreaElement, FormTextAreaProps>(
           ref={ref}
           data-slot="wedding-textarea"
           className={cn(
-            "min-h-32 resize-none border-2 bg-transparent p-3 text-xs md:text-base font-medium shadow-none ring-0 transition-all duration-300 outline-none placeholder:opacity-40 rounded-xl focus-visible:dark:border-red-800 focus-visible:dark:ring-red-800/50 focus-visible:border-green-800 focus-visible:ring-green-800/50",
+            "min-h-32 resize-none bg-transparent p-3 text-xs md:text-base font-medium shadow-none ring-0 transition-all duration-300 outline-none placeholder:opacity-40 rounded-xl focus-visible:dark:border-red-800 focus-visible:dark:ring-red-800/50 focus-visible:border-green-800 focus-visible:ring-green-800/50",
             error && "border-red-500! focus-visible:ring-red-200",
-
             className
           )}
-          style={{
-            borderTopColor: focused ? accent : (borderColor ?? "transparent"),
-            borderRightColor: focused ? accent : (borderColor ?? "transparent"),
-            borderBottomColor: focused
-              ? accent
-              : (borderColor ?? "transparent"),
-            borderLeftColor: focused ? accent : (borderColor ?? "transparent"),
-          }}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           {...props}

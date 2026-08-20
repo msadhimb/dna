@@ -32,18 +32,10 @@ const FormInput = React.forwardRef<HTMLInputElement, FormInputProps>(
           ref={ref}
           data-slot="wedding-input"
           className={cn(
-            "h-auto w-full border-input! border-2 bg-transparent p-3 text-xs md:text-base font-medium shadow-none ring-0 transition-all duration-300 outline-none placeholder:opacity-40 focus-visible:dark:border-red-800 focus-visible:dark:ring-red-800/50 focus-visible:border-green-800 focus-visible:ring-green-800/50",
+            "h-auto w-full bg-transparent p-3 text-xs md:text-base font-medium shadow-none ring-0 transition-all duration-300 outline-none placeholder:opacity-40 focus-visible:dark:border-red-800 focus-visible:dark:ring-red-800/50 focus-visible:border-green-800 focus-visible:ring-green-800/50",
             error && "border-red-500! focus-visible:ring-red-200",
             className
           )}
-          style={{
-            borderTopColor: focused ? accent : (borderColor ?? "transparent"),
-            borderRightColor: focused ? accent : (borderColor ?? "transparent"),
-            borderBottomColor: focused
-              ? accent
-              : (borderColor ?? "transparent"),
-            borderLeftColor: focused ? accent : (borderColor ?? "transparent"),
-          }}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           {...props}
