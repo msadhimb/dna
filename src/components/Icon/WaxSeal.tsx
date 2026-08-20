@@ -7,8 +7,8 @@ export function WaxSeal({
   isDark: boolean
   size?: number
 }) {
-  const fill = isDark ? "#A0280A" : "#8B6914"
-  const glow = isDark ? "rgba(160,40,10,0.4)" : "rgba(139,105,20,0.3)"
+  const fill = isDark ? "#A0280A" : "rgba(22,163,74,1)"
+  const glow = isDark ? "rgba(160,40,10,0.4)" : "rgba(22,163,74,0.06)"
   const textColor = isDark ? "#F5DCC8" : "#FFF5E6"
   const viewSize = size
   const cx = viewSize / 2

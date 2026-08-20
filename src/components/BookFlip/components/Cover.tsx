@@ -11,6 +11,11 @@ interface CoverProps {
 const Cover = ({ isDark, gold, ribbonRef }: CoverProps) => {
   const { imageUrl } = useImageUrl()
 
+  // Cari item dengan nama "garuda.png" di list icon, bukan asal ambil index [0]
+  const garudaIcon = (imageUrl as any)?.icon?.find((item: any) =>
+    item?.name?.toLowerCase().includes("garuda")
+  )
+
   return (
     <>
       {" "}
@@ -44,12 +49,14 @@ const Cover = ({ isDark, gold, ribbonRef }: CoverProps) => {
             justifyContent: "center",
           }}
         >
-          <Image
-            src={(imageUrl as any)?.icon?.[0].link}
-            alt="Emblem"
-            width={200}
-            height={200}
-          />
+          {garudaIcon?.link && (
+            <Image
+              src={garudaIcon.link}
+              alt="Emblem"
+              width={200}
+              height={200}
+            />
+          )}
         </div>
       </div>
       {/* bottom block */}

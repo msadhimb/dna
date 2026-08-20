@@ -5,6 +5,7 @@ import { useTheme } from "next-themes"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { Separator } from "../ui/separator"
+import useResponsive from "@/hooks/useResponsive"
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -15,14 +16,10 @@ export interface RomanticQuoteRef {
 export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
   const { resolvedTheme } = useTheme()
   const isDark = resolvedTheme === "dark"
-  const isMobile =
-    typeof navigator !== "undefined" &&
-    /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)
+  const { isMobile } = useResponsive()
 
-  const accent = isDark ? "#FF2D55" : "#16A34A"
   const dot = isDark ? "rgba(255,45,85,0.06)" : "rgba(22,163,74,0.06)"
   const surface = isDark ? "#0A0A0A" : "#F8F8F8"
-  const textPrimary = isDark ? "#FFFFFF" : "#111111"
   const textSecondary = isDark ? "#888888" : "#555555"
   const borderAccent = isDark ? "rgba(255,45,85,0.25)" : "rgba(22,163,74,0.25)"
   const bgGradient = isDark
