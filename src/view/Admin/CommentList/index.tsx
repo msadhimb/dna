@@ -1,5 +1,6 @@
 "use client"
 
+import { AttendanceBadge } from "@/components/AttendanceBadge"
 import { DataTable } from "@/components/DataTable"
 import { ColumnDef } from "@tanstack/react-table"
 import useCommentsList from "./store"
@@ -40,28 +41,11 @@ const CommentListView = () => {
       accessorKey: "arrival_status",
       header: () => <div className="text-center">Kehadiran</div>,
       size: 120,
-      cell: ({ row }) => {
-        const status = row.getValue("arrival_status") as string
-        return (
-          <div className="flex justify-center">
-            <span
-              className={`text-[10px] font-forum tracking-widest uppercase px-2.5 py-1 rounded-sm border font-medium ${
-                status === "attending"
-                  ? "text-[#A8C5A0] border-[#A8C5A0]/30 bg-[#A8C5A0]/10"
-                  : status === "not_attending"
-                    ? "text-[#D4A8A8] border-[#D4A8A8]/30 bg-[#D4A8A8]/10"
-                    : "text-[#D2B48C] border-[#D2B48C]/30 bg-[#D2B48C]/10"
-              }`}
-            >
-              {status === "attending"
-                ? "Hadir"
-                : status === "not_attending"
-                  ? "Tidak Hadir"
-                  : "Mungkin"}
-            </span>
-          </div>
-        )
-      },
+      cell: ({ row }) => (
+        <div className="flex justify-center">
+          <AttendanceBadge status={row.getValue("arrival_status") as string} />
+        </div>
+      ),
     },
     {
       accessorKey: "created_at",
@@ -69,11 +53,7 @@ const CommentListView = () => {
       size: 180,
       cell: ({ row }) => {
         const date = row.getValue("created_at") as string
-        return (
-          <span className="text-xs text-muted-foreground">
-            {moment(date).format("DD MMMM YYYY HH:mm")}
-          </span>
-        )
+        return <span>{moment(date).format("dddd, DD MMMM YYYY")}</span>
       },
     },
   ]
@@ -115,7 +95,18 @@ const CommentListView = () => {
   ]
 
   return (
-    <div className="font-manrope w-full max-w-full overflow-x-hidden">
+    <div className="font-manrope w-full max-w-full space-y-6 overflow-x-hidden">
+      <div className="flex flex-col gap-4 border-b border-border pb-5 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="font-sans text-3xl font-bold tracking-[0.2em] text-foreground uppercase">
+            Daftar Doa & Harapan
+          </h1>
+          <p className="mt-1 text-md text-muted-foreground">
+            Kelola ucapan, doa, dan konfirmasi kehadiran dari tamu undangan.
+          </p>
+        </div>
+      </div>
+
       <DataTable
         columns={columns}
         actions={actions}

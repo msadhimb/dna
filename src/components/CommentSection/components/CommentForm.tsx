@@ -6,6 +6,8 @@ import { WeddingInput } from "@/components/WeddingInput"
 import { WeddingTextarea } from "@/components/WeddingTextarea"
 import { AttendanceToggle } from "./AttendanceToggle"
 import { Button } from "@/components/Button"
+import { FormInput } from "@/components/Form/FormInput"
+import { FormTextArea } from "@/components/Form/FormTextArea"
 
 interface FormValues {
   name: string
@@ -97,7 +99,7 @@ export function CommentForm({
                 name="name"
                 control={methods.control}
                 render={({ field, fieldState }) => (
-                  <WeddingInput
+                  <FormInput
                     accent={accent}
                     borderColor={border}
                     label="Nama"
@@ -130,7 +132,7 @@ export function CommentForm({
               name="message"
               control={methods.control}
               render={({ field, fieldState }) => (
-                <WeddingTextarea
+                <FormTextArea
                   accent={accent}
                   borderColor={border}
                   label="Ucapan & Doa"

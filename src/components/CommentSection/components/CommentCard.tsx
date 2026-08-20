@@ -1,4 +1,4 @@
-import { Badge } from "@/components/ui/badge"
+import { AttendanceBadge } from "@/components/AttendanceBadge"
 
 interface CommentCardProps {
   name: string
@@ -12,12 +12,6 @@ interface CommentCardProps {
   border: string
 }
 
-const ATTENDANCE = {
-  hadir: { label: "HADIR", color: "#16A34A" },
-  ragu: { label: "RAGU", color: "#D4AF37" },
-  tidak_hadir: { label: "TIDAK HADIR", color: "#EF4444" },
-} as const
-
 export function CommentCard({
   name,
   message,
@@ -29,15 +23,18 @@ export function CommentCard({
   surface,
   border,
 }: CommentCardProps) {
-  const att = ATTENDANCE[attendance]
-
   return (
     <div
       className="cs-card-item flex flex-col gap-5 rounded-xl border p-8 transition-all duration-500"
       style={{
         background: surface,
         borderTopWidth: "2px",
-        borderTopColor: att.color,
+        borderTopColor:
+          attendance === "hadir"
+            ? "#16A34A"
+            : attendance === "tidak_hadir"
+              ? "#EF4444"
+              : "#D4AF37",
         borderRightColor: border,
         borderBottomColor: border,
         borderLeftColor: border,
@@ -50,12 +47,7 @@ export function CommentCard({
         >
           {name}
         </h3>
-        <Badge
-          className="rounded-md border bg-transparent px-2.5 py-0.5 text-[9px] font-bold tracking-[0.2em]"
-          style={{ borderColor: att.color, color: att.color }}
-        >
-          {att.label}
-        </Badge>
+        <AttendanceBadge status={attendance} />
       </div>
 
       <p
