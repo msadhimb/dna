@@ -1,5 +1,6 @@
 import { useImageUrl } from "@/store/useImageUrl"
 import { useQuery } from "@tanstack/react-query"
+import { useTheme } from "next-themes"
 import axios from "axios"
 import { useEffect, useRef } from "react"
 import { preloadImages } from "../helper/preload"
@@ -13,6 +14,7 @@ const usePreloadImages = (
   const onProgressRef = useRef(onProgress)
   const { setImageUrl } = useImageUrl()
   const setImageUrlRef = useRef(setImageUrl)
+  const { resolvedTheme } = useTheme()
 
   useEffect(() => {
     onDoneRef.current = onDone
@@ -35,9 +37,12 @@ const usePreloadImages = (
       const dark = res.data?.data?.dark ?? []
       const light = res.data?.data?.light ?? []
 
+      // Preload only the active theme. Preloading both themes doubles image
+      // downloads and decoded bitmap memory on mobile, while Next Image can
+      // fetch the alternate theme later if the user switches themes.
+      const activeThemeImages = resolvedTheme === "dark" ? dark : light
       const urls = [
-        ...dark.map((img: { link: string }) => img.link),
-        ...light.map((img: { link: string }) => img.link),
+        ...activeThemeImages.map((img: { link: string }) => img.link),
         ...imageIcon.map((img: { link: string }) => img.link),
       ]
 

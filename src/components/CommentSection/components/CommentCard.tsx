@@ -42,7 +42,7 @@ export function CommentCard({
     >
       <div className="flex flex-col items-start gap-2">
         <h3
-          className="font-signature text-2xl leading-tight font-bold"
+          className="font-signature text-2xl leading-tight tracking-[0.1em] font-bold"
           style={{ color: textPrimary }}
         >
           {name}

@@ -144,7 +144,7 @@ const MainView = ({
             src={content}
             alt={`Curtain Photo ${i + 1}`}
             fill
-            sizes="130vw"
+            sizes="100vw"
             priority={i === 0}
             className="object-cover object-center"
           />
@@ -402,10 +402,10 @@ const MainView = ({
       <div className="flex flex-col gap-36">
         <RomanticQuote />
         <CommentSection
-        ref={commentRef}
-        guestId={guestId}
-        guestName={guestName}
-      />
+          ref={commentRef}
+          guestId={guestId}
+          guestName={guestName}
+        />
         <DigitalGift />
         <Footer />
       </div>
