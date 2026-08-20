@@ -244,8 +244,8 @@ const MainView = ({
 
       bookFlipTlRef.current = bookFlipWrapperTl
 
-      // Scrub lebih tinggi = animasi lebih smooth mengikuti scroll (mengurangi jank)
-      // Hindari scrub < 1 karena akan terasa patah saat scroll cepat
+      // Smoothing terlalu tinggi membuat Welcome terlihat berhenti di tengah
+      // pada swipe Android karena timeline tertinggal jauh dari posisi scroll.
       const masterTl = gsap.timeline({
         scrollTrigger: {
           trigger: masterTrigger,
@@ -253,7 +253,7 @@ const MainView = ({
           end: `+=${totalScrollHeight}%`,
           pin: true,
           pinSpacing: true,
-          scrub: isMobileSetup ? 2.5 : 1.5,
+          scrub: isMobileSetup ? 1 : 1.5,
           anticipatePin: 1,
           invalidateOnRefresh: true,
         },
