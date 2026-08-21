@@ -372,8 +372,6 @@ const MainView = ({
           <HeroSection />
         </div>
 
-        {/* WelcomeSection sebagai absolute overlay z-50 di dalam master-trigger
-            — tidak ada pin terpisah, sehingga tidak ada pin-handoff glitch */}
         <WelcomeSection ref={welcomeRef} guestName={guestName} />
 
         <div className="pointer-events-none absolute inset-0 z-30">

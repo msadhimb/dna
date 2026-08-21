@@ -280,7 +280,7 @@ export const JourneySequence = forwardRef<
           }
           fill
           alt="Journey"
-          sizes="100vw"
+          sizes="150vw"
           quality={80}
           priority
           className="journey-inner-img object-cover"
