@@ -24,7 +24,7 @@ const data = {
       icon: <LayoutDashboardIcon />,
     },
     {
-      title: "Guests List",
+      title: "Guest List",
       url: "/dashboard/guests",
       icon: <ListIcon />,
     },
@@ -50,7 +50,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <div className="font-serif text-white text-4xl text-center text-balance w-full py-5 border-b border-white/25">
+            <div className="font-serif dark:text-white text-muted text-4xl text-center text-balance w-full py-5 border-b border-muted dark:border-white/25">
               D & A
             </div>
           </SidebarMenuItem>

@@ -223,7 +223,7 @@ const GuestFormModal = (props: GuestFormModalProps) => {
         </div>
 
         {isModal ? (
-          <DialogFooter className="-mx-4 -mb-4 mt-2 bg-border">
+          <DialogFooter className="-mx-4 -mb-4 mt-2 bg-muted dark:bg-border">
             <Button
               type="button"
               variant="outline"
