@@ -75,18 +75,16 @@ const GuestsListView = () => {
           .map((row: any) => {
             // Find potential keys
             const nameKey = Object.keys(row).find((key) =>
-              /name|nama|guest_name/i.test(key)
+              /name|nama|full_name/i.test(key)
             )
-            const akadKey = Object.keys(row).find((key) => /akad/i.test(key))
+
             const mantuKey = Object.keys(row).find((key) => /mantu/i.test(key))
-            const guestKnockKey = Object.keys(row).find((key) =>
-              /menerima/i.test(key)
-            )
+
             const unduhKey = Object.keys(row).find((key) =>
               /unduh|unduh.*mantu/i.test(key)
             )
 
-            const guest_name = nameKey ? String(row[nameKey] ?? "").trim() : ""
+            const full_name = nameKey ? String(row[nameKey] ?? "").trim() : ""
 
             const parseBool = (val: any) => {
               if (val === undefined || val === null) return false
@@ -98,17 +96,15 @@ const GuestsListView = () => {
               )
             }
 
-            return {
-              guest_name,
-              akad_status: akadKey ? parseBool(row[akadKey]) : false,
-              mantu_status: mantuKey ? parseBool(row[mantuKey]) : false,
-              guest_knock_status: guestKnockKey
-                ? parseBool(row[guestKnockKey])
-                : false,
-              unduh_mantu_status: unduhKey ? parseBool(row[unduhKey]) : false,
-            }
+            const payload: any = { full_name }
+
+            if (mantuKey) payload.mantu_status = parseBool(row[mantuKey])
+
+            if (unduhKey) payload.unduh_mantu_status = parseBool(row[unduhKey])
+
+            return payload
           })
-          .filter((g) => !!g.guest_name) // Filter out rows with no guest name
+          .filter((g) => !!g.full_name) // Filter out rows with no guest name
 
         if (mappedGuests.length === 0) {
           toast.error(
@@ -185,10 +181,10 @@ const GuestsListView = () => {
       {/* Header Section */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-border pb-5">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">
+          <h1 className="text-3xl font-bold font-sans text-foreground tracking-[0.2em] uppercase">
             Daftar Tamu Undangan
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="text-md text-muted-foreground mt-1">
             Kelola data tamu undangan pernikahan, salin link undangan personal,
             dan import data massal dari Excel.
           </p>

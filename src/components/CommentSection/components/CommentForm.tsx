@@ -6,6 +6,8 @@ import { WeddingInput } from "@/components/WeddingInput"
 import { WeddingTextarea } from "@/components/WeddingTextarea"
 import { AttendanceToggle } from "./AttendanceToggle"
 import { Button } from "@/components/Button"
+import { FormInput } from "@/components/Form/FormInput"
+import { FormTextArea } from "@/components/Form/FormTextArea"
 
 interface FormValues {
   name: string
@@ -97,7 +99,7 @@ export function CommentForm({
                 name="name"
                 control={methods.control}
                 render={({ field, fieldState }) => (
-                  <WeddingInput
+                  <FormInput
                     accent={accent}
                     borderColor={border}
                     label="Nama"
@@ -130,7 +132,7 @@ export function CommentForm({
               name="message"
               control={methods.control}
               render={({ field, fieldState }) => (
-                <WeddingTextarea
+                <FormTextArea
                   accent={accent}
                   borderColor={border}
                   label="Ucapan & Doa"
@@ -149,7 +151,7 @@ export function CommentForm({
             <Button
               type="button"
               onClick={handleSubmit}
-              className="cs-submit-btn flex cursor-pointer items-center justify-center rounded-xl px-8 py-6 font-sans text-[10px] md:text-[11px] font-bold tracking-[0.3em] uppercase transition-all duration-300 bg-green-800 text-white hover:bg-green-700 dark:bg-red-800 dark:hover:bg-red-700"
+              className="cs-submit-btn flex cursor-pointer items-center justify-center rounded-xl px-8 py-6 font-sans text-[10px] md:text-[11px] font-bold tracking-[0.3em] uppercase transition-all duration-300 bg-green-800 text-white hover:bg-green-700 dark:bg-red-800 dark:hover:bg-red-700 z-15"
             >
               {isSubmitting
                 ? "Mengirim..."

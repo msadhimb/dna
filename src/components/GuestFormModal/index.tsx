@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react"
 import { useForm, Controller } from "react-hook-form"
+import { yupResolver } from "@hookform/resolvers/yup"
 import { Copy, Check, Loader2, Link2 } from "lucide-react"
 import {
   Dialog,
@@ -12,18 +13,13 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
 import { FormInput } from "@/components/Form/FormInput"
 import { toast } from "sonner"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { Button } from "../Button"
-
-export type GuestFormValues = {
-  guest_name: string
-  akad_status: boolean
-  mantu_status: boolean
-  unduh_mantu_status: boolean
-  guest_knock_status: boolean
-}
+import { defaultGuestValues } from "./form"
+import { guestFormSchema } from "./validation"
 
 export type GuestFormModalProps = {
   isModal?: boolean
@@ -36,10 +32,14 @@ export type GuestFormModalProps = {
     }
   | {
       mode: "edit"
-      guest: GuestFormValues & { id: string }
+      guest: typeof defaultGuestValues & { id: string }
       onSuccess?: () => void
     }
 )
+
+const HEADER_TITLE = "Buat Link Undangan"
+const HEADER_DESCRIPTION =
+  "Isi form berikut untuk membuat link undangan personal."
 
 const GuestFormModal = (props: GuestFormModalProps) => {
   const { mode, isModal = true } = props
@@ -51,8 +51,9 @@ const GuestFormModal = (props: GuestFormModalProps) => {
   const [generatedLink, setGeneratedLink] = useState("")
   const [copied, setCopied] = useState(false)
   const queryClient = useQueryClient()
+
   const saveGuest = useMutation({
-    mutationFn: async (values: GuestFormValues) => {
+    mutationFn: async (values: typeof defaultGuestValues) => {
       const endpoint =
         isEdit && "guest" in props
           ? `/api/guests/${props.guest.id}`
@@ -70,13 +71,9 @@ const GuestFormModal = (props: GuestFormModalProps) => {
   })
 
   const form = useForm({
-    defaultValues: {
-      guest_name: "",
-      akad_status: false,
-      mantu_status: false,
-      unduh_mantu_status: false,
-      guest_knock_status: false,
-    },
+    resolver: yupResolver(guestFormSchema),
+    defaultValues: defaultGuestValues,
+    mode: "onSubmit",
   })
 
   const handleSubmit = form.handleSubmit(async (values) => {
@@ -99,6 +96,7 @@ const GuestFormModal = (props: GuestFormModalProps) => {
       } else if ("onSuccess" in props && id) {
         props.onSuccess?.(id, `${origin}/${id}`)
       }
+      if (isModal) props.onOpenChange?.(false)
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Gagal menyimpan data tamu",
@@ -117,169 +115,193 @@ const GuestFormModal = (props: GuestFormModalProps) => {
     setTimeout(() => setCopied(false), 2000)
   }
 
-  const switchFields: {
-    name: keyof GuestFormValues
-    label: string
-    id: string
-  }[] = [
-    { name: "akad_status", label: "Akad", id: "switch-akad" },
-    { name: "guest_knock_status", label: "Menerima Tamu", id: "switch-knock" },
-    { name: "mantu_status", label: "Mantu", id: "switch-mantu" },
-    { name: "unduh_mantu_status", label: "Unduh Mantu", id: "switch-unduh" },
-  ]
-
   useEffect(() => {
     if (isEdit && openState && "guest" in props) {
       form.reset({
-        guest_name: props.guest.guest_name,
-        akad_status: props.guest.akad_status,
+        full_name: props.guest.full_name,
         mantu_status: props.guest.mantu_status,
         unduh_mantu_status: props.guest.unduh_mantu_status,
-        guest_knock_status: props.guest.guest_knock_status,
       })
       setGeneratedLink(`${origin}/${props.guest.id}`)
     } else if (!isEdit && openState) {
-      form.reset({
-        guest_name: "",
-        akad_status: false,
-        mantu_status: false,
-        unduh_mantu_status: false,
-        guest_knock_status: false,
-      })
+      form.reset(defaultGuestValues)
       setGeneratedLink("")
     }
   }, [openState, isEdit, props, origin])
 
-  const renderFormContent = () => (
-    <div className="flex flex-col gap-6 w-full ">
-      {/* Title / Description (shown when rendered inline) */}
-      {!isModal && (
-        <div className="flex flex-col gap-1">
-          <h1 className="text-xl font-semibold text-foreground">
-            Buat Link Undangan
-          </h1>
-          <p className="text-xs text-muted-foreground">
-            Isi form berikut untuk membuat link undangan personal.
-          </p>
-        </div>
-      )}
+  const submitButtonContent = isLoading ? (
+    <>
+      <Loader2 className="size-4 animate-spin mr-2" />
+      Membuat...
+    </>
+  ) : (
+    "Generate Link"
+  )
+  const renderHeader = () =>
+    isModal ? (
+      <DialogHeader className={`gap-0`}>
+        <DialogTitle className="text-2xl">{HEADER_TITLE}</DialogTitle>
+        <DialogDescription className="text-md">
+          {HEADER_DESCRIPTION}
+        </DialogDescription>
+      </DialogHeader>
+    ) : (
+      <div className={` flex flex-col gap-1`}>
+        <h1 className="text-2xl font-semibold text-foreground">
+          {HEADER_TITLE}
+        </h1>
+        <p className="text-md text-muted-foreground">{HEADER_DESCRIPTION}</p>
+      </div>
+    )
 
-      <form
-        onSubmit={handleSubmit}
-        className="flex flex-col gap-5 pt-1 font-manropen"
-      >
-        <div className="py-2 px-5 flex flex-col gap-5">
-          {/* Guest Name */}
-          <Controller
-            control={form.control}
-            name="guest_name"
-            rules={{ required: "Nama tamu wajib diisi" }}
-            render={({ field, fieldState }) => (
-              <div className="flex flex-col gap-1">
-                <FormInput
-                  {...field}
-                  label="Nama Tamu"
-                  placeholder="Contoh: Budi Santoso"
-                  required
-                  disabled={isLoading}
-                />
-                {fieldState.error && (
-                  <p className="text-xs text-destructive mt-1">
-                    {fieldState.error.message}
-                  </p>
-                )}
+  const renderFields = () => (
+    <div className={`flex flex-col gap-5`}>
+      {/* Guest Name */}
+      <Controller
+        control={form.control}
+        name="full_name"
+        render={({ field, fieldState }) => (
+          <div className="flex flex-col gap-1">
+            <FormInput
+              {...field}
+              label="Nama Tamu"
+              placeholder="Contoh: Budi Santoso"
+              required
+              disabled={isLoading}
+              error={fieldState.error?.message}
+            />
+          </div>
+        )}
+      />
+
+      <div className="flex flex-col sm:flex-row gap-4">
+        <Controller
+          control={form.control}
+          name="mantu_status"
+          render={({ field }) => (
+            <div className="flex flex-row items-center justify-between rounded-lg border border-input p-3 flex-1 bg-transparent">
+              <div className="space-y-0.5">
+                <Label className="font-sans text-[10px] md:text-[11px] font-bold tracking-[0.30em] uppercase">
+                  Mantu
+                </Label>
               </div>
-            )}
-          />
-
-          {/* Status Toggles */}
-
-          {/* Generated or Existing Link */}
-          {generatedLink && (
-            <div className="flex flex-col gap-2">
-              <Label className="text-xs text-muted-foreground">
-                Link undangan:
-              </Label>
-              <div className="flex items-center gap-2 bg-border border border-border rounded-md px-3 py-2">
-                <Link2 className="size-4 text-[#d4af37] shrink-0" />
-                <span className="text-xs text-[#d4af37] break-all flex-1 select-all font-mono">
-                  {generatedLink}
-                </span>
-                <button
-                  type="button"
-                  onClick={handleCopy}
-                  className="shrink-0 text-[#d4af37] hover:text-primary transition-colors p-1"
-                  title="Salin link"
-                >
-                  {copied ? (
-                    <Check className="size-4 text-[#d4af37]" />
-                  ) : (
-                    <Copy className="size-4" />
-                  )}
-                </button>
-              </div>
+              <Switch
+                checked={field.value}
+                onCheckedChange={field.onChange}
+                disabled={isLoading}
+              />
             </div>
           )}
-        </div>
+        />
+        <Controller
+          control={form.control}
+          name="unduh_mantu_status"
+          render={({ field }) => (
+            <div className="flex flex-row items-center justify-between rounded-lg border border-input p-3 flex-1 bg-transparent">
+              <div className="space-y-0.5">
+                <Label className="font-sans text-[10px] md:text-[11px] font-bold tracking-[0.30em] uppercase">
+                  Unduh Mantu
+                </Label>
+              </div>
+              <Switch
+                checked={field.value}
+                onCheckedChange={field.onChange}
+                disabled={isLoading}
+              />
+            </div>
+          )}
+        />
+      </div>
 
-        {isModal ? (
-          <DialogFooter className="-mx-4 -mb-4 mt-2 bg-muted dark:bg-border">
-            <Button
+      {/* Generated or Existing Link */}
+      {generatedLink && (
+        <div className="flex flex-col gap-2">
+          <Label className="font-sans text-[10px] md:text-[11px] font-bold tracking-[0.30em] uppercase">
+            Link undangan:
+          </Label>
+          <div className="flex items-center gap-2 bg-border border border-border rounded-md px-3 py-2">
+            <Link2 className="size-4 text-muted dark:text-white shrink-0" />
+            <span className="text-xs text-muted dark:text-white break-all flex-1 select-all font-mono">
+              {generatedLink}
+            </span>
+            <button
               type="button"
-              variant="outline"
-              onClick={() => props.onOpenChange?.(false)}
-              disabled={isLoading}
+              onClick={handleCopy}
+              className="shrink-0 text-muted dark:text-white hover:text-primary transition-colors p-1"
+              title="Salin link"
             >
-              Batal
-            </Button>
-            <Button type="submit" disabled={isLoading}>
-              {isLoading ? (
-                <>
-                  <Loader2 className="size-4 animate-spin mr-2" />
-                  Membuat...
-                </>
+              {copied ? (
+                <Check className="size-4 text-muted" />
               ) : (
-                "Generate Link"
+                <Copy className="size-4" />
               )}
-            </Button>
-          </DialogFooter>
-        ) : (
-          <Button type="submit" className="w-full mt-2" disabled={isLoading}>
-            {isLoading ? (
-              <>
-                <Loader2 className="size-4 animate-spin mr-2" />
-                Membuat...
-              </>
-            ) : (
-              "Generate Link"
-            )}
-          </Button>
-        )}
-      </form>
+            </button>
+          </div>
+        </div>
+      )}
     </div>
+  )
+
+  const renderActions = () =>
+    isModal ? (
+      <DialogFooter
+        className={` py-4 border-t border-border bg-muted dark:bg-border`}
+      >
+        <Button
+          type="button"
+          variant="destructive"
+          onClick={() => props.onOpenChange?.(false)}
+          disabled={isLoading}
+        >
+          Batal
+        </Button>
+        <Button type="button" onClick={handleSubmit} disabled={isLoading}>
+          {submitButtonContent}
+        </Button>
+      </DialogFooter>
+    ) : (
+      <div className={``}>
+        <Button
+          type="button"
+          onClick={handleSubmit}
+          className="w-full"
+          disabled={isLoading}
+        >
+          {submitButtonContent}
+        </Button>
+      </div>
+    )
+
+  const content = (
+    <>
+      {isModal ? (
+        <div className="p-3 pb-0 flex flex-col gap-8">
+          {renderHeader()}
+          {renderFields()}
+        </div>
+      ) : (
+        <>
+          {renderHeader()}
+          {renderFields()}
+        </>
+      )}
+      {renderActions()}
+    </>
   )
 
   if (isModal) {
     return (
       <Dialog open={props.open} onOpenChange={props.onOpenChange}>
-        <DialogContent className="!max-w-2xl font-manrope ">
-          <DialogHeader className="p-5">
-            <DialogTitle>Buat Link Undangan</DialogTitle>
-            <DialogDescription>
-              Isi form berikut untuk membuat link undangan personal.
-            </DialogDescription>
-          </DialogHeader>
-          {renderFormContent()}
-        </DialogContent>
+        <DialogContent className="max-w-2xl! gap-8">{content}</DialogContent>
       </Dialog>
     )
   }
 
-  // Non-modal rendering
+  // Non-modal rendering — identical structure/padding, no footer wrapper.
   return (
     <div className="w-full h-full flex items-center justify-center">
-      <div className="bg-card border border-border rounded-xl shadow-sm p-8 flex flex-col gap-6 w-2xl">
-        {renderFormContent()}
+      <div className="bg-card border border-border rounded-xl shadow-sm w-2xl flex flex-col gap-8 p-8">
+        {content}
       </div>
     </div>
   )

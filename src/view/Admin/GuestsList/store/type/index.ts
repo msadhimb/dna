@@ -30,11 +30,11 @@ export type GetGuestsResponse = {
 };
 
 export type ImportGuestInput = {
-  guest_name: string;
-  akad_status?: boolean;
+  full_name: string;
+
   mantu_status?: boolean;
   unduh_mantu_status?: boolean;
-  guest_knock_status?: boolean;
+
 };
 
 export type GuestsListProps = {

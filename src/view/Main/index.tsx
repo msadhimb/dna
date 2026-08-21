@@ -144,7 +144,7 @@ const MainView = ({
             src={content}
             alt={`Curtain Photo ${i + 1}`}
             fill
-            sizes="130vw"
+            sizes="100vw"
             priority={i === 0}
             className="object-cover object-center"
           />
@@ -244,8 +244,8 @@ const MainView = ({
 
       bookFlipTlRef.current = bookFlipWrapperTl
 
-      // Scrub lebih tinggi = animasi lebih smooth mengikuti scroll (mengurangi jank)
-      // Hindari scrub < 1 karena akan terasa patah saat scroll cepat
+      // Smoothing terlalu tinggi membuat Welcome terlihat berhenti di tengah
+      // pada swipe Android karena timeline tertinggal jauh dari posisi scroll.
       const masterTl = gsap.timeline({
         scrollTrigger: {
           trigger: masterTrigger,
@@ -253,7 +253,7 @@ const MainView = ({
           end: `+=${totalScrollHeight}%`,
           pin: true,
           pinSpacing: true,
-          scrub: isMobileSetup ? 2.5 : 1.5,
+          scrub: isMobileSetup ? 1 : 1.5,
           anticipatePin: 1,
           invalidateOnRefresh: true,
         },
@@ -402,10 +402,10 @@ const MainView = ({
       <div className="flex flex-col gap-36">
         <RomanticQuote />
         <CommentSection
-        ref={commentRef}
-        guestId={guestId}
-        guestName={guestName}
-      />
+          ref={commentRef}
+          guestId={guestId}
+          guestName={guestName}
+        />
         <DigitalGift />
         <Footer />
       </div>

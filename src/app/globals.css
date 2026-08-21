@@ -112,16 +112,16 @@
   --book-dot: #a08050;
   --book-page-bg: #fdf8f0;
   --book-page-bg2: #f7f2e8;
-  --book-border: rgba(201,162,39,0.3);
-  --book-divider: rgba(201,162,39,0.2);
+  --book-border: rgba(201, 162, 39, 0.3);
+  --book-divider: rgba(201, 162, 39, 0.2);
   --book-label: #9a865a;
   --book-body: #1e1a14;
   --book-ornament: #c9a227;
   --book-ribbon: #b8902a;
   --book-cover-a: #2e3d2c;
   --book-cover-b: #111a10;
-  --book-cover-border: rgba(201,162,39,0.55);
-  --book-cover-inner: rgba(201,162,39,0.28);
+  --book-cover-border: rgba(201, 162, 39, 0.55);
+  --book-cover-inner: rgba(201, 162, 39, 0.28);
   --book-cover-title: #d9c78a;
   --book-cover-sub: #b0a882;
   --book-mono-border: #c9a227;
@@ -129,8 +129,8 @@
   --book-mono-glow: none;
   --book-inside-cover: #ede0c0;
   --book-spine: #1a2b18;
-  --book-spine-shadow: rgba(0,0,0,0.28);
-  --book-shadow: 0 40px 80px -20px rgba(0,0,0,0.35);
+  --book-spine-shadow: rgba(0, 0, 0, 0.28);
+  --book-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.35);
   --book-edge-light: #f4ecd8;
   --book-edge-dark: #cbb98a;
 }
@@ -172,25 +172,25 @@
   --book-dot: #832004;
   --book-page-bg: #0e0e0e;
   --book-page-bg2: #0a0808;
-  --book-border: rgba(131,32,4,0.3);
-  --book-divider: rgba(131,32,4,0.2);
+  --book-border: rgba(131, 32, 4, 0.3);
+  --book-divider: rgba(131, 32, 4, 0.2);
   --book-label: #7a6060;
   --book-body: #e0d8d0;
   --book-ornament: #832004;
   --book-ribbon: #9a2a0a;
   --book-cover-a: #0e0e0e;
   --book-cover-b: #050505;
-  --book-cover-border: rgba(131,32,4,0.5);
-  --book-cover-inner: rgba(131,32,4,0.22);
+  --book-cover-border: rgba(131, 32, 4, 0.5);
+  --book-cover-inner: rgba(131, 32, 4, 0.22);
   --book-cover-title: #9a7070;
   --book-cover-sub: #7a5a5a;
   --book-mono-border: #832004;
   --book-mono-text: #c8b0a0;
-  --book-mono-glow: 0 0 28px rgba(131,32,4,0.55);
+  --book-mono-glow: 0 0 28px rgba(131, 32, 4, 0.55);
   --book-inside-cover: #0c0808;
   --book-spine: #050505;
-  --book-spine-shadow: rgba(0,0,0,0.8);
-  --book-shadow: 0 40px 100px -20px rgba(131,32,4,0.25);
+  --book-spine-shadow: rgba(0, 0, 0, 0.8);
+  --book-shadow: 0 40px 100px -20px rgba(131, 32, 4, 0.25);
   --book-edge-light: #2a1c18;
   --book-edge-dark: #150c0a;
 }
@@ -291,20 +291,14 @@
   will-change: auto;
 }
 
-/* Mobile: disable hardware acceleration tricks that cause repaints */
+/* Keep mobile compositing selective: a blanket translateZ(0) promotes every
+   text, wrapper, and image to its own layer and can exhaust Android GPUs. */
 @media (max-width: 768px) {
-  .gsap-element,
   .curtain-bg,
   [class*="photo-bg"],
   [class*="photo-inner"] {
-    will-change: auto !important;
-    -webkit-backface-visibility: auto !important;
-    backface-visibility: auto !important;
-  }
-
-  /* Force hardware compositing only when needed */
-  .gsap-element {
-    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
   }
 }
 

@@ -309,7 +309,14 @@ export const CommentSection = forwardRef<
     message: string
     attendance: Attendance
   }) => {
-    if (!guestId) return
+    if (!guestId) {
+      toast({
+        title: "Tautan undangan tidak lengkap",
+        description:
+          "Buka halaman undangan melalui URL dengan ID tamu agar ucapan dapat dikirim.",
+      })
+      return
+    }
 
     const loadingToast = toast({
       title: "Mengirim ucapan...",
@@ -334,7 +341,9 @@ export const CommentSection = forwardRef<
       toast({
         title: "Ucapan gagal dikirim",
         description:
-          submitError instanceof Error ? submitError.message : "Silakan coba lagi.",
+          submitError instanceof Error
+            ? submitError.message
+            : "Silakan coba lagi.",
       })
       throw submitError
     }
@@ -371,7 +380,7 @@ export const CommentSection = forwardRef<
 
       <div
         ref={contentRef}
-        className="relative z-30 mx-auto w-full max-w-5xl px-6 py-10 md:px-10 flex flex-col gap-5 gsap-element"
+        className="pointer-events-auto relative z-40 mx-auto flex w-full max-w-5xl flex-col gap-5 px-6 py-10 gsap-element md:px-10"
         style={{
           transformStyle: "preserve-3d",
           backfaceVisibility: "hidden",

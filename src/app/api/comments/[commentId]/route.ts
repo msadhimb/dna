@@ -73,10 +73,7 @@ export async function PATCH(
   }
   if (!Object.keys(updates).length) return error("Tidak ada data untuk diubah")
 
-  let updateQuery = client
-    .from("comments")
-    .update(updates)
-    .eq("id", commentId)
+  let updateQuery = client.from("comments").update(updates).eq("id", commentId)
   if (guestId) updateQuery = updateQuery.eq("guest_id", guestId)
   const { data, error: dbError } = await updateQuery
     .select("id, guest_id, name, comment, attendance, created_at, updated_at")
@@ -97,10 +94,7 @@ export async function DELETE(
   const { data: claims } = await client.auth.getClaims()
   if (!guestId && !claims?.claims) return error("guest_id wajib diisi", 401)
 
-  let query = client
-    .from("comments")
-    .delete()
-    .eq("id", commentId)
+  let query = client.from("comments").delete().eq("id", commentId)
   if (guestId) query = query.eq("guest_id", guestId)
   const { error: dbError } = await query
 

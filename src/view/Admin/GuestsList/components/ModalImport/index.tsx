@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/Button"
 import {
   Dialog,
   DialogContent,
@@ -6,8 +6,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { AlertCircle, Check, FileSpreadsheet, Loader2, X } from "lucide-react";
+} from "@/components/ui/dialog"
+import { AlertCircle, Check, FileSpreadsheet, Loader2, X } from "lucide-react"
 
 const ModalImport = ({
   isPreviewOpen,
@@ -19,18 +19,18 @@ const ModalImport = ({
   handleImportSubmit,
   isImporting,
 }: {
-  isPreviewOpen: boolean;
-  setIsPreviewOpen: (open: boolean) => void;
-  parsedData: any[];
-  setParsedData: (parsedData: any[]) => void;
-  file: File | null;
-  setFile: (file: File | null) => void;
-  handleImportSubmit: () => void;
-  isImporting: boolean;
+  isPreviewOpen: boolean
+  setIsPreviewOpen: (open: boolean) => void
+  parsedData: any[]
+  setParsedData: (parsedData: any[]) => void
+  file: File | null
+  setFile: (file: File | null) => void
+  handleImportSubmit: () => void
+  isImporting: boolean
 }) => {
   return (
     <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
-      <DialogContent className="sm:max-w-xl font-manrope max-h-[90vh] flex flex-col p-6">
+      <DialogContent className="sm:max-w-xl font-manrope max-h-[90vh] flex flex-col ">
         <DialogHeader className="mb-2 shrink-0">
           <DialogTitle className="flex items-center gap-2 text-lg font-bold text-foreground">
             <FileSpreadsheet className="size-5 text-emerald-500" />
@@ -50,21 +50,15 @@ const ModalImport = ({
         {/* Table Preview container */}
         <div className="flex-1 overflow-y-auto border border-border rounded-lg mb-4">
           <table className="w-full text-left border-collapse text-xs">
-            <thead className="sticky top-0 bg-muted border-b border-border">
+            <thead className="sticky top-0 bg-muted  border-b border-border">
               <tr>
-                <th className="px-4 py-2 font-medium text-muted-foreground">
+                <th className="px-4 py-2 font-medium text-secondary">
                   Nama Tamu
                 </th>
-                <th className="px-4 py-2 font-medium text-muted-foreground text-center">
-                  Akad
-                </th>
-                <th className="px-4 py-2 font-medium text-muted-foreground text-center">
+                <th className="px-4 py-2 font-medium text-secondary text-center">
                   Mantu
                 </th>
-                <th className="px-4 py-2 font-medium text-muted-foreground text-center">
-                  Menerima Tamu
-                </th>
-                <th className="px-4 py-2 font-medium text-muted-foreground text-center">
+                <th className="px-4 py-2 font-medium text-secondary text-center">
                   Unduh Mantu
                 </th>
               </tr>
@@ -73,29 +67,11 @@ const ModalImport = ({
               {parsedData.slice(0, 5).map((row, idx) => (
                 <tr key={idx} className="hover:bg-muted/50 transition-colors">
                   <td className="px-4 py-2.5 font-medium text-foreground truncate max-w-[200px]">
-                    {row.guest_name}
-                  </td>
-                  <td className="px-4 py-2.5">
-                    <div className="flex justify-center">
-                      {row.akad_status ? (
-                        <Check className="size-4 text-emerald-500" />
-                      ) : (
-                        <X className="size-4 text-rose-500" />
-                      )}
-                    </div>
+                    {row.full_name}
                   </td>
                   <td className="px-4 py-2.5">
                     <div className="flex justify-center">
                       {row.mantu_status ? (
-                        <Check className="size-4 text-emerald-500" />
-                      ) : (
-                        <X className="size-4 text-rose-500" />
-                      )}
-                    </div>
-                  </td>
-                  <td className="px-4 py-2.5">
-                    <div className="flex justify-center">
-                      {row.guest_knock_status ? (
                         <Check className="size-4 text-emerald-500" />
                       ) : (
                         <X className="size-4 text-rose-500" />
@@ -134,11 +110,11 @@ const ModalImport = ({
 
         <DialogFooter className="gap-2 shrink-0 sm:justify-end">
           <Button
-            variant="outline"
+            variant="destructive"
             onClick={() => {
-              setIsPreviewOpen(false);
-              setParsedData([]);
-              setFile(null);
+              setIsPreviewOpen(false)
+              setParsedData([])
+              setFile(null)
             }}
             disabled={isImporting}
             className="hover:cursor-pointer"
@@ -165,7 +141,7 @@ const ModalImport = ({
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  );
-};
+  )
+}
 
-export default ModalImport;
+export default ModalImport

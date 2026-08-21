@@ -5,7 +5,7 @@ export type Comment = {
   created_at: string;
   guests?: {
     id: string;
-    guest_name: string;
+    full_name: string;
   };
   [key: string]: unknown;
 };

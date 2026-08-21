@@ -11,6 +11,11 @@ interface CoverProps {
 const Cover = ({ isDark, gold, ribbonRef }: CoverProps) => {
   const { imageUrl } = useImageUrl()
 
+  // Cari item dengan nama "garuda.png" di list icon, bukan asal ambil index [0]
+  const garudaIcon = (imageUrl as any)?.icon?.find((item: any) =>
+    item?.name?.toLowerCase().includes("garuda")
+  )
+
   return (
     <>
       {" "}
@@ -24,9 +29,8 @@ const Cover = ({ isDark, gold, ribbonRef }: CoverProps) => {
       {/* title block */}
       <div className="relative z-10 mt-3 flex flex-col items-center gap-[2px]">
         <span
-          className="font-serif text-[2rem] font-bold"
+          className="font-serif text-[2rem] font-bold text-white"
           style={{
-            color: gold,
             textShadow: "0 1px 1px rgba(0,0,0,0.5)",
           }}
         >
@@ -44,29 +48,29 @@ const Cover = ({ isDark, gold, ribbonRef }: CoverProps) => {
             justifyContent: "center",
           }}
         >
-          <Image
-            src={(imageUrl as any)?.icon?.[0].link}
-            alt="Emblem"
-            width={200}
-            height={200}
-          />
+          {garudaIcon?.link && (
+            <Image
+              src={garudaIcon.link}
+              alt="Emblem"
+              width={200}
+              height={200}
+            />
+          )}
         </div>
       </div>
       {/* bottom block */}
       <div className="relative z-10 mb-2 flex flex-col items-center gap-[2px]">
         <span
-          className="font-serif text-[1.8rem] font-bold"
+          className="font-serif text-[1.8rem] font-bold text-white"
           style={{
-            color: gold,
             textShadow: "0 1px 1px rgba(0,0,0,0.5)",
           }}
         >
           DEPARTEMEN AGAMA
         </span>
         <span
-          className="font-serif text-[1.8rem] font-bold"
+          className="font-serif text-[1.8rem] font-bold text-white"
           style={{
-            color: gold,
             textShadow: "0 1px 1px rgba(0,0,0,0.5)",
           }}
         >

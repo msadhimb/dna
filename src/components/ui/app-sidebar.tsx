@@ -12,9 +12,9 @@ import {
 import { LayoutDashboardIcon, ListIcon } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { FaComment } from "react-icons/fa"
-import { Button } from "./button"
 import { createClient } from "@/utils/supabase/client"
 import { NavMain } from "../nav-main"
+import { Button } from "../Button"
 
 const data = {
   navMain: [
@@ -60,7 +60,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={data.navMain} />
       </SidebarContent>
       <SidebarFooter>
-        <Button className="bg-red-400" onClick={handleLogout}>
+        <Button variant={"destructive"} onClick={handleLogout}>
           Keluar
         </Button>
       </SidebarFooter>
