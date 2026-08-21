@@ -577,17 +577,6 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
             }}
           />
         </div>
-
-        {/* floor shadow */}
-        <div
-          ref={shadowRef}
-          className="pointer-events-none mt-[-6px] h-[32px] w-[60%] origin-top"
-          style={{
-            background: isDark
-              ? "radial-gradient(ellipse at center, rgba(0,0,0,0.8), transparent 70%)"
-              : "radial-gradient(ellipse at center, rgba(0,0,0,0.28), transparent 70%)",
-          }}
-        />
       </section>
     )
   }
