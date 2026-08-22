@@ -389,12 +389,7 @@ const MainView = ({
           id="book-flip-wrapper"
           className="gsap-element pointer-events-none absolute inset-0 z-20 flex h-full w-full flex-col justify-center overflow-hidden bg-background opacity-0"
         >
-          <BookFlip
-            ref={bookFlipRef}
-            theme={theme}
-            date="12 Desember 2026"
-            location="Gedung Pernikahan"
-          />
+          <BookFlip ref={bookFlipRef} theme={theme} />
         </div>
       </section>
       <div className="flex flex-col gap-36">

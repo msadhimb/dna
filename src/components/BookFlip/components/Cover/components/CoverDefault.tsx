@@ -2,13 +2,13 @@ import { useImageUrl } from "@/store/useImageUrl"
 import Image from "next/image"
 import React from "react"
 
-interface CoverProps {
+interface CoverDefaultProps {
   isDark: boolean
   gold: string
   ribbonRef: React.RefObject<any>
 }
 
-const Cover = ({ isDark, gold, ribbonRef }: CoverProps) => {
+const CoverDefault = ({ isDark, gold, ribbonRef }: CoverDefaultProps) => {
   const { imageUrl } = useImageUrl()
 
   // Cari item dengan nama "garuda.png" di list icon, bukan asal ambil index [0]
@@ -27,7 +27,7 @@ const Cover = ({ isDark, gold, ribbonRef }: CoverProps) => {
         }}
       />
       {/* title block */}
-      <div className="relative z-10 mt-3 flex flex-col items-center gap-[2px]">
+      <div className="relative z-10 mt-3 flex flex-col items-center gap-0.5">
         <span
           className="font-serif text-[2rem] font-bold text-white"
           style={{
@@ -59,7 +59,7 @@ const Cover = ({ isDark, gold, ribbonRef }: CoverProps) => {
         </div>
       </div>
       {/* bottom block */}
-      <div className="relative z-10 mb-2 flex flex-col items-center gap-[2px]">
+      <div className="relative z-10 mb-2 flex flex-col items-center gap-0.5">
         <span
           className="font-serif text-[1.8rem] font-bold text-white"
           style={{
@@ -80,10 +80,10 @@ const Cover = ({ isDark, gold, ribbonRef }: CoverProps) => {
       {/* ribbon */}
       <div
         ref={ribbonRef}
-        className="absolute bottom-[10px] flex items-end gap-[6px]"
+        className="absolute bottom-2.5 flex items-end gap-1.5"
       />
     </>
   )
 }
 
-export default Cover
+export default CoverDefault
