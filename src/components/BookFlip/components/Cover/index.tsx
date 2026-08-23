@@ -1,6 +1,7 @@
 import React from "react"
 import CoverDefault from "./components/CoverDefault"
 import { cn } from "@/lib/utils"
+import CoverBack from "./components/CoverBack"
 
 const Cover = ({
   coverFront,
@@ -14,6 +15,7 @@ const Cover = ({
   ribbonRef,
   isDark,
   coverGradient,
+  isSpinning,
 }: {
   coverFront: any
   coverBack: any
@@ -26,6 +28,7 @@ const Cover = ({
   ribbonRef: React.RefObject<any>
   isDark: boolean
   coverGradient: string
+  isSpinning: boolean
 }) => {
   return (
     <>
@@ -79,7 +82,8 @@ const Cover = ({
             ...coverBack?.style,
           }}
         >
-          {isDesktop && (
+          {isSpinning && <CoverBack background={coverGradient} />}
+          {isDesktop && !isSpinning && (
             <div className="absolute inset-0 flex">
               {/* kiri = index 0 */}
               <div className="w-full flex flex-col items-center justify-center ...">

@@ -49,6 +49,7 @@ export const getTimeline = ({
     gsap.set(coverRef.current, {
       rotateY: 0,
       rotateX: 0,
+      zIndex: 100,
       transformOrigin: "left center",
       force3D: true,
     })
@@ -127,7 +128,7 @@ export const getTimeline = ({
       validPageRefs.slice(0, -1).forEach((pageEl, i) => {
         const frontShadow = pageFrontShadowRefs.current[i]
         const backShadow = pageBackShadowRefs.current[i]
-        const baseZIndex = 15 + (validPageRefs.length - 1 - i) * 5
+        const baseZIndex = 15 + i * 5
 
         tl.to({}, { duration: 0.8 })
           .to(bookRef.current, {

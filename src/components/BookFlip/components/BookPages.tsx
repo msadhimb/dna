@@ -6,12 +6,14 @@ const BookPages = ({
   pageRefs,
   pageFrontShadowRefs,
   pageBackShadowRefs,
+  isSpinning,
 }: {
   isDesktop: boolean
   resolvedPages: React.ReactNode[]
   pageRefs: React.MutableRefObject<(HTMLDivElement | null)[]>
   pageFrontShadowRefs: React.MutableRefObject<(HTMLDivElement | null)[]>
   pageBackShadowRefs: React.MutableRefObject<(HTMLDivElement | null)[]>
+  isSpinning: boolean
 }) => {
   return (
     <>

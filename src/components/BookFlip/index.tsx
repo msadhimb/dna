@@ -5,6 +5,7 @@ import React, {
   useRef,
   useImperativeHandle,
   useEffect,
+  useState,
 } from "react"
 import { useTheme } from "next-themes"
 import gsap from "gsap"
@@ -72,6 +73,8 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
     const pageBackShadowRefs = useRef<(HTMLDivElement | null)[]>([])
     const isDesktop = typeof window !== "undefined" && window.innerWidth >= 768
 
+    const [isSpinning, setIsSpinning] = useState(false)
+
     const activeTheme = theme ?? (resolvedTheme === "dark" ? "dark" : "light")
     const isDark = activeTheme === "dark"
     const coverThemeIsGreen = !isDark
@@ -120,13 +123,19 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
       }
 
       const bookFlipWrapper = sectionRef.current?.closest("#book-flip-wrapper")
+
       const wrapperOpacity = bookFlipWrapper
         ? parseFloat(
             (bookFlipWrapper as HTMLElement).style.opacity ||
               getComputedStyle(bookFlipWrapper as HTMLElement).opacity
           )
         : 1
+
       if (wrapperOpacity < 0.5) {
+        return
+      }
+
+      if (!bookRef.current || !coverRef.current) {
         return
       }
 
@@ -135,27 +144,50 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
         "rotateY"
       ) as number
 
-      const targetX = gsap.getProperty(bookRef.current, "x") + "%"
+      const targetX = `${gsap.getProperty(bookRef.current, "x")}%`
       const targetZ = gsap.getProperty(bookRef.current, "z")
       const targetRotX = gsap.getProperty(bookRef.current, "rotateX")
+
       let currentRotY = gsap.getProperty(bookRef.current, "rotateY") as number
-      currentRotY = currentRotY % 360
-      if (currentRotY > 180) currentRotY -= 360
-      if (currentRotY < -180) currentRotY += 360
-      gsap.set(bookRef.current, { rotateY: currentRotY })
+
+      currentRotY %= 360
+
+      if (currentRotY > 180) {
+        currentRotY -= 360
+      }
+
+      if (currentRotY < -180) {
+        currentRotY += 360
+      }
+
+      gsap.set(bookRef.current, {
+        rotateY: currentRotY,
+      })
 
       const targetRotY = currentRotY
       const targetScale = gsap.getProperty(bookRef.current, "scale")
 
       const validPageEls = pageRefs.current.filter(Boolean) as HTMLDivElement[]
+
       const targetPageRots = validPageEls.map(
         (el) => gsap.getProperty(el, "rotateY") as number
       )
+
+      const targetRotations = new Map<HTMLElement, number>()
+
+      targetRotations.set(coverRef.current, targetCoverRot)
+
+      validPageEls.forEach((el, index) => {
+        targetRotations.set(el, targetPageRots[index])
+      })
+
       const anyFlipped =
-        targetCoverRot < -10 || targetPageRots.some((r) => r < -10)
+        targetCoverRot < -10 ||
+        targetPageRots.some((rotation) => rotation < -10)
 
       if (anyFlipped) {
         const tl = gsap.timeline()
+
         tl.to(
           [...validPageEls, coverRef.current],
           {
@@ -166,57 +198,75 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
           },
           0
         )
-        validPageEls.forEach((el, i) => {
-          tl.set(el, { zIndex: 15 + (validPageEls.length - 1 - i) * 5 }, 0.3)
-        })
-        tl.set(coverRef.current, { zIndex: 25 }, 0.4)
-          .to(
-            bookRef.current,
-            {
-              x: "0%",
-              rotateX: 0,
-              rotateY: 0,
-              z: 0,
-              scale: 1,
-              duration: 0.6,
-              ease: "power2.inOut",
-            },
-            0
-          )
-          .to(
-            bookRef.current,
-            {
-              rotateY: "+=360",
-              duration: 1.0,
-              ease: "power2.inOut",
-            },
-            ">"
-          )
-          .addLabel("reopen", ">")
-          .to(
-            [coverRef.current, ...validPageEls],
-            {
-              rotateY: (i: number, target: HTMLDivElement) => {
-                if (target === coverRef.current) return targetCoverRot
-                const pageIdx = validPageEls.indexOf(target)
-                return pageIdx >= 0 ? targetPageRots[pageIdx] : 0
-              },
-              duration: 0.6,
-              ease: "power2.inOut",
-              stagger: 0.1,
-            },
-            "reopen"
-          )
-          .add(() => {
-            if (targetCoverRot < -10) gsap.set(coverRef.current, { zIndex: 10 })
-          }, "reopen+=0.3")
 
-        validPageEls.forEach((el, i) => {
+        tl.set(
+          coverRef.current,
+          {
+            zIndex: 100,
+          },
+          0.4
+        )
+
+        tl.to(
+          bookRef.current,
+          {
+            x: "0%",
+            rotateX: 0,
+            rotateY: 0,
+            z: 0,
+            scale: 1,
+            duration: 0.6,
+            ease: "power2.inOut",
+          },
+          0
+        )
+
+        tl.to(
+          bookRef.current,
+          {
+            rotateY: "+=360",
+            duration: 1,
+            ease: "power2.inOut",
+            onStart: () => {
+              setIsSpinning(true)
+            },
+            onComplete: () => {
+              setIsSpinning(false)
+            },
+          },
+          ">"
+        )
+
+        tl.addLabel("reopen", ">")
+
+        tl.to(
+          [coverRef.current, ...validPageEls],
+          {
+            rotateY: (_index: number, target: HTMLElement) =>
+              targetRotations.get(target) ?? 0,
+            duration: 0.6,
+            ease: "power2.inOut",
+            stagger: 0.1,
+          },
+          "reopen"
+        )
+
+        tl.add(() => {
+          gsap.set(coverRef.current, {
+            zIndex: targetCoverRot < -10 ? 10 : 25,
+          })
+        }, "reopen+=0.3")
+
+        validPageEls.forEach((el, index) => {
           tl.add(() => {
-            if (targetPageRots[i] < -10)
-              gsap.set(el, { zIndex: 30 + (validPageEls.length - 1 - i) * 5 })
+            if (targetPageRots[index] < -10) {
+              gsap.set(el, {
+                zIndex: 15 + index * 5,
+              })
+            }
           }, "reopen+=0.4")
         })
+
         tl.to(
           bookRef.current,
           {
@@ -230,17 +280,26 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
           },
           "reopen"
         )
-      } else {
-        if (bookRef.current) {
-          gsap.to(bookRef.current, {
-            rotateY: "+=360",
-            duration: 1.2,
-            ease: "power2.inOut",
+
+        tl.add(() => {
+          gsap.set(bookRef.current, {
+            rotateY: targetRotY,
           })
-        }
+        }, "reopen+=0.6")
+      } else {
+        gsap.to(bookRef.current, {
+          rotateY: "+=360",
+          duration: 1.2,
+          ease: "power2.inOut",
+          onStart: () => {
+            setIsSpinning(true)
+          },
+          onComplete: () => {
+            setIsSpinning(false)
+          },
+        })
       }
     }, [isDark])
-
     return (
       <section
         ref={sectionRef}
@@ -267,6 +326,7 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
             pageRefs={pageRefs}
             pageFrontShadowRefs={pageFrontShadowRefs}
             pageBackShadowRefs={pageBackShadowRefs}
+            isSpinning={isSpinning}
           />
 
           {/* COVER — flipping page (front & back configurable via `cover` prop) */}
@@ -282,6 +342,7 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
             ribbonRef={ribbonRef}
             isDark={isDark}
             coverGradient={coverGradient}
+            isSpinning={isSpinning}
           />
 
           <div
