@@ -280,7 +280,7 @@ export const JourneySequence = forwardRef<
           }
           fill
           alt="Journey"
-          sizes="150vw"
+          sizes="200vw"
           quality={80}
           priority
           className="journey-inner-img object-cover"
@@ -293,22 +293,20 @@ export const JourneySequence = forwardRef<
         ref={groomBioRef}
         className={cn(
           "gsap-element absolute inset-x-0 bottom-0 z-50 flex w-screen flex-col gap-3 opacity-0",
-          // Mobile: full-width panel sliding from bottom, gradient from bottom, centered text
-          "items-center justify-end text-center bg-gradient-to-t from-black/90 via-black/60 to-transparent pt-24 pb-12 px-6",
-          // Desktop: right-side panel, gradient from left, right-aligned text
-          "md:inset-y-0 md:bottom-auto md:right-0 md:left-auto md:h-full md:w-1/2 md:items-end md:justify-center md:text-right md:bg-gradient-to-l md:from-black/85 md:via-black/45 md:pt-0 md:pb-0 md:px-12"
+          "items-center justify-end text-center bg-linear-to-t from-black/90 via-black/60 to-transparent pt-24 pb-12 px-6",
+          "lg:inset-y-0 sm:bottom-auto sm:right-0 sm:left-auto sm:h-full sm:w-1/2 sm:items-end sm:justify-center sm:text-right sm:bg-linear-to-l sm:from-black/85 sm:via-black/45 sm:pt-0 sm:pb-0 sm:px-12"
         )}
       >
-        <span className="font-sans text-[10px] font-semibold tracking-[0.5em] text-[#f2dfa0] uppercase md:text-xs dark:text-muted">
+        <span className="font-sans text-[10px] font-semibold tracking-[0.5em] text-[#f2dfa0] uppercase sm:text-xs dark:text-muted">
           The Groom
         </span>
-        <h2 className="font-signature text-5xl leading-[1.1] font-bold tracking-wide text-[#f2dfa0] [text-shadow:0_4px_20px_rgba(0,0,0,0.5)] md:text-7xl  dark:text-primary">
+        <h2 className="font-signature text-5xl leading-[1.1] font-bold tracking-wide text-[#f2dfa0] [text-shadow:0_4px_20px_rgba(0,0,0,0.5)] sm:text-7xl  dark:text-primary">
           Muhamad Salman Adhim Baqy
         </h2>
-        <span className="h-px w-16 bg-gradient-to-r from-transparent via-[#d4af37] to-transparent md:bg-gradient-to-l md:from-[#d4af37] md:via-transparent md:to-transparent md:w-24 dark:via-primary md:dark:from-primary" />
+        <span className="h-px w-16 bg-linear-to-r from-transparent via-[#d4af37] to-transparent sm:bg-linear-to-l sm:from-[#d4af37] sm:via-transparent sm:to-transparent sm:w-24 dark:via-primary sm:dark:from-primary" />
 
-        <div className="mt-2 flex flex-col items-center gap-2 md:items-end">
-          <p className="font-serif text-[11px] font-normal tracking-[0.4em] text-[#e9cf7a] dark:text-white italic uppercase md:text-xs">
+        <div className="mt-2 flex flex-col items-center gap-2 sm:items-end">
+          <p className="font-serif text-[11px] font-normal tracking-[0.4em] text-[#e9cf7a] dark:text-white italic uppercase sm:text-xs">
             Putra dari
           </p>
 
