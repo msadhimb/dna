@@ -15,6 +15,8 @@ import {
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { FormInput } from "@/components/Form/FormInput"
+import { FormDropdown } from "@/components/Form/FormDropdown"
+import { guestFromList } from "@/helper/guestFormList"
 import { toast } from "sonner"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { Button } from "../Button"
@@ -119,6 +121,7 @@ const GuestFormModal = (props: GuestFormModalProps) => {
     if (isEdit && openState && "guest" in props) {
       form.reset({
         full_name: props.guest.full_name,
+        guest_from: props.guest.guest_from,
         mantu_status: props.guest.mantu_status,
         unduh_mantu_status: props.guest.unduh_mantu_status,
       })
@@ -166,6 +169,28 @@ const GuestFormModal = (props: GuestFormModalProps) => {
               {...field}
               label="Nama Tamu"
               placeholder="Contoh: Budi Santoso"
+              required
+              disabled={isLoading}
+              error={fieldState.error?.message}
+            />
+          </div>
+        )}
+      />
+
+      {/* Guest From */}
+      <Controller
+        control={form.control}
+        name="guest_from"
+        render={({ field, fieldState }) => (
+          <div className="flex flex-col gap-1">
+            <FormDropdown
+              {...field}
+              label="Tamu Dari"
+              options={guestFromList.map(({ id, name }) => ({
+                value: id,
+                label: name,
+              }))}
+              placeholder="Pilih asal tamu"
               required
               disabled={isLoading}
               error={fieldState.error?.message}

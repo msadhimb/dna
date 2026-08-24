@@ -1,3 +1,4 @@
+import { guestFromList } from "@/helper/guestFormList"
 import { Check, Pencil, Trash, X } from "lucide-react"
 import { toast } from "sonner"
 
@@ -9,6 +10,21 @@ export const columns = ({
   {
     accessorKey: "full_name",
     header: "Name",
+  },
+  {
+    accessorKey: "guest_from",
+    header: "Tamu Dari",
+    cell: ({ row }: { row: any }) => {
+      return (
+        <div>
+          {
+            guestFromList.find(
+              (guestFrom) => guestFrom.id === row.original.guest_from
+            )?.name
+          }
+        </div>
+      )
+    },
   },
   {
     accessorKey: "mantu_status",

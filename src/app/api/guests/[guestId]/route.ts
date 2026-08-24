@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { cookies } from "next/headers"
 import { createClient } from "@/utils/supabase/server"
 
-const FIELDS = "id, full_name, mantu_status, unduh_mantu_status"
+const FIELDS = "id, full_name, mantu_status, unduh_mantu_status, guest_from"
 
 async function getAdmin() {
   const client = createClient(await cookies())
@@ -25,7 +25,7 @@ export async function PATCH(
   const full_name = String(body?.full_name ?? "").trim()
   if (!full_name) return bad("Nama tamu wajib diisi")
 
-  const payload: any = { full_name }
+  const payload: any = { full_name, guest_from: body?.guest_from }
   if (typeof body?.mantu_status === "boolean")
     payload.mantu_status = body.mantu_status
   if (typeof body?.unduh_mantu_status === "boolean")
