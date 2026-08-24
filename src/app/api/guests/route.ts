@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server"
 import { cookies } from "next/headers"
 import { createClient } from "@/utils/supabase/server"
 
-const FIELDS = "id, full_name, guest_from, mantu_status, unduh_mantu_status"
+const FIELDS =
+  "id, full_name, guest_from, mantu_status, unduh_mantu_status, guest_total"
 
 async function adminClient() {
   const client = createClient(await cookies())
@@ -27,6 +28,7 @@ export async function GET(request: NextRequest) {
     100
   )
   const search = request.nextUrl.searchParams.get("search")?.trim() ?? ""
+  const guestFrom = request.nextUrl.searchParams.get("guest_from")?.trim() ?? ""
   const allowedSort = ["full_name", "id"]
   const requestedSort =
     request.nextUrl.searchParams.get("sortBy") ?? "full_name"
@@ -40,6 +42,7 @@ export async function GET(request: NextRequest) {
     .select(FIELDS, { count: "exact" })
     .order(sortBy, { ascending })
   if (search) query = query.ilike("full_name", `%${search}%`)
+  if (guestFrom) query = query.eq("guest_from", guestFrom)
   const from = (page - 1) * pageSize
   const { data, error, count } = await query.range(from, from + pageSize - 1)
   if (error) return bad(error.message, 500)
@@ -70,6 +73,8 @@ export async function POST(request: NextRequest) {
     const full_name = String(input?.full_name ?? "").trim()
     if (!full_name) continue
     const payload: any = { full_name, guest_from: input?.guest_from }
+    if (Number.isInteger(input?.guest_total) && input.guest_total >= 0)
+      payload.guest_total = input.guest_total
 
     if (typeof input.mantu_status === "boolean")
       payload.mantu_status = input.mantu_status

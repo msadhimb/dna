@@ -46,7 +46,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Button } from "../Button"
 
 export type ActionItem<TData> = {
@@ -253,7 +253,7 @@ export function DataTable<TData>({
         ref={scrollAreaRef}
         className="w-full rounded-md border border-border"
       >
-        <Table className="min-w-full">
+        <Table className="min-w-[760px] w-full">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id} className="hover:!bg-transparent">
@@ -339,6 +339,7 @@ export function DataTable<TData>({
             )}
           </TableBody>
         </Table>
+        <ScrollBar orientation="horizontal" />
       </ScrollArea>
 
       {/* ── Pagination ────────────────────────────────────────────────────── */}

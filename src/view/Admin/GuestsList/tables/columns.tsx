@@ -57,6 +57,13 @@ export const columns = ({
     },
   },
   {
+    accessorKey: "guest_total",
+    header: () => <div className="text-center">Jumlah Tamu</div>,
+    cell: ({ row }: { row: any }) => {
+      return <div className="text-center">{row.original.guest_total} Orang</div>
+    },
+  },
+  {
     accessorKey: "url",
     header: "Link",
     cell: ({ row }: { row: any }) => {
