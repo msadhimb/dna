@@ -83,7 +83,9 @@ export function DataTable<TData>({
   const [pageSize, setPageSize] = React.useState(20)
   const [search, setSearch] = React.useState("")
   const [debouncedSearch, setDebouncedSearch] = React.useState("")
-  const [sorting, setSorting] = React.useState<SortingState>([])
+  const [sorting, setSorting] = React.useState<SortingState>([
+    { id: "full_name", desc: false },
+  ])
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
@@ -98,14 +100,13 @@ export function DataTable<TData>({
   }, [search])
 
   // ── Build query params ────────────────────────────────────────────────────
-  const sortBy = sorting[0]?.id ?? "created_at"
   const sortDir = sorting[0]?.desc === false ? "asc" : "desc"
 
   const params = {
     page,
     pageSize,
     search: debouncedSearch,
-    sortBy,
+    sortBy: sorting[0]?.id ?? "full_name",
     sortDir,
   }
 

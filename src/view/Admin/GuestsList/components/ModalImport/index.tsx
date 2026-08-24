@@ -7,6 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { guestFromList } from "@/helper/guestFormList"
 import { AlertCircle, Check, FileSpreadsheet, Loader2, X } from "lucide-react"
 
 const ModalImport = ({
@@ -56,6 +57,9 @@ const ModalImport = ({
                   Nama Tamu
                 </th>
                 <th className="px-4 py-2 font-medium text-secondary text-center">
+                  Tamu Dari
+                </th>
+                <th className="px-4 py-2 font-medium text-secondary text-center">
                   Mantu
                 </th>
                 <th className="px-4 py-2 font-medium text-secondary text-center">
@@ -68,6 +72,11 @@ const ModalImport = ({
                 <tr key={idx} className="hover:bg-muted/50 transition-colors">
                   <td className="px-4 py-2.5 font-medium text-foreground truncate max-w-[200px]">
                     {row.full_name}
+                  </td>
+                  <td className="px-4 py-2.5 text-center">
+                    {guestFromList.find(
+                      (guestFrom) => guestFrom.id === row.guest_from
+                    )?.name || row.guest_from}
                   </td>
                   <td className="px-4 py-2.5">
                     <div className="flex justify-center">
@@ -124,7 +133,7 @@ const ModalImport = ({
           <Button
             onClick={handleImportSubmit}
             disabled={isImporting}
-            className="flex items-center gap-2 hover:cursor-pointer animate-pulse"
+            className="flex items-center gap-2"
           >
             {isImporting ? (
               <>

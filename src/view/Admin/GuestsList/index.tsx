@@ -77,13 +77,13 @@ const GuestsListView = () => {
             const nameKey = Object.keys(row).find((key) =>
               /name|nama|full_name/i.test(key)
             )
-
+            const guestFromKey = Object.keys(row).find((key) =>
+              /^(guest[\s_-]*from|tamu[\s_-]*dari)$/i.test(key.trim())
+            )
             const mantuKey = Object.keys(row).find((key) => /mantu/i.test(key))
-
             const unduhKey = Object.keys(row).find((key) =>
               /unduh|unduh.*mantu/i.test(key)
             )
-
             const full_name = nameKey ? String(row[nameKey] ?? "").trim() : ""
 
             const parseBool = (val: any) => {
@@ -96,12 +96,14 @@ const GuestsListView = () => {
               )
             }
 
-            const payload: any = { full_name }
-
+            const payload: any = {
+              full_name,
+              guest_from: guestFromKey ? String(row[guestFromKey]).trim() : "",
+            }
             if (mantuKey) payload.mantu_status = parseBool(row[mantuKey])
-
             if (unduhKey) payload.unduh_mantu_status = parseBool(row[unduhKey])
 
+            console.log(payload)
             return payload
           })
           .filter((g) => !!g.full_name) // Filter out rows with no guest name

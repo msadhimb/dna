@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
   for (const input of guests) {
     const full_name = String(input?.full_name ?? "").trim()
     if (!full_name) continue
-    const payload: any = { full_name }
+    const payload: any = { full_name, guest_from: input?.guest_from }
 
     if (typeof input.mantu_status === "boolean")
       payload.mantu_status = input.mantu_status
