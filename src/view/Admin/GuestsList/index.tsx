@@ -103,7 +103,6 @@ const GuestsListView = () => {
             if (mantuKey) payload.mantu_status = parseBool(row[mantuKey])
             if (unduhKey) payload.unduh_mantu_status = parseBool(row[unduhKey])
 
-            console.log(payload)
             return payload
           })
           .filter((g) => !!g.full_name) // Filter out rows with no guest name
@@ -119,7 +118,6 @@ const GuestsListView = () => {
         setFile(selectedFile)
         setIsPreviewOpen(true)
       } catch (err) {
-        console.error("Error parsing Excel:", err)
         toast.error("Gagal membaca file Excel. Pastikan format file benar.")
       }
 
@@ -161,7 +159,6 @@ const GuestsListView = () => {
         })
       }
     } catch (error: any) {
-      console.error("Error during import submit:", error)
       toast.error(
         error?.message || "Terjadi kesalahan saat mengimpor data tamu.",
         {

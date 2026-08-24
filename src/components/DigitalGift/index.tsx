@@ -19,10 +19,6 @@ export const DigitalGift = () => {
   const { resolvedTheme } = useTheme()
   const { guest } = useGuest()
 
-  useEffect(() => {
-    console.log("DigitalGift guest:", guest)
-  }, [guest])
-
   const isDark = resolvedTheme === "dark"
   const sectionRef = useRef<HTMLElement>(null)
 

@@ -37,7 +37,6 @@ const Login = ({ className, ...props }: React.ComponentProps<"form">) => {
         id: toastId,
         duration: 3000,
       })
-      console.error("Login failed:", error)
     }
   }
   return (
