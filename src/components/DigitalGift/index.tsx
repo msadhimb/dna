@@ -119,7 +119,7 @@ export const DigitalGift = () => {
         style={{ background: bgGradient }}
       />
 
-      <div className="dg-content relative z-10 mx-auto flex w-full max-w-3xl flex-col items-center gap-10 px-6">
+      <div className="dg-content relative z-10 mx-auto flex w-full max-w-5xl flex-col items-center gap-10 px-6">
         {/* ── Header ── */}
         <div className="dg-header flex flex-col items-center gap-3 text-center">
           <p
@@ -215,7 +215,7 @@ export const DigitalGift = () => {
         </div>
 
         {/* ── Bank Account Cards ── */}
-        <div className="dg-cards-wrapper flex flex-col md:flex-row gap-5 md:gap-6">
+        <div className="dg-cards-wrapper relative z-10 w-full md:w-auto flex max-w-5xl flex-col md:flex-row items-center gap-10">
           {guest?.guest_from === "devis_mother" ||
           guest?.guest_from === "devis_father" ||
           guest?.guest_from === "devis_family_neighbor" ? (

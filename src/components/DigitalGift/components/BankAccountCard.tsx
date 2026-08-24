@@ -30,7 +30,7 @@ const BankAccountCard = ({
 
   return (
     <div
-      className="dg-card group relative md:w-100 flex flex-col items-center gap-3 px-8 py-7 text-center transition-all duration-300"
+      className="dg-card group relative w-full md:w-100 flex flex-col items-center gap-3 px-8 py-7 text-center transition-all duration-300"
       style={{
         border: `1px solid ${borderAccent}`,
         borderRadius: "12px",
