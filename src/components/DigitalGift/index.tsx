@@ -1,23 +1,28 @@
 "use client"
 
-import React, { useRef, useState } from "react"
+import { useEffect, useRef } from "react"
 import { useTheme } from "next-themes"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
-import { Button } from "@/components/Button"
 import { useGSAP } from "@gsap/react"
 import {
   WaxSeal,
   OrnamentalDivider,
   EnvelopeIllustration,
 } from "@/components/Icon"
-import { CopyCheck, CopyIcon } from "lucide-react"
 import BankAccountCard from "./components/BankAccountCard"
+import { useGuest } from "@/store/useGuest"
 
 gsap.registerPlugin(ScrollTrigger)
 
 export const DigitalGift = () => {
   const { resolvedTheme } = useTheme()
+  const { guest } = useGuest()
+
+  useEffect(() => {
+    console.log("DigitalGift guest:", guest)
+  }, [guest])
+
   const isDark = resolvedTheme === "dark"
   const sectionRef = useRef<HTMLElement>(null)
 
@@ -214,27 +219,44 @@ export const DigitalGift = () => {
         </div>
 
         {/* ── Bank Account Cards ── */}
-        <div className="dg-cards-wrapper grid w-full grid-cols-1 gap-5 md:grid-cols-2 md:gap-6">
-          <BankAccountCard
-            svg={
-              "https://znefanspvasmutcrbjmu.supabase.co/storage/v1/object/public/image-icon/bni.svg"
-            }
-            accountNumber="1819801119"
-            accountName="Salman Adhim"
-            accent={accent}
-            borderAccent={borderAccent}
-            isDark={isDark}
-          />
-          <BankAccountCard
-            svg={
-              "https://znefanspvasmutcrbjmu.supabase.co/storage/v1/object/public/image-icon/bca.svg"
-            }
-            accountNumber="7296154554"
-            accountName="Devi Yuliana"
-            accent={accent}
-            borderAccent={borderAccent}
-            isDark={isDark}
-          />
+        <div className="dg-cards-wrapper flex flex-col md:flex-row gap-5 md:gap-6">
+          {guest?.guest_from === "devis_mother" ||
+          guest?.guest_from === "devis_father" ||
+          guest?.guest_from === "devis_family_neighbor" ? (
+            <BankAccountCard
+              svg={
+                "https://znefanspvasmutcrbjmu.supabase.co/storage/v1/object/public/image-icon/bca.svg"
+              }
+              accountNumber="7130633280"
+              accountName="Selvia Agustin"
+              accent={accent}
+              borderAccent={borderAccent}
+              isDark={isDark}
+            />
+          ) : (
+            <>
+              <BankAccountCard
+                svg={
+                  "https://znefanspvasmutcrbjmu.supabase.co/storage/v1/object/public/image-icon/bni.svg"
+                }
+                accountNumber="1819801119"
+                accountName="Salman Adhim"
+                accent={accent}
+                borderAccent={borderAccent}
+                isDark={isDark}
+              />
+              <BankAccountCard
+                svg={
+                  "https://znefanspvasmutcrbjmu.supabase.co/storage/v1/object/public/image-icon/bca.svg"
+                }
+                accountNumber="7296154554"
+                accountName="Devi Yuliana"
+                accent={accent}
+                borderAccent={borderAccent}
+                isDark={isDark}
+              />
+            </>
+          )}
         </div>
 
         {/* ── Closing ── */}

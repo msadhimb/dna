@@ -19,7 +19,6 @@ async function supabase() {
 }
 
 export async function GET(request: NextRequest) {
-  const guestId = request.nextUrl.searchParams.get("guest_id")
   const isAdminQuery = request.nextUrl.searchParams.has("page")
   const limit = Math.min(
     Math.max(Number(request.nextUrl.searchParams.get("limit") ?? "10"), 1),
@@ -35,8 +34,6 @@ export async function GET(request: NextRequest) {
     .select("id, guest_id, name, comment, attendance, created_at, updated_at")
     .order("created_at", { ascending: false })
     .range(offset, offset + limit - 1)
-
-  if (guestId) query = query.eq("guest_id", guestId)
 
   if (isAdminQuery) {
     const { data: claims } = await client.auth.getClaims()
@@ -118,7 +115,6 @@ export async function GET(request: NextRequest) {
     })
   }
 
-  if (!guestId) return error("guest_id wajib diisi")
   const { data, error: dbError } = await query
 
   if (dbError) return error(dbError.message, 500)

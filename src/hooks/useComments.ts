@@ -27,9 +27,7 @@ export function useComments(guestId: string | undefined) {
     enabled: Boolean(guestId),
     initialPageParam: 0,
     queryFn: ({ pageParam }) =>
-      request(
-        `/api/comments?guest_id=${encodeURIComponent(guestId ?? "")}&limit=${PAGE_SIZE}&offset=${pageParam}`
-      ),
+      request(`/api/comments?limit=${PAGE_SIZE}&offset=${pageParam}`),
     getNextPageParam: (lastPage, allPages) =>
       lastPage.length === PAGE_SIZE ? allPages.length * PAGE_SIZE : undefined,
   })

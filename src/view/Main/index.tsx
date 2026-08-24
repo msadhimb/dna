@@ -27,6 +27,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { useGSAP } from "@gsap/react"
 import { Tools } from "@/components/Tools"
 import { useImageUrl } from "@/store/useImageUrl"
+import { useGuest, Guest } from "@/store/useGuest"
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger)
@@ -39,12 +40,19 @@ if (typeof window !== "undefined") {
 const MainView = ({
   guestId,
   guestName,
+  guest,
 }: {
   guestId?: string
   guestName?: string
+  guest?: Guest
 }) => {
   const { resolvedTheme } = useTheme()
   const { imageUrl } = useImageUrl()
+  const setGuest = useGuest((state) => state.setGuest)
+
+  useEffect(() => {
+    setGuest(guest ?? null)
+  }, [guest, setGuest])
 
   const [mounted, setMounted] = useState(false)
   const [isLoaded, setIsLoaded] = useState(false)

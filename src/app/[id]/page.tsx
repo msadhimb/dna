@@ -12,10 +12,16 @@ export default async function GuestPage({
   const client = createClient(await cookies())
   const { data: guest, error } = await client
     .from("guests")
-    .select("id, full_name")
+    .select("id, full_name, guest_from, mantu_status, unduh_mantu_status")
     .eq("id", id)
     .maybeSingle()
 
   if (error || !guest) notFound()
-  return <MainView guestId={guest.id} guestName={guest.full_name ?? ""} />
+  return (
+    <MainView
+      guestId={guest.id}
+      guestName={guest.full_name ?? ""}
+      guest={guest}
+    />
+  )
 }
