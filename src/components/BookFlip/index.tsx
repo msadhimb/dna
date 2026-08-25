@@ -296,6 +296,8 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
           },
           onComplete: () => {
             setIsSpinning(false)
+            gsap.set(bookRef.current, { rotateY: 0 })
+            ScrollTrigger.refresh()
           },
         })
       }

@@ -36,7 +36,7 @@ const Cover = ({
         ref={coverRef}
         className="absolute inset-0"
         style={{
-          zIndex: 25,
+          zIndex: 100,
           transformStyle: "preserve-3d",
           pointerEvents: "none",
         }}

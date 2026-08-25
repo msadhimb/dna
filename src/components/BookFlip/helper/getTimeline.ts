@@ -27,6 +27,16 @@ export const getTimeline = ({
     if (!bookRef.current || !coverRef.current || validPageRefs.length === 0)
       return tl
 
+    tl.eventCallback("onUpdate", () => {
+      if (!coverRef.current) return
+      const rotY = gsap.getProperty(coverRef.current, "rotateY") as number
+      if (rotY > -90) {
+        gsap.set(coverRef.current, { zIndex: 100 })
+      } else {
+        gsap.set(coverRef.current, { zIndex: 10 })
+      }
+    })
+
     const shadowNodes = [
       coverFrontShadowRef.current,
       coverBackShadowRef.current,
@@ -110,7 +120,6 @@ export const getTimeline = ({
           { opacity: 0.55, duration: 0.6, yoyo: true, repeat: 1 },
           "<"
         )
-        .set(coverRef.current, { zIndex: 10 }, "<0.6")
         .to(
           bookRef.current,
           {
@@ -175,7 +184,6 @@ export const getTimeline = ({
           { opacity: 0.55, duration: 0.5, yoyo: true, repeat: 1 },
           "<"
         )
-        .set(coverRef.current, { zIndex: 10 }, "<0.5")
         .to(
           bookRef.current,
           {
