@@ -20,32 +20,20 @@ export const WelcomeSection = forwardRef<
 
       // Set awal: full visible
       gsap.set(containerRef.current, {
-        transformOrigin: "top center",
-        scaleY: 1,
+        opacity: 1,
+        y: 0,
         force3D: true,
       })
       gsap.set(textRef.current, { y: 0, opacity: 1, force3D: true })
 
-      // 1. Text fade out + slide up (GPU composited)
-      tl.to(textRef.current, {
-        y: -60,
+      // Animasi super ringan (pure composite: opacity & transform) namun tetap estetik
+      tl.to(containerRef.current, {
         opacity: 0,
-        duration: 0.4,
+        y: -30,
+        duration: 0.5,
         ease: "none",
         force3D: true,
       })
-
-      // 2. Container wipe ke atas via scaleY (compositor-only, zero repaint)
-      tl.to(
-        containerRef.current,
-        {
-          scaleY: 0,
-          duration: 0.6,
-          ease: "none",
-          force3D: true,
-        },
-        "-=0.1"
-      )
 
       return tl
     },
@@ -57,7 +45,7 @@ export const WelcomeSection = forwardRef<
     <div
       ref={containerRef}
       className="absolute inset-0 z-50 flex h-full w-full flex-col items-center justify-center overflow-hidden bg-background"
-      style={{ willChange: "transform", transformOrigin: "top center" }}
+      style={{ willChange: "transform, opacity" }}
     >
       <div
         ref={textRef}
