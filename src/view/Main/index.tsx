@@ -358,6 +358,8 @@ const MainView = ({
     bWrapper.progress(savedBProgress, true)
   }, [theme])
 
+
+
   if (!mounted) {
     return (
       <div className="flex h-screen items-center justify-center bg-background">
@@ -366,10 +368,12 @@ const MainView = ({
     )
   }
 
+  const handleLoadingComplete = () => setIsLoaded(true)
+
   return (
     <main ref={mainRef}>
       <Tools />
-      {!isLoaded && <LoadingScreen onComplete={() => setIsLoaded(true)} />}
+      {!isLoaded && <LoadingScreen onComplete={handleLoadingComplete} />}
 
       <section
         id="master-trigger"
