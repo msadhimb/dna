@@ -5,6 +5,7 @@ import { useTheme } from "next-themes"
 import { Volume2, VolumeX, Moon, Sun, Settings, X, Music2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useAudio, AudioTrack } from "@/store/useAudio"
+import { useScroll } from "@/hooks/useScroll"
 
 export const Tools = () => {
   const [isOpen, setIsOpen] = useState(false)
@@ -23,8 +24,53 @@ export const Tools = () => {
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const [mounted, setMounted] = useState(false)
   const [showTitle, setShowTitle] = useState(false)
+  const { scrollY } = useScroll()
+  const hasAutoPlayedRef = useRef(false)
+  // true kalau browser sempat menolak play() (belum ada user gesture yang valid)
+  const [needsUserAction, setNeedsUserAction] = useState(false)
 
   useEffect(() => setMounted(true), [])
+
+  // Trigger utama: gesture asli (click/touchstart) di mana pun di dokumen.
+  // Browser hanya mengizinkan audio.play() kalau dipicu oleh gesture asli
+  // seperti click/touchstart/keydown — scroll TIDAK dihitung sebagai gesture valid,
+  // makanya auto-play dari scroll saja sering gagal diam-diam.
+  useEffect(() => {
+    if (hasAutoPlayedRef.current || isPlaying) return
+
+    const handler = () => {
+      hasAutoPlayedRef.current = true
+      setIsPlaying(true)
+      document.removeEventListener("click", handler)
+      document.removeEventListener("touchstart", handler)
+      document.removeEventListener("keydown", handler)
+    }
+
+    document.addEventListener("click", handler, { once: true })
+    document.addEventListener("touchstart", handler, { once: true })
+    document.addEventListener("keydown", handler, { once: true })
+
+    return () => {
+      document.removeEventListener("click", handler)
+      document.removeEventListener("touchstart", handler)
+      document.removeEventListener("keydown", handler)
+    }
+  }, [isPlaying, setIsPlaying])
+
+  // Trigger sekunder: scroll pertama kali. Ini tetap dicoba karena kadang
+  // scroll di beberapa browser/kondisi sudah dianggap cukup "sticky activation",
+  // tapi kalau gagal kita tidak diam-diam — lihat effect play/pause di bawah.
+  useEffect(() => {
+    if (hasAutoPlayedRef.current) return
+    if (isPlaying) {
+      hasAutoPlayedRef.current = true
+      return
+    }
+    if (scrollY > 10) {
+      hasAutoPlayedRef.current = true
+      setIsPlaying(true)
+    }
+  }, [scrollY, isPlaying, setIsPlaying])
 
   // Load apapun yang ada di public/audio
   useEffect(() => {
@@ -42,15 +88,22 @@ export const Tools = () => {
     }
   }, [setPlaylist])
 
-  // Play/pause sinkron dengan store — dipicu oleh tap di WelcomeSection atau tombol Tools
+  // Play/pause sinkron dengan store.
+  // Kalau play() ditolak browser (belum ada gesture valid), kita catat lewat
+  // needsUserAction alih-alih menelan errornya diam-diam seperti sebelumnya.
   useEffect(() => {
     const audio = audioRef.current
     if (!audio || !src) return
     audio.volume = volume
     if (isPlaying) {
-      audio.play().catch(() => {
-        // jika masih block (user belum tap Welcome), biarkan isPlaying true, akan coba lagi saat Welcome di-tap
-      })
+      audio
+        .play()
+        .then(() => setNeedsUserAction(false))
+        .catch(() => {
+          // Masih diblokir browser: biarkan isPlaying true di store,
+          // tapi tampilkan prompt kecil supaya user bisa tap untuk mulai.
+          setNeedsUserAction(true)
+        })
     } else {
       audio.pause()
     }
@@ -64,7 +117,10 @@ export const Tools = () => {
   useEffect(() => {
     const audio = audioRef.current
     if (!audio) return
-    const onPlay = () => setIsPlaying(true)
+    const onPlay = () => {
+      setIsPlaying(true)
+      setNeedsUserAction(false)
+    }
     const onPause = () => setIsPlaying(false)
     const onEnded = () => {
       if (playlist.length > 1) next()
@@ -93,16 +149,38 @@ export const Tools = () => {
   const isDark = resolvedTheme === "dark"
   const shouldLoop = playlist.length <= 1
 
+  // Tap di mana pun pada prompt ini SELALU berupa gesture asli (click),
+  // jadi audio.play() yang dipanggil langsung di sini pasti diizinkan browser.
+  const handleUnlockAudio = () => {
+    const audio = audioRef.current
+    if (!audio) return
+    audio
+      .play()
+      .then(() => setNeedsUserAction(false))
+      .catch(() => {})
+  }
+
   if (!mounted) return null
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-center gap-3">
+      {/* Prompt kecil kalau autoplay diblokir browser */}
+      {needsUserAction && (
+        <button
+          onClick={handleUnlockAudio}
+          className="pointer-events-auto absolute bottom-10 right-0 flex items-center gap-2 whitespace-nowrap rounded-full bg-primary px-4 py-2 text-xs font-medium text-muted shadow-xl transition-all duration-300 hover:scale-105 dark:text-white"
+        >
+          <Music2 className="h-3.5 w-3.5 shrink-0" />
+          Tap untuk putar musik
+        </button>
+      )}
+
       {/* Judul — tetap di atas logo setting, naik saat expand */}
       <div
         className={cn(
           "pointer-events-none absolute right-0 flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-xs font-medium text-muted dark:text-white shadow-xl transition-all duration-300",
           isOpen ? "bottom-28" : "bottom-10",
-          showTitle
+          showTitle && !needsUserAction
             ? "translate-y-0 opacity-100"
             : "pointer-events-none translate-y-2 opacity-0"
         )}
@@ -141,7 +219,10 @@ export const Tools = () => {
         </button>
 
         <button
-          onClick={() => toggle()}
+          onClick={() => {
+            toggle()
+            if (audioRef.current?.paused === false) setNeedsUserAction(false)
+          }}
           className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform hover:scale-110"
           aria-label="Toggle Music"
         >

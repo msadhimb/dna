@@ -93,13 +93,16 @@ export const WelcomeSection = forwardRef<
       {hintVisible && (
         <div
           ref={hintRef}
-          className="absolute bottom-10 left-1/2 flex -translate-x-1/2 items-center gap-2.5 rounded-full px-5 py-3 text-xs font-medium text-black dark:text-white  md:bottom-12 md:px-6 md:py-3.5 md:text-sm"
+          className="absolute left-1/2 flex -translate-x-1/2 items-center gap-2.5 rounded-full px-5 py-3 text-xs font-medium text-black dark:text-white md:px-6 md:py-3.5 md:text-sm"
+          style={{
+            bottom: "max(2.5rem, env(safe-area-inset-bottom, 0px) + 1.5rem)",
+          }}
         >
           <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary-foreground/15">
             <Music2 className="h-3.5 w-3.5" />
           </span>
           <span className="whitespace-nowrap">
-            Tap di mana saja untuk memutar musik
+            Scroll atau tap untuk memutar musik
           </span>
         </div>
       )}
