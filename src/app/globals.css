@@ -302,6 +302,29 @@
   }
 }
 
+/* iPhone 14 (390×844) — BookFlip compact tuning */
+@media (max-width: 390px) {
+  /* Turunkan skala tipografi di dalam buku agar tidak terasa terlalu besar di layar 390px */
+  #book-flip-wrapper {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 390px) and (max-height: 850px) {
+  /* Pastikan buku tidak melebihi tinggi layar dengan notch + home indicator */
+  #book-flip-wrapper > section {
+    padding-top: max(8px, env(safe-area-inset-top));
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+  }
+}
+
+/* Support dvh fallback untuk browser lama */
+@supports not (height: 100dvh) {
+  #book-flip-wrapper > section {
+    height: 100vh;
+  }
+}
+
 /* Respect reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
   .animate-ken-burns,

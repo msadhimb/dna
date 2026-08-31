@@ -44,7 +44,7 @@ const Cover = ({
         {/* Front of cover */}
         <div
           className={cn(
-            "absolute inset-0 flex flex-col items-center justify-between overflow-hidden rounded-[4px_8px_8px_4px] border-2 px-7 py-8 text-center border-border",
+            "absolute inset-0 flex flex-col items-center justify-between overflow-hidden rounded-[4px_8px_8px_4px] border-2 px-5 py-6 sm:px-7 sm:py-8 max-[390px]:px-4 max-[390px]:py-5 text-center border-border",
             coverFront?.className
           )}
           style={{
@@ -70,7 +70,7 @@ const Cover = ({
         {/* Back of cover (inside cover) */}
         <div
           className={cn(
-            "absolute inset-0 flex flex-col items-center justify-center gap-4 overflow-hidden rounded-[8px_4px_4px_8px] border bg-[#fdf8f0] px-7 py-9 text-center dark:bg-[#141414]",
+            "absolute inset-0 flex flex-col items-center justify-center gap-3 sm:gap-4 overflow-hidden rounded-[8px_4px_4px_8px] border bg-[#fdf8f0] px-5 py-6 sm:px-7 sm:py-9 max-[390px]:px-4 max-[390px]:py-5 text-center dark:bg-[#141414]",
             coverBack?.className
           )}
           style={{

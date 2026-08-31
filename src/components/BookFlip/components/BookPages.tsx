@@ -51,7 +51,7 @@ const BookPages = ({
                   }}
                 >
                   {/* Kiri */}
-                  <div className="relative w-full flex flex-col items-center justify-center gap-4 px-7 py-9 text-center border-r border-border">
+                  <div className="relative w-full flex flex-col items-center justify-center gap-3 sm:gap-4 px-5 py-6 sm:px-7 sm:py-9 max-[390px]:px-4 max-[390px]:py-5 text-center border-r border-border">
                     {resolvedPages[leftIndex] ?? null}
                   </div>
                   <div
@@ -71,7 +71,7 @@ const BookPages = ({
                     WebkitBackfaceVisibility: "hidden",
                   }}
                 >
-                  <div className="relative w-full flex flex-col items-center justify-center gap-4 px-7 py-9 text-center border-r border-border">
+                  <div className="relative w-full flex flex-col items-center justify-center gap-3 sm:gap-4 px-5 py-6 sm:px-7 sm:py-9 max-[390px]:px-4 max-[390px]:py-5 text-center border-r border-border">
                     {resolvedPages[rightIndex] ?? null}
                   </div>
                   <div
@@ -97,7 +97,7 @@ const BookPages = ({
               }}
             >
               <div
-                className="absolute inset-0 flex flex-col items-center justify-center gap-4 overflow-hidden rounded-[4px_8px_8px_4px] border bg-[#fdf8f0] px-7 py-9 text-center dark:bg-[#141414] border-border"
+                className="absolute inset-0 flex flex-col items-center justify-center gap-3 sm:gap-4 overflow-hidden rounded-[4px_8px_8px_4px] border bg-[#fdf8f0] px-5 py-6 sm:px-7 sm:py-9 max-[390px]:px-4 max-[390px]:py-5 text-center dark:bg-[#141414] border-border"
                 style={{
                   transform: "translateZ(1px)",
                   backfaceVisibility: "hidden",

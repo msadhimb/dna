@@ -46,8 +46,8 @@ export interface BookFlipProps {
 export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
   (
     {
-      width = "min(90vw, 420px)",
-      height = "min(72vh, 600px)",
+      width = "min(88vw, 360px)",
+      height = "min(62dvh, 560px)",
       className,
       theme,
       cover,
@@ -306,18 +306,25 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
       <section
         ref={sectionRef}
         className={cn(
-          "gsap-element relative flex h-screen w-full flex-col items-center justify-center overflow-hidden",
+          "gsap-element relative flex h-[100dvh] w-full flex-col items-center justify-center overflow-hidden px-2 max-[390px]:px-3",
           isDark && "dark",
           className
         )}
-        style={{ perspective: "1400px", perspectiveOrigin: "50% 38%" }}
+        style={{
+          perspective: "1400px",
+          perspectiveOrigin: "50% 38%",
+          paddingTop: "env(safe-area-inset-top)",
+          paddingBottom: "env(safe-area-inset-bottom)",
+        }}
       >
         <div
           ref={bookRef}
-          className="relative max-w-full pointer-events-auto"
+          className="relative max-w-full pointer-events-auto max-[390px]:scale-[0.96] max-[375px]:scale-[0.92]"
           style={{
             width: dist(width, "min(85vw, 420px)"),
-            height: dist(height, "min(70vh, 600px)"),
+            height: dist(height, "min(68dvh, 600px)"),
+            maxHeight:
+              "calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 32px)",
             transformStyle: "preserve-3d",
           }}
         >
