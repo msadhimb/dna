@@ -8,18 +8,19 @@ const BankAccountCard = ({
   accountNumber,
   accountName,
   accent,
-
   borderAccent,
   isDark,
+  surface,
 }: {
   svg: string
   accountNumber: string
   accountName: string
   accent: string
-
   borderAccent: string
   isDark: boolean
+  surface?: string
 }) => {
+  const bg = surface ?? (isDark ? "#0A0A0A" : "#F8F8F8")
   const [copied, setCopied] = useState(false)
 
   const handleCopy = () => {
@@ -30,10 +31,14 @@ const BankAccountCard = ({
 
   return (
     <div
-      className="dg-card group relative w-full md:w-100 flex flex-col items-center gap-3 px-8 py-7 text-center transition-all duration-300"
+      className="dg-card group relative w-full md:w-80 flex flex-col items-center gap-3 px-8 py-7 text-center transition-all duration-300"
       style={{
+        background: bg,
         border: `1px solid ${borderAccent}`,
-        borderRadius: "12px",
+        borderRadius: "20px",
+        boxShadow: isDark
+          ? "0 25px 50px -12px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04)"
+          : "0 25px 50px -12px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04)",
       }}
     >
       {/* Top accent line */}

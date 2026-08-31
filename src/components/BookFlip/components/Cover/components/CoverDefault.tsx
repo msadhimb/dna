@@ -29,7 +29,7 @@ const CoverDefault = ({ isDark, gold, ribbonRef }: CoverDefaultProps) => {
       {/* title block */}
       <div className="relative z-10 mt-2 sm:mt-3 flex flex-col items-center gap-0.5">
         <span
-          className="font-serif font-bold text-white text-[clamp(1.15rem,6vw,2rem)] sm:text-[2rem] max-[390px]:text-[clamp(1.1rem,5vw,1.5rem)]"
+          className="font-serif font-bold text-yellow-400 text-[clamp(1.15rem,6vw,2rem)] sm:text-[2rem] max-[390px]:text-[clamp(1.1rem,5vw,1.5rem)]"
           style={{
             textShadow: "0 1px 1px rgba(0,0,0,0.5)",
           }}
@@ -64,7 +64,7 @@ const CoverDefault = ({ isDark, gold, ribbonRef }: CoverDefaultProps) => {
       {/* bottom block */}
       <div className="relative z-10 mb-1 sm:mb-2 flex flex-col items-center gap-0 sm:gap-0.5">
         <span
-          className="font-serif font-bold text-white text-[clamp(1rem,5.5vw,1.8rem)] sm:text-[1.8rem] max-[390px]:text-[clamp(0.95rem,4.5vw,1.35rem)]"
+          className="font-serif font-bold text-yellow-400 text-[clamp(1rem,5.5vw,1.8rem)] sm:text-[1.8rem] max-[390px]:text-[clamp(0.95rem,4.5vw,1.35rem)]"
           style={{
             textShadow: "0 1px 1px rgba(0,0,0,0.5)",
           }}
@@ -72,7 +72,7 @@ const CoverDefault = ({ isDark, gold, ribbonRef }: CoverDefaultProps) => {
           DEPARTEMEN AGAMA
         </span>
         <span
-          className="font-serif font-bold text-white text-[clamp(1rem,5.5vw,1.8rem)] sm:text-[1.8rem] max-[390px]:text-[clamp(0.95rem,4.5vw,1.35rem)]"
+          className="font-serif font-bold text-yellow-400 text-[clamp(1rem,5.5vw,1.8rem)] sm:text-[1.8rem] max-[390px]:text-[clamp(0.95rem,4.5vw,1.35rem)]"
           style={{
             textShadow: "0 1px 1px rgba(0,0,0,0.5)",
           }}

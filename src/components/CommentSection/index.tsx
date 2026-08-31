@@ -205,17 +205,6 @@ export const CommentSection = forwardRef<
           "-=0.3"
         )
         .fromTo(
-          ".cs-line-deco",
-          { scaleX: 0 },
-          {
-            scaleX: 1,
-            duration: 1,
-            ease: "power3.inOut",
-            transformOrigin: "center",
-          },
-          "-=0.4"
-        )
-        .fromTo(
           ".cs-desc",
           { opacity: 0, y: 16 },
           { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" },
@@ -251,15 +240,6 @@ export const CommentSection = forwardRef<
           },
           "-=0.4"
         )
-
-      gsap.to(".cs-float-line", {
-        y: -8,
-        duration: 3,
-        ease: "sine.inOut",
-        repeat: -1,
-        yoyo: true,
-        stagger: 0.4,
-      })
 
       return tl
     },
@@ -391,7 +371,6 @@ export const CommentSection = forwardRef<
           eyebrow="Kartu Ucapan"
           title="Ucapan & Doa"
           description="Sematkan doa dan harapan terbaik Anda untuk Devi & Adhim. Setiap kata yang ditulis akan menjadi kenangan berharga."
-          accent={accent}
           textSecondary={textSecondary}
           textPrimary={textPrimary}
         />
