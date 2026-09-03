@@ -1,22 +1,19 @@
 import * as React from "react"
 
 interface WaxSealProps {
-  /** Main seal color — overrides theme default */
+  
   color?: string
-  /** @deprecated alias for color */
+  
   accent?: string
-  /** Theme variant — uses dark palette when true */
+  
   isDark?: boolean
-  /** Diameter in px (default 72) — also accepts string like "4rem" */
+  
   size?: number | string
   className?: string
   style?: React.CSSProperties
 }
 
-/**
- * WaxSeal — circular wax seal with drips and initials.
- * Customize via size (diameter) and color. isDark switches default palette.
- */
+
 export function WaxSeal({ color, accent, isDark = false, size = 72, className, style }: WaxSealProps) {
   const finalColor = color ?? accent ?? "var(--wedding-accent)"
   const fill = finalColor
@@ -36,7 +33,7 @@ export function WaxSeal({ color, accent, isDark = false, size = 72, className, s
       className={`relative flex items-center justify-center ${className ?? ""}`}
       style={{ width: sizeStr, height: sizeStr, ...style }}
     >
-      {/* Outer glow */}
+      
       <div
         className="absolute rounded-full blur-xl"
         style={{
@@ -45,7 +42,7 @@ export function WaxSeal({ color, accent, isDark = false, size = 72, className, s
           background: glow,
         }}
       />
-      {/* Seal body */}
+      
       <svg
         width={viewSize}
         height={viewSize}
@@ -56,7 +53,7 @@ export function WaxSeal({ color, accent, isDark = false, size = 72, className, s
         style={{ color: fill }}
         aria-hidden="true"
       >
-        {/* Drip blobs */}
+        
         {[...Array(12)].map((_, i) => {
           const angle = (i * 30 * Math.PI) / 180
           const blobAngle = angle + (i % 2 === 0 ? 0.2 : -0.2)
@@ -74,9 +71,9 @@ export function WaxSeal({ color, accent, isDark = false, size = 72, className, s
             />
           )
         })}
-        {/* Main circle */}
+        
         <circle cx={cx} cy={cy} r={r1} fill={fill} />
-        {/* Inner ring */}
+        
         <circle
           cx={cx}
           cy={cy}
@@ -85,7 +82,7 @@ export function WaxSeal({ color, accent, isDark = false, size = 72, className, s
           stroke={isDark ? "rgba(245,220,200,0.15)" : "rgba(255,245,230,0.2)"}
           strokeWidth="1"
         />
-        {/* Initials */}
+        
         <text
           x={cx}
           y={cy + viewSize * 0.06}

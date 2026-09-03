@@ -5,13 +5,13 @@ export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   withTopLine?: boolean
   withCorners?: boolean
   radius?: string
-  /** @deprecated — warna sekarang terpusat via Tailwind CSS variables (globals.css). Prop diabaikan untuk kompatibilitas. */
+  
   accent?: string
-  /** @deprecated */
+  
   borderAccent?: string
-  /** @deprecated */
+  
   isDark?: boolean
-  /** @deprecated */
+  
   surface?: string
 }
 
@@ -23,7 +23,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
       withTopLine = true,
       withCorners = true,
       radius = "20px",
-      // deprecated — ignore, kept for backward compat
+      
       accent: _accent,
       borderAccent: _borderAccent,
       isDark: _isDark,

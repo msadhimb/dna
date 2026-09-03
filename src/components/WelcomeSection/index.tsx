@@ -24,7 +24,7 @@ export const WelcomeSection = forwardRef<
   const { isPlaying, setIsPlaying } = useAudio()
   const [hintVisible, setHintVisible] = useState(true)
 
-  // hide hint setelah musik diputar
+  
   useEffect(() => {
     if (isPlaying) {
       if (hintRef.current) {
@@ -89,7 +89,7 @@ export const WelcomeSection = forwardRef<
         </p>
       </div>
 
-      {/* Peringatan tap di mana saja untuk memutar musik */}
+      
       {hintVisible && (
         <div
           ref={hintRef}

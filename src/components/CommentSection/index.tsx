@@ -323,7 +323,7 @@ export const CommentSection = forwardRef<
       className="relative w-full overflow-hidden bg-background gsap-element"
       style={{ perspective: "1500px" }}
     >
-      {/* Lingkaran terpusat — hanya beberapa rem di luar content utama, tidak full background */}
+      
       <div className="pointer-events-none absolute left-1/2 top-[52%] h-[92vw] max-h-[560px] w-[92vw] max-w-[560px] -translate-x-1/2 -translate-y-1/2 rounded-full md:h-[860px] md:max-h-[860px] md:w-[860px] md:max-w-[860px] lg:h-[1040px] lg:max-h-[1040px] lg:w-[1040px] lg:max-w-[1040px] overflow-hidden">
         <div
           className="absolute inset-0 bg-wedding-dot opacity-50"

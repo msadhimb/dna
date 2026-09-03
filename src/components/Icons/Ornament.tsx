@@ -2,15 +2,11 @@ import * as React from "react"
 import { IconProps } from "./types"
 
 interface OrnamentProps extends IconProps {
-  /** Flip 180deg */
+  
   flip?: boolean
 }
 
-/**
- * Ornament — thin divider with central dot and double arches.
- * viewBox 0 0 120 16
- * Default rendered at 100 x 14px (aspect 120:16). Pass size / width / height / color to customize.
- */
+
 const Ornament = React.memo(function Ornament({
   color = "currentColor",
   size,
@@ -21,14 +17,14 @@ const Ornament = React.memo(function Ornament({
   style,
   ...props
 }: OrnamentProps) {
-  // Resolve dimensions: default 100x14
+  
   const defaultW = 100
   const defaultH = 14
 
   let w: string | number = width ?? (size != null ? size : defaultW)
   let h: string | number | undefined = height
 
-  // If size is number and no explicit height, derive height proportionally
+  
   if (size != null && width == null && height == null) {
     if (typeof size === "number") {
       w = size
@@ -38,7 +34,7 @@ const Ornament = React.memo(function Ornament({
     }
   }
   if (h == null && width != null && size == null) {
-    // if only width given, compute height
+    
     if (typeof w === "number") h = (w * 16) / 120
   }
   if (h == null) h = defaultH

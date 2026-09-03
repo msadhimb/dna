@@ -144,11 +144,12 @@ export const JourneySequence = forwardRef<
           "gone"
         )
 
+        
         // zoom into groom image and show groom bio
         tl.to(
           journeyImgElement,
           {
-            scale: isMobile ? 1.6 : 2,
+            scale: isMobile ? 1.35 : 1.45,
             x:
               theme === "dark"
                 ? dist("-35vw", "-35vw")
@@ -191,7 +192,7 @@ export const JourneySequence = forwardRef<
         tl.to(
           journeyImgElement,
           {
-            scale: isMobile ? 1.6 : 2,
+            scale: isMobile ? 1.35 : 1.45,
             x: theme === "dark" ? dist("35vw", "25vw") : dist("30vw", "20vw"),
             y: theme === "dark" ? dist("-15vh", "5vh") : dist("20vh", "40vh"),
             duration: 1.5,
@@ -261,7 +262,7 @@ export const JourneySequence = forwardRef<
 
       <div
         ref={journeyImageRef}
-        className="gsap-element relative z-0 h-[42vh] w-[85vw] overflow-hidden rounded-2xl md:h-[40vh] md:w-[40vw] md:rounded-3xl"
+        className="gsap-element relative z-0 h-[42vh] w-[85vw] overflow-hidden rounded-2xl md:h-[60vh] md:w-[42vw] md:rounded-3xl"
         style={{
           borderRadius: "24px",
           willChange: "transform",
@@ -281,7 +282,7 @@ export const JourneySequence = forwardRef<
           fill
           alt="Journey"
           sizes="(max-width: 768px) 200vw, 150vw"
-          quality={100}
+          quality={90}
           priority
           fetchPriority="high"
           className="journey-inner-img object-cover"
@@ -289,7 +290,7 @@ export const JourneySequence = forwardRef<
         />
       </div>
 
-      {/* Groom Bio Overlay (Left Side) */}
+      
       <div
         ref={groomBioRef}
         className={cn(
@@ -335,14 +336,14 @@ export const JourneySequence = forwardRef<
         </div>
       </div>
 
-      {/* Bride Bio Overlay (Right Side) */}
+      
       <div
         ref={brideBioRef}
         className={cn(
           "gsap-element absolute inset-x-0 bottom-0 z-50 flex w-screen flex-col gap-3 opacity-0",
-          // Mobile: full-width panel sliding from bottom, gradient from bottom, centered text
+          
           "items-center justify-end text-center bg-gradient-to-t from-black/90 via-black/60 to-transparent pt-24 pb-12 px-6",
-          // Desktop: left-side panel, gradient from right, left-aligned text
+          
           "md:inset-y-0 md:bottom-auto md:left-0 md:right-auto md:h-full md:w-1/2 md:items-start md:justify-center md:text-left md:bg-gradient-to-r md:from-black/85 md:via-black/45 md:pt-0 md:pb-0 md:px-12"
         )}
         style={{ willChange: "transform" }}

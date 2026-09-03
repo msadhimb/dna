@@ -5,11 +5,7 @@ interface WideOrnamentProps extends IconProps {
   flip?: boolean
 }
 
-/**
- * WideOrnament — stretched divider with zigzag center.
- * viewBox 0 0 200 12
- * Default 100% width x 10px height. Customize via size / width / height / color.
- */
+
 const WideOrnament = React.memo(function WideOrnament({
   color = "currentColor",
   size,

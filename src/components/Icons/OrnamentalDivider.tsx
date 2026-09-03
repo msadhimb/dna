@@ -1,20 +1,17 @@
 import * as React from "react"
 
 interface OrnamentalDividerProps {
-  /** Main color for divider lines & diamond */
+  
   color?: string
-  /** @deprecated use color */
+  
   accent?: string
-  /** Size preset or custom. number/string controls width of center icon; default 120px container */
+  
   size?: "default" | "small" | number | string
   className?: string
   style?: React.CSSProperties
 }
 
-/**
- * OrnamentalDivider — horizontal line with centered diamond + dot.
- * Container is flex full-width; size controls the gap width preset when string preset is used.
- */
+
 export function OrnamentalDivider({
   color = "var(--wedding-border-accent)",
   accent,
@@ -24,7 +21,7 @@ export function OrnamentalDivider({
 }: OrnamentalDividerProps) {
   const finalColor = accent ?? color
 
-  // Preset handling backward compatible
+  
   const isPreset = size === "default" || size === "small"
   const containerWidth = isPreset ? (size === "small" ? "80px" : "120px") : undefined
   const svgSize = isPreset ? undefined : size

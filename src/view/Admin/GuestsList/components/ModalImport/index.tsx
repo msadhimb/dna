@@ -48,7 +48,7 @@ const ModalImport = ({
           </DialogDescription>
         </DialogHeader>
 
-        {/* Table Preview container */}
+        
         <div className="flex-1 overflow-y-auto border border-border rounded-lg mb-4">
           <table className="w-full text-left border-collapse text-xs">
             <thead className="sticky top-0 bg-muted  border-b border-border">
@@ -107,7 +107,7 @@ const ModalImport = ({
           )}
         </div>
 
-        {/* Info note */}
+        
         <div className="bg-amber-500/10 border border-amber-500/20 text-amber-500 text-xs rounded-lg p-3 flex gap-2.5 items-start mb-4 shrink-0">
           <AlertCircle className="size-4 shrink-0 mt-0.5" />
           <p className="leading-relaxed">

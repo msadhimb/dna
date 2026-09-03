@@ -24,7 +24,7 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete }) => {
       delay: 0.5,
       ease: "power2.inOut",
       onComplete: () => {
-        // An invisible fixed layer can still intercept touch events on mobile.
+        
         if (loadingScreenRef.current) {
           loadingScreenRef.current.style.pointerEvents = "none"
         }

@@ -58,6 +58,8 @@ export const CurtainTransition = forwardRef<
         })
       })
 
+      
+      
       // Curtain muncul: titik kecil → garis vertikal → melebar penuh
       // Gunakan keyframes agar transisi antar fase mulus tanpa discontinuity
       tl.to(
@@ -73,6 +75,7 @@ export const CurtainTransition = forwardRef<
         ">0.5"
       )
 
+      
       // Frame photos slideIn satu per satu
       frames.forEach((_, i) => {
         const pos = i === 0 ? "-=0.3" : `-=${FRAME_DUR - STAGGER}`
@@ -87,6 +90,7 @@ export const CurtainTransition = forwardRef<
         )
       })
 
+      
       // Fade hero halus sebelum split
       tl.to(
         heroSection,

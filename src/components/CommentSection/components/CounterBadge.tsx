@@ -1,8 +1,8 @@
 interface CounterBadgeProps {
   count: number
-  /** @deprecated — terpusat via Tailwind */
+  
   borderAccent?: string
-  /** @deprecated */
+  
   textSecondary?: string
 }
 

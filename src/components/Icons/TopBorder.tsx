@@ -1,22 +1,19 @@
 import * as React from "react"
 
 interface TopBorderProps {
-  /** Accent color */
+  
   color?: string
-  /** @deprecated alias */
+  
   accent?: string
-  /** Width in px (viewBox 280x24) */
+  
   size?: number | string
-  /** @deprecated alias for size */
+  
   width?: number | string
   className?: string
   style?: React.CSSProperties
 }
 
-/**
- * TopBorder — ornamental top border SVG for footer section.
- * viewBox 0 0 280 24. Customize via size (width) and color.
- */
+
 export function TopBorder({
   color,
   accent,
@@ -40,12 +37,12 @@ export function TopBorder({
       style={{ color: stroke, ...style }}
       aria-hidden="true"
     >
-      {/* Left arm */}
+      
       <line x1="0" y1="12" x2="108" y2="12" stroke="currentColor" strokeWidth="0.75" strokeOpacity="0.5" />
-      {/* Right arm */}
+      
       <line x1="172" y1="12" x2="280" y2="12" stroke="currentColor" strokeWidth="0.75" strokeOpacity="0.5" />
 
-      {/* Center diamond */}
+      
       <path
         d="M140 4 L148 12 L140 20 L132 12 Z"
         stroke="currentColor"
@@ -55,7 +52,7 @@ export function TopBorder({
       />
       <circle cx="140" cy="12" r="2.5" fill="currentColor" opacity="0.6" />
 
-      {/* Side diamonds */}
+      
       <path
         d="M108 12 L113 9 L118 12 L113 15 Z"
         stroke="currentColor"
@@ -71,7 +68,7 @@ export function TopBorder({
         fill="none"
       />
 
-      {/* End dots */}
+      
       <circle cx="118" cy="12" r="1.5" fill="currentColor" opacity="0.4" />
       <circle cx="162" cy="12" r="1.5" fill="currentColor" opacity="0.4" />
     </svg>

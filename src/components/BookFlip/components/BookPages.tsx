@@ -41,7 +41,7 @@ const BookPages = ({
                   transformStyle: "preserve-3d",
                 }}
               >
-                {/* Front: kiri = leftIndex, kanan = rightIndex */}
+                
                 <div
                   className="absolute inset-0 flex overflow-hidden rounded-[4px_8px_8px_4px] border bg-[#fdf8f0] dark:bg-[#141414] border-border"
                   style={{
@@ -50,7 +50,7 @@ const BookPages = ({
                     WebkitBackfaceVisibility: "hidden",
                   }}
                 >
-                  {/* Kiri */}
+                  
                   <div className="relative w-full flex flex-col items-center justify-center gap-3 sm:gap-4 px-5 py-6 sm:px-7 sm:py-9 max-[390px]:px-4 max-[390px]:py-5 text-center border-r border-border">
                     {resolvedPages[leftIndex] ?? null}
                   </div>
@@ -62,7 +62,7 @@ const BookPages = ({
                   />
                 </div>
 
-                {/* Back kosong */}
+                
                 <div
                   className="absolute inset-0 flex overflow-hidden rounded-[8px_4px_4px_8px] border bg-[#fdf8f0] dark:bg-[#141414] border-border"
                   style={{

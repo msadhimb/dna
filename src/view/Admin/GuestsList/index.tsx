@@ -18,14 +18,14 @@ const GuestsListView = () => {
   const queryClient = useQueryClient()
   const confirm = useConfirm()
 
-  // Excel Upload States
+  
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [file, setFile] = useState<File | null>(null)
   const [parsedData, setParsedData] = useState<any[]>([])
   const [isPreviewOpen, setIsPreviewOpen] = useState(false)
   const [isImporting, setIsImporting] = useState(false)
 
-  // Guest Form Modal States
+  
   const [guestModalOpen, setGuestModalOpen] = useState(false)
   const [editingGuest, setEditingGuest] = useState<any | null>(null)
 
@@ -49,7 +49,7 @@ const GuestsListView = () => {
     queryClient.invalidateQueries({ queryKey: ["guests"] })
   }
 
-  // Smart case-insensitive parser for Excel data
+  
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
     if (!files || files.length === 0) return
@@ -70,10 +70,10 @@ const GuestsListView = () => {
           return
         }
 
-        // Map column names dynamically & smartly (e.g. "Nama Tamu", "Nama", "Guest Name", etc)
+        
         const mappedGuests = rawJson
           .map((row: any) => {
-            // Find potential keys
+            
             const nameKey = Object.keys(row).find((key) =>
               /name|nama|full_name/i.test(key)
             )
@@ -105,7 +105,7 @@ const GuestsListView = () => {
 
             return payload
           })
-          .filter((g) => !!g.full_name) // Filter out rows with no guest name
+          .filter((g) => !!g.full_name) 
 
         if (mappedGuests.length === 0) {
           toast.error(
@@ -121,7 +121,7 @@ const GuestsListView = () => {
         toast.error("Gagal membaca file Excel. Pastikan format file benar.")
       }
 
-      // Reset input value to allow uploading same file again if needed
+      
       e.target.value = ""
     }
 
@@ -150,7 +150,7 @@ const GuestsListView = () => {
         setParsedData([])
         setFile(null)
 
-        // Refresh the table query
+        
         queryClient.invalidateQueries({ queryKey: ["guests"] })
       } else {
         toast.error(res.message || "Gagal mengimpor data tamu.", {
@@ -177,7 +177,7 @@ const GuestsListView = () => {
 
   return (
     <div className="font-manrope w-full max-w-full space-y-6">
-      {/* Header Section */}
+      
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-border pb-5">
         <div>
           <h1 className="text-3xl font-bold font-sans text-foreground tracking-[0.2em] uppercase">
@@ -234,7 +234,7 @@ const GuestsListView = () => {
         isImporting={isImporting}
       />
 
-      {/* Guest Form Modal — create mode */}
+      
       {!editingGuest && (
         <GuestFormModal
           mode="create"
@@ -244,7 +244,7 @@ const GuestsListView = () => {
         />
       )}
 
-      {/* Guest Form Modal — edit mode */}
+      
       {editingGuest && (
         <GuestFormModal
           mode="edit"

@@ -1,9 +1,9 @@
-// utils/serverApi.ts
+
 import { createClient } from "@/utils/supabase/server"
 import axios, { AxiosRequestConfig } from "axios"
 import { cookies } from "next/headers"
 
-// Fallback BASE_URL if not defined
+
 const BASE_URL = process.env.NEXT_PUBLIC_API || ""
 
 interface ServerConfig {

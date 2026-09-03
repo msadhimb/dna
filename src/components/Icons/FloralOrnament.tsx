@@ -2,14 +2,11 @@ import * as React from "react"
 import { IconProps } from "./types"
 
 interface FloralOrnamentProps extends IconProps {
-  /** @deprecated use color */
+  
   accent?: string
 }
 
-/**
- * FloralOrnament — decorative divider with circular center and leaf petals.
- * viewBox 0 0 120 24
- */
+
 export function FloralOrnament({
   size,
   width,
@@ -25,7 +22,7 @@ export function FloralOrnament({
   const resolvedWidth = width ?? size ?? undefined
   const resolvedHeight = height ?? (size != null ? undefined : undefined)
 
-  // Default: let CSS control size via className, but allow size to set width
+  
   const svgStyle: React.CSSProperties = {
     color: finalColor,
     ...(resolvedWidth != null ? { width: typeof resolvedWidth === "number" ? `${resolvedWidth}px` : resolvedWidth } : {}),
@@ -35,7 +32,7 @@ export function FloralOrnament({
     ...style,
   }
 
-  // If size is number, keep aspect ratio 120:24 = 5:1
+  
   if (size != null && width == null && height == null && typeof size === "number") {
     svgStyle.width = `${size}px`
     svgStyle.height = `${(size * 24) / 120}px`

@@ -17,21 +17,21 @@ interface CommentListProps {
   hasMore: boolean
   isLoadingMore: boolean
   onLoadMore: () => void
-  /** @deprecated — terpusat via Tailwind */
+  
   surface?: string
-  /** @deprecated */
+  
   border?: string
-  /** @deprecated */
+  
   textPrimary?: string
-  /** @deprecated */
+  
   textSecondary?: string
-  /** @deprecated */
+  
   textMuted?: string
-  /** @deprecated */
+  
   borderAccent?: string
-  /** @deprecated */
+  
   accent?: string
-  /** @deprecated */
+  
   isDark?: boolean
 }
 

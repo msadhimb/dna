@@ -17,17 +17,17 @@ interface FormValues {
 }
 
 interface CommentFormProps {
-  /** @deprecated — terpusat via Tailwind */
+  
   accent?: string
-  /** @deprecated */
+  
   border?: string
-  /** @deprecated */
+  
   textSecondary?: string
-  /** @deprecated */
+  
   textPrimary?: string
-  /** @deprecated */
+  
   isDark?: boolean
-  /** @deprecated */
+  
   surface?: string
   onSubmit: (data: FormValues) => Promise<void>
   isSubmitting: boolean

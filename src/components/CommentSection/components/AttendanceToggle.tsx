@@ -3,11 +3,11 @@ import { cn } from "@/lib/utils"
 interface AttendanceToggleProps {
   value: "hadir" | "tidak_hadir" | "ragu"
   onChange: (v: "hadir" | "tidak_hadir" | "ragu") => void
-  /** @deprecated — terpusat via Tailwind */
+  
   textSecondary?: string
   label?: string
   error?: string
-  /** @deprecated */
+  
   labelColor?: string
 }
 

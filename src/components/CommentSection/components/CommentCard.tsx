@@ -6,21 +6,21 @@ interface CommentCardProps {
   message: string
   attendance: "hadir" | "tidak_hadir" | "ragu"
   date: string
-  /** @deprecated — terpusat via Tailwind */
+  
   textPrimary?: string
-  /** @deprecated */
+  
   textSecondary?: string
-  /** @deprecated */
+  
   textMuted?: string
-  /** @deprecated */
+  
   surface?: string
-  /** @deprecated */
+  
   border?: string
-  /** @deprecated */
+  
   borderAccent?: string
-  /** @deprecated */
+  
   isDark?: boolean
-  /** @deprecated */
+  
   accent?: string
 }
 

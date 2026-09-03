@@ -20,17 +20,12 @@ export const CORNER_POS: Record<CornerPosition, React.CSSProperties> = {
 
 interface CornerFlourishProps extends IconProps {
   position?: CornerPosition
-  /** @deprecated use position */
+  
   pos?: CornerPosition
   opacity?: number
 }
 
-/**
- * CornerFlourish — L-shaped corner ornament with curved inner detail.
- * viewBox 0 0 20 20
- * Default 16x16px at given position. Control via size / color / position / opacity.
- * When used outside absolute container, pass style to override positioning.
- */
+
 const CornerFlourish = React.memo(function CornerFlourish({
   color = "currentColor",
   size = 16,

@@ -2,9 +2,9 @@ interface SectionHeaderProps {
   eyebrow: string
   title: string
   description: string
-  /** @deprecated — terpusat via Tailwind `text-wedding-text-secondary` */
+  
   textSecondary?: string
-  /** @deprecated */
+  
   textPrimary?: string
 }
 

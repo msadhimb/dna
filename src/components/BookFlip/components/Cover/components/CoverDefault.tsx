@@ -11,7 +11,7 @@ interface CoverDefaultProps {
 const CoverDefault = ({ isDark, gold, ribbonRef }: CoverDefaultProps) => {
   const { imageUrl } = useImageUrl()
 
-  // Cari item dengan nama "garuda.png" di list icon, bukan asal ambil index [0]
+  
   const garudaIcon = (imageUrl as any)?.icon?.find((item: any) =>
     item?.name?.toLowerCase().includes("garuda")
   )
@@ -26,7 +26,7 @@ const CoverDefault = ({ isDark, gold, ribbonRef }: CoverDefaultProps) => {
             "repeating-linear-gradient(0deg, rgba(0,0,0,0.06) 0px, rgba(0,0,0,0.06) 1px, transparent 1px, transparent 3px), repeating-linear-gradient(90deg, rgba(0,0,0,0.05) 0px, rgba(0,0,0,0.05) 1px, transparent 1px, transparent 3px)",
         }}
       />
-      {/* title block */}
+      
       <div className="relative z-10 mt-2 sm:mt-3 flex flex-col items-center gap-0.5">
         <span
           className="font-serif font-bold text-yellow-400 text-[clamp(1.15rem,6vw,2rem)] sm:text-[2rem] max-[390px]:text-[clamp(1.1rem,5vw,1.5rem)]"
@@ -37,7 +37,7 @@ const CoverDefault = ({ isDark, gold, ribbonRef }: CoverDefaultProps) => {
           BUKU NIKAH {isDark ? "SUAMI" : "ISTRI"}
         </span>
       </div>
-      {/* emblem */}
+      
       <div className="relative z-10 flex flex-col items-center gap-2">
         <div
           style={{
@@ -61,7 +61,7 @@ const CoverDefault = ({ isDark, gold, ribbonRef }: CoverDefaultProps) => {
           )}
         </div>
       </div>
-      {/* bottom block */}
+      
       <div className="relative z-10 mb-1 sm:mb-2 flex flex-col items-center gap-0 sm:gap-0.5">
         <span
           className="font-serif font-bold text-yellow-400 text-[clamp(1rem,5.5vw,1.8rem)] sm:text-[1.8rem] max-[390px]:text-[clamp(0.95rem,4.5vw,1.35rem)]"
@@ -80,7 +80,7 @@ const CoverDefault = ({ isDark, gold, ribbonRef }: CoverDefaultProps) => {
           REPUBLIK INDONESIA
         </span>
       </div>
-      {/* ribbon */}
+      
       <div
         ref={ribbonRef}
         className="absolute bottom-2.5 flex items-end gap-1.5"

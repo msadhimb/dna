@@ -8,7 +8,7 @@ import Image from "next/image"
 
 gsap.registerPlugin(ScrollTrigger)
 
-// Reuse the same Ornament language as BookFlip
+
 function Ornament({ color, flip = false }: { color: string; flip?: boolean }) {
   return (
     <svg
@@ -113,7 +113,7 @@ export default function EventDetails() {
   const { resolvedTheme } = useTheme()
   const isDark = resolvedTheme === "dark"
 
-  // Exact same token system as BookFlip
+  
   const accent = isDark ? "#832004" : "#c9a227"
   const label = isDark ? "#7a6060" : "#9a865a"
   const body = isDark ? "#e0d8d0" : "#1e1a14"
@@ -174,7 +174,7 @@ export default function EventDetails() {
       ref={sectionRef}
       className="relative w-full overflow-hidden bg-background will-change-transform"
     >
-      {/* Dot texture — identical to BookFlip */}
+      
       <div
         className="pointer-events-none absolute inset-0"
         style={{
@@ -183,7 +183,7 @@ export default function EventDetails() {
         }}
       />
 
-      {/* Ambient glow */}
+      
       <div
         className="pointer-events-none absolute inset-0"
         style={{
@@ -194,7 +194,7 @@ export default function EventDetails() {
       />
 
       <div className="relative z-10 flex flex-col items-center justify-center gap-8 p-6 text-center md:gap-10 md:py-32">
-        {/* ── Label ── */}
+        
         <p
           ref={topLabelRef}
           style={{
@@ -208,7 +208,7 @@ export default function EventDetails() {
           Hari Bahagia Kami
         </p>
 
-        {/* ── Title ── */}
+        
         <h2
           ref={titleRef}
           className="font-signature"
@@ -221,12 +221,12 @@ export default function EventDetails() {
           Waktu & Tempat
         </h2>
 
-        {/* ── Top wide ornament ── */}
+        
         <div ref={orn1Ref} className="flex justify-center">
           <WideOrnament color={accent} />
         </div>
 
-        {/* ── Date Block ── */}
+        
         <div
           ref={dateBlockRef}
           className="relative flex w-full max-w-sm flex-col items-center gap-5 px-10 py-10"
@@ -279,7 +279,7 @@ export default function EventDetails() {
           <Ornament color={accent} flip />
         </div>
 
-        {/* ── Divider with heart ── */}
+        
         <div
           ref={dividerRef}
           className="flex items-center gap-4"
@@ -311,7 +311,7 @@ export default function EventDetails() {
           />
         </div>
 
-        {/* ── Location Block ── */}
+        
         <div
           ref={locationBlockRef}
           className="relative flex w-full max-w-sm flex-col items-center gap-5 px-10 py-10"
@@ -366,7 +366,7 @@ export default function EventDetails() {
           <Ornament color={accent} flip />
         </div>
 
-        {/* ── Map ── */}
+        
         <div
           ref={mapBlockRef}
           className="w-full max-w-sm overflow-hidden"
@@ -387,7 +387,7 @@ export default function EventDetails() {
           />
         </div>
 
-        {/* ── Bottom wide ornament ── */}
+        
         <div ref={orn2Ref} className="flex justify-center">
           <WideOrnament color={accent} flip />
         </div>

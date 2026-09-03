@@ -53,9 +53,9 @@ export type ActionItem<TData> = {
   label: string
   icon?: React.ReactNode
   onClick: (row: TData) => void
-  /** Tampilkan separator sebelum item ini */
+  
   separator?: boolean
-  /** Warna merah untuk aksi destructive seperti delete */
+  
   destructive?: boolean
 }
 
@@ -65,7 +65,7 @@ interface DataTableProps<TData> {
   fetcher: (params: any) => Promise<any>
   filterColumn?: string
   filterPlaceholder?: string
-  /** Daftar aksi untuk dropdown kolom Action */
+  
   actions?: ActionItem<TData>[]
 }
 
@@ -78,7 +78,7 @@ export function DataTable<TData>({
   filterPlaceholder = "Search...",
   actions,
 }: DataTableProps<TData>) {
-  // ── Internal state ────────────────────────────────────────────────────────
+  
   const [page, setPage] = React.useState(1)
   const [pageSize, setPageSize] = React.useState(20)
   const [search, setSearch] = React.useState("")
@@ -90,7 +90,7 @@ export function DataTable<TData>({
     React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
 
-  // ── Debounce search ───────────────────────────────────────────────────────
+  
   React.useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(search)
@@ -99,7 +99,7 @@ export function DataTable<TData>({
     return () => clearTimeout(timer)
   }, [search])
 
-  // ── Build query params ────────────────────────────────────────────────────
+  
   const sortDir = sorting[0]?.desc === false ? "asc" : "desc"
 
   const params = {
@@ -110,7 +110,7 @@ export function DataTable<TData>({
     sortDir,
   }
 
-  // ── React Query ───────────────────────────────────────────────────────────
+  
   const { data, isLoading, isError } = useQuery({
     queryKey: [queryKey, params],
     queryFn: () => fetcher(params),
@@ -127,7 +127,7 @@ export function DataTable<TData>({
   const canPrev = page > 1
   const canNext = page < totalPages
 
-  // ── Scroll Shadow detection ───────────────────────────────────────────────
+  
   const [showShadow, setShowShadow] = React.useState(true)
   const scrollAreaRef = React.useRef<HTMLDivElement>(null)
 
@@ -164,7 +164,7 @@ export function DataTable<TData>({
     }
   }, [rows])
 
-  // ── Inject kolom Actions di paling kanan ──────────────────────────────────
+  
   const columnsWithActions = React.useMemo<ColumnDef<TData, unknown>[]>(() => {
     if (!actions?.length) return columns
 
@@ -214,7 +214,7 @@ export function DataTable<TData>({
     return [...columns, actionColumn]
   }, [columns, actions])
 
-  // ── TanStack Table ────────────────────────────────────────────────────────
+  
   const table = useReactTable({
     data: rows,
     columns: columnsWithActions,
@@ -246,7 +246,7 @@ export function DataTable<TData>({
           onChange={(e) => setSearch(e.target.value)}
           className="max-w-sm"
         />
-        {/* <DataTableViewOptions table={table} /> */}
+        
       </div>
 
       <ScrollArea
@@ -342,7 +342,7 @@ export function DataTable<TData>({
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
 
-      {/* ── Pagination ────────────────────────────────────────────────────── */}
+      
       <div className="flex items-center justify-between px-2">
         <p className="text-sm text-muted-foreground">
           {totalItems} row(s) total.

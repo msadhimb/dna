@@ -45,10 +45,10 @@ export const Footer = () => {
       ref={footerRef}
       className="relative flex w-full flex-col items-center gap-6 py-5 text-center"
     >
-      {/* Thin top line */}
+      
       <div className="ft-el h-px w-16" style={{ background: line }} />
 
-      {/* Names */}
+      
       <p
         className="ft-el font-signature font-bold"
         style={{
@@ -61,7 +61,7 @@ export const Footer = () => {
         Devi &amp; Adhim
       </p>
 
-      {/* Three dots */}
+      
       <div className="ft-el flex items-center gap-3">
         <div className="h-px w-6" style={{ background: line }} />
         <div className="flex gap-1.5">
@@ -78,7 +78,7 @@ export const Footer = () => {
         <div className="h-px w-6" style={{ background: line }} />
       </div>
 
-      {/* Thank you */}
+      
       <p
         className="ft-el max-w-xs font-sans text-sm font-light italic leading-relaxed"
         style={{ color: muted, lineHeight: 1.8 }}
@@ -86,7 +86,7 @@ export const Footer = () => {
         Terima kasih atas doa, ucapan, dan kehadiran Anda.
       </p>
 
-      {/* Date */}
+      
       <p
         className="ft-el font-sans text-[11px] tracking-[0.3em] uppercase"
         style={{ color: muted, opacity: 0.6 }}
@@ -94,10 +94,10 @@ export const Footer = () => {
         12 Desember 2026
       </p>
 
-      {/* Bottom thin line */}
+      
       <div className="ft-el mt-4 h-px w-16" style={{ background: line }} />
 
-      {/* Copyright */}
+      
       <p
         className="ft-el font-sans text-[9px] tracking-[0.25em] uppercase"
         style={{ color: muted, opacity: 0.35 }}

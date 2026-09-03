@@ -1,23 +1,20 @@
 import * as React from "react"
 
 interface FooterFrameProps {
-  /** Stroke / accent color */
+  
   color?: string
-  /** @deprecated alias */
+  
   accent?: string
   isDark?: boolean
-  /** Width in px (height derived as 0.55*width) — also accepts string */
+  
   size?: number | string
-  /** Explicit width override @deprecated use size */
+  
   width?: number | string
   className?: string
   style?: React.CSSProperties
 }
 
-/**
- * FooterFrame — ornamental frame SVG that wraps the couple's names.
- * Customize via size (width) and color. isDark switches fill palette.
- */
+
 export function FooterFrame({
   color,
   accent,
@@ -46,7 +43,7 @@ export function FooterFrame({
       style={style}
       aria-hidden="true"
     >
-      {/* Outer shadow */}
+      
       <rect
         x={cx - widthNum / 2 + 4}
         y={4}
@@ -56,7 +53,7 @@ export function FooterFrame({
         fill={isDark ? "rgba(0,0,0,0.3)" : "rgba(0,0,0,0.08)"}
       />
 
-      {/* Outer border */}
+      
       <rect
         x={cx - widthNum / 2}
         y="0"
@@ -69,7 +66,7 @@ export function FooterFrame({
         strokeOpacity="0.5"
       />
 
-      {/* Inner inset border */}
+      
       <rect
         x={cx - widthNum / 2 + 10}
         y="10"
@@ -82,7 +79,7 @@ export function FooterFrame({
         strokeOpacity="0.25"
       />
 
-      {/* Top-left corner ornament */}
+      
       <path
         d={`M ${cx - widthNum / 2 + 10} 28 Q ${cx - widthNum / 2 + 10} 10 ${cx - widthNum / 2 + 28} 10`}
         stroke={strokeColor}
@@ -92,7 +89,7 @@ export function FooterFrame({
       />
       <circle cx={cx - widthNum / 2 + 19} cy="19" r="2" fill={strokeColor} opacity="0.5" />
 
-      {/* Top-right corner ornament */}
+      
       <path
         d={`M ${cx + widthNum / 2 - 18} 10 Q ${cx + widthNum / 2 - 10} 10 ${cx + widthNum / 2 - 10} 28`}
         stroke={strokeColor}
@@ -102,7 +99,7 @@ export function FooterFrame({
       />
       <circle cx={cx + widthNum / 2 - 19} cy="19" r="2" fill={strokeColor} opacity="0.5" />
 
-      {/* Bottom-left corner ornament */}
+      
       <path
         d={`M ${cx - widthNum / 2 + 10} ${h - 19} Q ${cx - widthNum / 2 + 10} ${h - 11} ${cx - widthNum / 2 + 28} ${h - 11}`}
         stroke={strokeColor}
@@ -112,7 +109,7 @@ export function FooterFrame({
       />
       <circle cx={cx - widthNum / 2 + 19} cy={h - 19} r="2" fill={strokeColor} opacity="0.5" />
 
-      {/* Bottom-right corner ornament */}
+      
       <path
         d={`M ${cx + widthNum / 2 - 18} ${h - 11} Q ${cx + widthNum / 2 - 10} ${h - 11} ${cx + widthNum / 2 - 10} ${h - 19}`}
         stroke={strokeColor}
@@ -122,7 +119,7 @@ export function FooterFrame({
       />
       <circle cx={cx + widthNum / 2 - 19} cy={h - 19} r="2" fill={strokeColor} opacity="0.5" />
 
-      {/* Center diamond ornaments */}
+      
       <path
         d={`M ${cx} ${h * 0.18} L ${cx + 8} ${h * 0.24} L ${cx} ${h * 0.3} L ${cx - 8} ${h * 0.24} Z`}
         fill={strokeColor}

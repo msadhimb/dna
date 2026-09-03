@@ -28,10 +28,10 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
   const currentX = useRef(0)
   const currentY = useRef(0)
 
-  // Smooth lerp
+  
   const lerp = (a: number, b: number, t: number) => a + (b - a) * t
 
-  // Desktop: mouse parallax
+  
   useEffect(() => {
     if (isMobile || !cardRef.current || !wrapperRef.current) return
 
@@ -81,7 +81,7 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
     }
   }, [isMobile])
 
-  // Mobile: auto smooth sway kiri-kanan (tidak pakai device orientation)
+  
   useEffect(() => {
     if (!isMobile || !cardRef.current) return
 
@@ -119,7 +119,7 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
     }
   }, [isMobile])
 
-  // Reset on theme change
+  
   useEffect(() => {
     currentX.current = 0
     currentY.current = 0
@@ -151,9 +151,9 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
       ref={sectionRef}
       className="rq-section relative flex w-full items-center justify-center overflow-hidden bg-background min-h-[540px] md:min-h-[680px]"
     >
-      {/* Lingkaran terpusat — beberapa rem di luar card, radius diperkecil agar tidak terpotong */}
+      
       <div className="pointer-events-none absolute left-1/2 top-1/2 h-[94vw] max-h-[480px] w-[94vw] max-w-[480px] -translate-x-1/2 -translate-y-1/2 rounded-full md:h-[620px] md:w-[620px] overflow-hidden">
-        {/* Dot texture dalam lingkaran — soft fade di tepi */}
+        
         <div
           className="absolute inset-0 bg-wedding-dot opacity-60"
           style={{
@@ -162,7 +162,7 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
               "radial-gradient(circle, black 58%, transparent 76%)",
           }}
         />
-        {/* Glow lingkaran — hanya beberapa rem di luar card */}
+        
         <div
           className="absolute inset-0"
           style={{
@@ -177,7 +177,7 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
           Kata Hati
         </p>
 
-        {/* Perspective wrapper */}
+        
         <div
           ref={wrapperRef}
           className="relative flex w-[90vw] md:w-full items-center justify-center"
@@ -195,7 +195,7 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
               } as React.CSSProperties
             }
           >
-            {/* Shine overlay — inside card, always matches card dimensions exactly */}
+            
             <div
               className="rq-shine pointer-events-none absolute inset-0 rounded-[20px] opacity-0"
               style={{

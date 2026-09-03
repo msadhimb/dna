@@ -4,7 +4,7 @@ interface CoverBackProps {
   background: string
 }
 
-/** A clean back face so the rotating cover keeps its visual weight. */
+
 const CoverBack = forwardRef<HTMLDivElement, CoverBackProps>(
   ({ background }, ref) => {
     return (

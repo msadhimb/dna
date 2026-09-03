@@ -6,14 +6,14 @@ export interface ScrollState {
   scrollY: number
   scrollX: number
   direction: "up" | "down" | null
-  progress: number // 0 - 1, terhadap total scrollable height
+  progress: number 
   isScrolling: boolean
 }
 
 interface UseScrollOptions {
-  /** Throttle via requestAnimationFrame (default: true) */
+  
   throttle?: boolean
-  /** Delay (ms) sebelum isScrolling dianggap berhenti (default: 150) */
+  
   idleDelay?: number
 }
 
@@ -76,7 +76,7 @@ export function useScroll(options: UseScrollOptions = {}): ScrollState {
       }
     }
 
-    // Set nilai awal
+    
     lastScrollY.current = window.scrollY
 
     window.addEventListener("scroll", handleScroll, { passive: true })

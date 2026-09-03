@@ -9,13 +9,13 @@ import { Card } from "@/components/Card"
 interface QrisCardProps {
   qrisUrl: string
   qrisName?: string
-  /** @deprecated — terpusat via Tailwind */
+  
   accent?: string
-  /** @deprecated */
+  
   borderAccent?: string
-  /** @deprecated */
+  
   isDark?: boolean
-  /** @deprecated */
+  
   surface?: string
 }
 
@@ -34,7 +34,7 @@ const QrisCard = ({
       const url = URL.createObjectURL(blob)
       const a = document.createElement("a")
       a.href = url
-      // ambil ekstensi dari url atau default png
+      
       const ext = qrisUrl.split(".").pop()?.split("?")[0] ?? "png"
       a.download = `QRIS-${qrisName.replace(/\s+/g, "-")}.${ext}`
       document.body.appendChild(a)
@@ -42,7 +42,7 @@ const QrisCard = ({
       a.remove()
       URL.revokeObjectURL(url)
     } catch {
-      // fallback buka di tab baru jika fetch gagal karena CORS
+      
       window.open(qrisUrl, "_blank")
     } finally {
       setDownloading(false)
@@ -65,7 +65,7 @@ const QrisCard = ({
 
   return (
     <Card className="dg-card group w-full max-w-lg items-center gap-4 px-6 py-7 text-center md:px-8">
-      {/* Label */}
+      
       <div className="flex items-center gap-2">
         <QrCode className="h-4 w-4 text-wedding-accent" />
         <span className="font-sans text-[10px] font-bold tracking-[0.2em] uppercase text-wedding-accent">
@@ -73,9 +73,9 @@ const QrisCard = ({
         </span>
       </div>
 
-      {/* QR Image */}
+      
       <div className="relative overflow-hidden rounded-xl bg-white border border-wedding-border-accent">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
+        
         <img
           src={qrisUrl}
           alt="QRIS WEDDING ADHIM & DEVI"
@@ -86,12 +86,12 @@ const QrisCard = ({
         />
       </div>
 
-      {/* Name */}
+      
       <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-muted">
         a.n. {qrisName}
       </p>
 
-      {/* Divider */}
+      
       <div className="flex items-center gap-2">
         <div className="h-px w-8 bg-wedding-border-accent" />
         <div className="h-1.5 w-1.5 rotate-45 bg-wedding-accent opacity-60" />
@@ -103,7 +103,7 @@ const QrisCard = ({
         pembayaran.
       </p>
 
-      {/* Download */}
+      
       <Button
         onClick={handleDownload}
         disabled={downloading}

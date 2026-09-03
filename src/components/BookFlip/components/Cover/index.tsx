@@ -41,7 +41,7 @@ const Cover = ({
           pointerEvents: "none",
         }}
       >
-        {/* Front of cover */}
+        
         <div
           className={cn(
             "absolute inset-0 flex flex-col items-center justify-between overflow-hidden rounded-[4px_8px_8px_4px] border-2 px-5 py-6 sm:px-7 sm:py-8 max-[390px]:px-4 max-[390px]:py-5 text-center border-border",
@@ -53,7 +53,7 @@ const Cover = ({
             backfaceVisibility: "hidden",
             WebkitBackfaceVisibility: "hidden",
             boxShadow: "inset 0 0 40px rgba(0,0,0,0.45)",
-            pointerEvents: "auto", // re-enable untuk front face
+            pointerEvents: "auto", 
             ...coverFront?.style,
           }}
         >
@@ -67,7 +67,7 @@ const Cover = ({
           />
         </div>
 
-        {/* Back of cover (inside cover) */}
+        
         <div
           className={cn(
             "absolute inset-0 flex flex-col items-center justify-center gap-3 sm:gap-4 overflow-hidden rounded-[8px_4px_4px_8px] border bg-[#fdf8f0] px-5 py-6 sm:px-7 sm:py-9 max-[390px]:px-4 max-[390px]:py-5 text-center dark:bg-[#141414]",
@@ -85,7 +85,7 @@ const Cover = ({
           {isSpinning && <CoverBack background={coverGradient} />}
           {isDesktop && !isSpinning && (
             <div className="absolute inset-0 flex">
-              {/* kiri = index 0 */}
+              
               <div className="w-full flex flex-col items-center justify-center ...">
                 {resolvedPages[0]}
               </div>

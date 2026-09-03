@@ -90,7 +90,7 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
             isDark: isDark,
           })
 
-    // Pair pages into spreads: [[index0, index1], [index2, index3], ...]
+    
     const desktopSpreads = []
     for (let i = 0; i < resolvedPages.length; i += 2) {
       desktopSpreads.push([resolvedPages[i], resolvedPages[i + 1] ?? null])
@@ -328,7 +328,7 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
             transformStyle: "preserve-3d",
           }}
         >
-          {/* PAGES — flipping pages (configurable via `pages` prop) */}
+          
           <BookPages
             isDesktop={isDesktop}
             resolvedPages={resolvedPages}
@@ -338,7 +338,7 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
             isSpinning={isSpinning}
           />
 
-          {/* COVER — flipping page (front & back configurable via `cover` prop) */}
+          
           <Cover
             coverFront={coverFront}
             coverBack={coverBack}

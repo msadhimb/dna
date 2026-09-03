@@ -218,6 +218,7 @@ const MainView = ({
       const cDur = curtainTl.totalDuration() || 1
       const jDur = journeyTl.totalDuration() || 1
       const bDur = bookFlipTl.totalDuration() || 1
+
       // 500% adalah base scroll distance; welcome menambah proporsi ekstra
       const totalScrollHeight =
         ((wDur + cDur + jDur + bDur) / (cDur + jDur + bDur)) * 500
@@ -357,8 +358,6 @@ const MainView = ({
     jWrapper.progress(savedJProgress, true)
     bWrapper.progress(savedBProgress, true)
   }, [theme])
-
-
 
   if (!mounted) {
     return (

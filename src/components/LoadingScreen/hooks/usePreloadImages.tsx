@@ -31,15 +31,15 @@ const usePreloadImages = (
         const resIcon = await axios.get("/api/get-image?folder=image-icon")
         imageIcon = resIcon.data?.data?.["image-icon"] ?? []
       } catch {
-        // Icon images are optional; they must not block the invitation animation.
+        
       }
 
       const dark = res.data?.data?.dark ?? []
       const light = res.data?.data?.light ?? []
 
-      // Preload only the active theme. Preloading both themes doubles image
-      // downloads and decoded bitmap memory on mobile, while Next Image can
-      // fetch the alternate theme later if the user switches themes.
+      
+      
+      
       const activeThemeImages = resolvedTheme === "dark" ? dark : light
       const urls = [
         ...activeThemeImages.map((img: { link: string }) => img.link),

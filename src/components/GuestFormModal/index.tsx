@@ -159,7 +159,7 @@ const GuestFormModal = (props: GuestFormModalProps) => {
 
   const renderFields = () => (
     <div className={`flex flex-col gap-5`}>
-      {/* Guest Name */}
+      
       <Controller
         control={form.control}
         name="full_name"
@@ -177,7 +177,7 @@ const GuestFormModal = (props: GuestFormModalProps) => {
         )}
       />
 
-      {/* Guest From */}
+      
       <Controller
         control={form.control}
         name="guest_from"
@@ -238,7 +238,7 @@ const GuestFormModal = (props: GuestFormModalProps) => {
         />
       </div>
 
-      {/* Generated or Existing Link */}
+      
       {generatedLink && (
         <div className="flex flex-col gap-2">
           <Label className="font-sans text-[10px] md:text-[11px] font-bold tracking-[0.30em] uppercase">
@@ -322,7 +322,7 @@ const GuestFormModal = (props: GuestFormModalProps) => {
     )
   }
 
-  // Non-modal rendering — identical structure/padding, no footer wrapper.
+  
   return (
     <div className="w-full h-full flex items-center justify-center">
       <div className="bg-card border border-border rounded-xl shadow-sm w-2xl flex flex-col gap-8 p-8">

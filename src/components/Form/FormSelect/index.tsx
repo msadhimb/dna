@@ -72,8 +72,8 @@ const FormSelect = ({
   const [valueInput, setValueInput] = React.useState("")
   const [selectedOption, setSelectedOption] = React.useState<any>(null)
 
-  // ✅ Search state — searchInput untuk tampilan input (langsung/tanpa delay),
-  // debouncedSearch untuk yang benar-benar dikirim ke API (delay)
+  
+  
   const [searchInput, setSearchInput] = React.useState("")
   const [debouncedSearch, setDebouncedSearch] = React.useState("")
 
@@ -98,7 +98,7 @@ const FormSelect = ({
     label: toStr(labelKey ? item[labelKey] : item.name),
   })
 
-  // ✅ Debounce search — dibuat sekali via useMemo, dibersihkan saat unmount
+  
   const debouncedSetSearch = React.useMemo(
     () =>
       debounce((val: string) => {
@@ -118,7 +118,7 @@ const FormSelect = ({
     debouncedSetSearch(val)
   }
 
-  // ✅ Query list — fetch saat popover dibuka, refetch saat search berubah
+  
   const {
     data: asyncData,
     isLoading: loading,
@@ -199,7 +199,7 @@ const FormSelect = ({
     refetchOnReconnect: false,
   })
 
-  // IntersectionObserver untuk infinite scroll
+  
   React.useEffect(() => {
     if (!bottomRef.current) return
     const observer = new IntersectionObserver(
@@ -217,15 +217,15 @@ const FormSelect = ({
   const handleOpenChange = (newOpen: boolean) => {
     if (!disabled) {
       if (newOpen && isAsync) {
-        // Refresh data tanpa menghapus opsi lama agar label terpilih tidak
-        // berubah sementara menjadi ID saat dropdown dibuka kembali.
+        
+        
         queryClient.invalidateQueries({
           queryKey: [...baseQueryKey, "list"],
           exact: false,
         })
       }
       if (!newOpen) {
-        // reset search saat popover ditutup, biar buka lagi mulai dari kosong
+        
         debouncedSetSearch.cancel()
         setSearchInput("")
         setDebouncedSearch("")
@@ -244,24 +244,24 @@ const FormSelect = ({
 
   const getDisplayValue = () => {
     if (value) {
-      // 1. Cari dari options yang sudah di-load (setelah popover pernah dibuka)
+      
       const fromLoaded = currentOptions.find(
         (opt: any) => toStr(opt.value) === toStr(value)
       )
       if (fromLoaded) return fromLoaded.label
 
-      // 2. Keep showing the selected label while the list is refreshing
+      
       if (selectedOption && toStr(selectedOption.value) === toStr(value)) {
         return selectedOption.label
       }
 
-      // 3. From the result of resolve by ID
+      
       if (resolvedData) return resolvedData.label
 
-      // 4. Static fallback
+      
       if (!isAsync && selectedDisplayValue) return selectedDisplayValue
 
-      // 5. Loading state
+      
       if (isResolving) return "Loading..."
 
       return value
@@ -277,7 +277,7 @@ const FormSelect = ({
     return placeholder || "Select"
   }
 
-  // Sinkronkan valueInput dengan value dari luar (misal saat form di-reset)
+  
   React.useEffect(() => {
     if (!value) {
       setValueInput("")
@@ -362,7 +362,7 @@ const FormSelect = ({
                           keywords={[optionLabel]}
                           data-checked={
                             toStr(value) === optionValue ? "true" : undefined
-                          } // ✅ tambah ini
+                          } 
                           onSelect={(currentValue) => {
                             onChange?.(currentValue, option)
                             setSelectedOption(option)

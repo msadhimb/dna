@@ -27,7 +27,7 @@ export const DigitalGift = () => {
   const sectionRef = useRef<HTMLElement>(null)
   const [activeTab, setActiveTab] = useState<"bank" | "qris">("bank")
 
-  // QRIS lokal dari public/assets/qris/QRIS-Gopay.jpeg
+  
   const qrisUrl: string = "/assets/qris/QRIS-Gopay.jpeg"
 
   useGSAP(
@@ -148,7 +148,7 @@ export const DigitalGift = () => {
       ref={sectionRef}
       className="dg-section relative w-full overflow-hidden bg-background"
     >
-      {/* Lingkaran terpusat — hanya beberapa rem di luar content utama, tidak full background */}
+      
       <div className="pointer-events-none absolute left-1/2 top-[48%] h-[92vw] max-h-[560px] w-[92vw] max-w-[560px] -translate-x-1/2 -translate-y-1/2 rounded-full md:h-[840px] md:max-h-[840px] md:w-[840px] md:max-w-[840px] lg:h-[1020px] lg:max-h-[1020px] lg:w-[1020px] lg:max-w-[1020px] overflow-hidden">
         <div
           className="absolute inset-0 bg-wedding-dot opacity-50"
@@ -168,14 +168,7 @@ export const DigitalGift = () => {
       </div>
 
       <div className="dg-content relative z-10 mx-auto flex w-full max-w-5xl flex-col items-center gap-8 px-6 py-10 md:gap-10 md:px-10">
-        {/* ── Bridge dari CommentSection ── */}
-        <div className="dg-bridge flex w-full max-w-xs items-center gap-3 opacity-60">
-          <div className="h-px flex-1 bg-wedding-border-accent" />
-          <div className="h-1 w-1 rotate-45 bg-wedding-accent opacity-50" />
-          <div className="h-px flex-1 bg-wedding-border-accent" />
-        </div>
-
-        {/* ── Header — gaya SectionHeader agar nyambung ── */}
+        
         <div className="dg-header flex flex-col items-center gap-6 text-center">
           <p className="dg-eyebrow font-sans text-[10px] font-semibold tracking-[0.5em] uppercase text-wedding-text-secondary">
             Amplop Digital
@@ -195,17 +188,9 @@ export const DigitalGift = () => {
           </p>
         </div>
 
-        {/* ── Envelope Illustration ── */}
-        <div className="dg-envelope">
-          <EnvelopeIllustration
-            isDark={isDark}
-            accent="var(--wedding-accent)"
-          />
-        </div>
-
-        {/* ── Message Card — menggunakan Card terpusat ── */}
-        <Card className="dg-message group w-full max-w-lg px-8 py-8 text-center md:px-12 md:py-10">
-          {/* Wax seal overlapping top */}
+        
+        <Card className="dg-message group w-full max-w-lg px-8 py-8 mt-5 text-center md:px-12 md:py-10">
+          
           <div
             className="absolute -top-9 left-1/2 -translate-x-1/2"
             style={{ zIndex: 10 }}
@@ -213,7 +198,7 @@ export const DigitalGift = () => {
             <WaxSeal isDark={isDark} accent="var(--wedding-accent)" />
           </div>
 
-          {/* Names */}
+          
           <p
             className="font-signature font-bold text-wedding-text-primary"
             style={{
@@ -225,7 +210,7 @@ export const DigitalGift = () => {
             Adhim &amp; Devi
           </p>
 
-          {/* Inner ornament */}
+          
           <div className="mx-auto my-4 flex items-center gap-3">
             <div className="h-px flex-1 max-w-12 bg-wedding-border-accent" />
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
@@ -238,7 +223,7 @@ export const DigitalGift = () => {
             <div className="h-px flex-1 max-w-12 bg-wedding-border-accent" />
           </div>
 
-          {/* Message */}
+          
           <p
             className="mx-auto max-w-sm font-sans text-sm font-light leading-relaxed text-wedding-text-secondary"
             style={{ lineHeight: 1.9 }}
@@ -249,7 +234,7 @@ export const DigitalGift = () => {
           </p>
         </Card>
 
-        {/* ── Tab Switcher — Bank / QRIS ── */}
+        
         <div
           className="dg-tabs flex items-center gap-1.5 rounded-full p-1.5 bg-wedding-surface border border-wedding-border-accent shadow-wedding-card"
           role="tablist"
@@ -285,7 +270,7 @@ export const DigitalGift = () => {
           </button>
         </div>
 
-        {/* ── Content: Bank Account Cards / QRIS ── */}
+        
         {activeTab === "bank" ? (
           <div className="dg-cards-wrapper relative z-10 flex w-full max-w-5xl flex-col items-center gap-6 md:w-auto md:flex-row md:gap-8">
             {guest?.guest_from === "devis_mother" ||
@@ -323,7 +308,7 @@ export const DigitalGift = () => {
           </div>
         )}
 
-        {/* ── Closing ── */}
+        
         <div className="dg-closing flex flex-col items-center gap-4 text-center">
           <OrnamentalDivider size="small" />
 
