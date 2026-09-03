@@ -4,15 +4,18 @@ import { cn } from "@/lib/utils"
 import { Label } from "@/components/ui/label"
 
 export interface FormInputProps extends React.ComponentProps<"input"> {
+  /** @deprecated — terpusat via Tailwind */
   accent?: string
+  /** @deprecated */
   borderColor?: string
   label?: string
   error?: string
+  /** @deprecated */
   labelColor?: string
 }
 
 const FormInput = React.forwardRef<HTMLInputElement, FormInputProps>(
-  ({ className, accent, borderColor, label, error, labelColor, id, ...props }, ref) => {
+  ({ className, label, error, id, style, ...props }, ref) => {
     const generatedId = React.useId()
     const inputId = id ?? generatedId
 
@@ -21,8 +24,7 @@ const FormInput = React.forwardRef<HTMLInputElement, FormInputProps>(
         {label && (
           <Label
             htmlFor={inputId}
-            className="font-sans text-[10px] font-bold tracking-[0.30em] uppercase md:text-[11px]"
-            style={{ color: labelColor }}
+            className="font-sans text-[10px] font-bold tracking-[0.30em] uppercase md:text-[11px] text-wedding-text-secondary"
           >
             {label}
           </Label>
@@ -34,11 +36,11 @@ const FormInput = React.forwardRef<HTMLInputElement, FormInputProps>(
           data-slot="wedding-input"
           aria-invalid={!!error}
           className={cn(
-            "h-auto w-full bg-transparent p-3 text-xs font-medium shadow-none ring-0 transition-all duration-300 outline-none placeholder:opacity-40 focus-visible:dark:border-red-800 focus-visible:dark:ring-red-800/50 focus-visible:border-green-800 focus-visible:ring-green-800/50 md:text-base",
+            "h-auto w-full bg-transparent p-3 text-xs font-medium shadow-none ring-0 transition-all duration-300 outline-none placeholder:opacity-40 border-wedding-border text-wedding-text-primary focus-visible:border-wedding-accent focus-visible:ring-wedding-accent/50 md:text-base",
             error && "border-red-500! focus-visible:ring-red-200",
             className
           )}
-          style={{ borderColor, color: accent, ...props.style }}
+          style={style}
         />
         {error && <span className="font-sans text-xs text-red-500">{error}</span>}
       </div>

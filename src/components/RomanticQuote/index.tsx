@@ -6,6 +6,7 @@ import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { Separator } from "../ui/separator"
 import useResponsive from "@/hooks/useResponsive"
+import { Card } from "@/components/Card"
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -17,14 +18,6 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
   const { resolvedTheme } = useTheme()
   const isDark = resolvedTheme === "dark"
   const { isMobile } = useResponsive()
-
-  const dot = isDark ? "rgba(255,45,85,0.06)" : "rgba(22,163,74,0.06)"
-  const surface = isDark ? "#0A0A0A" : "#F8F8F8"
-  const textSecondary = isDark ? "#888888" : "#555555"
-  const borderAccent = isDark ? "rgba(255,45,85,0.25)" : "rgba(22,163,74,0.25)"
-  const bgGradient = isDark
-    ? "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(255,45,85,0.06), transparent)"
-    : "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(22,163,74,0.06), transparent)"
 
   const sectionRef = useRef<HTMLElement>(null)
   const cardRef = useRef<HTMLDivElement>(null)
@@ -156,25 +149,31 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
   return (
     <section
       ref={sectionRef}
-      className="rq-section relative w-full overflow-hidden"
+      className="rq-section relative flex w-full items-center justify-center overflow-hidden bg-background min-h-[540px] md:min-h-[680px]"
     >
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{
-          backgroundImage: `radial-gradient(circle, ${dot} 1px, transparent 0)`,
-          backgroundSize: "28px 28px",
-        }}
-      />
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{ background: bgGradient }}
-      />
+      {/* Lingkaran terpusat — beberapa rem di luar card, radius diperkecil agar tidak terpotong */}
+      <div className="pointer-events-none absolute left-1/2 top-1/2 h-[94vw] max-h-[480px] w-[94vw] max-w-[480px] -translate-x-1/2 -translate-y-1/2 rounded-full md:h-[620px] md:w-[620px] overflow-hidden">
+        {/* Dot texture dalam lingkaran — soft fade di tepi */}
+        <div
+          className="absolute inset-0 bg-wedding-dot opacity-60"
+          style={{
+            maskImage: "radial-gradient(circle, black 58%, transparent 76%)",
+            WebkitMaskImage:
+              "radial-gradient(circle, black 58%, transparent 76%)",
+          }}
+        />
+        {/* Glow lingkaran — hanya beberapa rem di luar card */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(circle, color-mix(in srgb, var(--wedding-accent) 14%, transparent) 0%, color-mix(in srgb, var(--wedding-accent) 6%, transparent) 36%, transparent 70%)",
+          }}
+        />
+      </div>
 
       <div className="rq-content relative z-10 mx-auto flex w-full max-w-3xl flex-col items-center gap-8 p-14 md:gap-10 ">
-        <p
-          className="rq-eyebrow font-sans text-[10px] font-semibold tracking-[0.5em] uppercase"
-          style={{ color: textSecondary }}
-        >
+        <p className="rq-eyebrow font-sans text-[10px] font-semibold tracking-[0.5em] uppercase text-wedding-text-secondary">
           Kata Hati
         </p>
 
@@ -184,21 +183,15 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
           className="relative flex w-[90vw] md:w-full items-center justify-center"
           style={{ perspective: "1000px" }}
         >
-          <div
+          <Card
             ref={cardRef}
-            className="rq-card group relative flex w-full max-w-xl flex-col items-center justify-center px-8 py-10"
+            className="rq-card group w-full max-w-xl items-center justify-center px-8 py-10"
             style={
               {
-                background: surface,
-                border: `1px solid ${borderAccent}`,
-                borderRadius: "20px",
                 transformStyle: "preserve-3d",
                 willChange: "transform",
                 "--mouse-x": "50%",
                 "--mouse-y": "50%",
-                boxShadow: isDark
-                  ? "0 25px 50px -12px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04)"
-                  : "0 25px 50px -12px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.04)",
               } as React.CSSProperties
             }
           >
@@ -223,7 +216,7 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
                 aku akan selalu memilihmu.&rdquo;
               </p>
             </div>
-          </div>
+          </Card>
         </div>
       </div>
     </section>

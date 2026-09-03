@@ -1,32 +1,54 @@
-export function EnvelopeIllustration({
-  accent = "var(--wedding-accent)",
-  isDark,
-}: {
+import * as React from "react"
+
+interface EnvelopeIllustrationProps {
+  /** Main accent color */
+  color?: string
+  /** @deprecated alias */
   accent?: string
-  isDark: boolean
-}) {
-  const fill = accent
+  /** Dark mode variant */
+  isDark?: boolean
+  /** Width in px (default 200, height 0.7*width) */
+  size?: number | string
+  className?: string
+  style?: React.CSSProperties
+}
+
+/**
+ * EnvelopeIllustration — decorative envelope with letter peeking out and wax seal.
+ * Customize via size (width) and color. isDark switches paper palette.
+ */
+export function EnvelopeIllustration({
+  color,
+  accent,
+  isDark = false,
+  size = 200,
+  className,
+  style,
+}: EnvelopeIllustrationProps) {
+  const fill = color ?? accent ?? "var(--wedding-accent)"
   const paper = isDark ? "#1A1A1A" : "#F0EBE0"
   const paperEdge = isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)"
 
+  const widthNum = typeof size === "number" ? size : parseInt(size as string, 10) || 200
+  const heightNum = (widthNum * 140) / 200
+  const scale = widthNum / 200
+
   return (
-    <div className="relative flex items-center justify-center py-2">
+    <div
+      className={`relative flex items-center justify-center py-2 ${className ?? ""}`}
+      style={style}
+    >
       <svg
-        width="200"
-        height="140"
+        width={widthNum}
+        height={heightNum}
         viewBox="0 0 200 140"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         className="drop-shadow-lg"
+        aria-hidden="true"
       >
         {/* Shadow */}
-        <ellipse
-          cx="100"
-          cy="132"
-          rx="72"
-          ry="6"
-          fill={isDark ? "rgba(0,0,0,0.4)" : "rgba(0,0,0,0.12)"}
-        />
+        <ellipse cx="100" cy="132" rx="72" ry="6" fill={isDark ? "rgba(0,0,0,0.4)" : "rgba(0,0,0,0.12)"} />
 
         {/* Envelope body */}
         <rect
@@ -74,33 +96,9 @@ export function EnvelopeIllustration({
         />
 
         {/* Decorative lines on letter */}
-        <line
-          x1="52"
-          y1="56"
-          x2="148"
-          y2="56"
-          stroke={fill}
-          strokeWidth="0.75"
-          strokeOpacity="0.3"
-        />
-        <line
-          x1="60"
-          y1="64"
-          x2="140"
-          y2="64"
-          stroke={fill}
-          strokeWidth="0.75"
-          strokeOpacity="0.2"
-        />
-        <line
-          x1="66"
-          y1="72"
-          x2="134"
-          y2="72"
-          stroke={fill}
-          strokeWidth="0.75"
-          strokeOpacity="0.15"
-        />
+        <line x1="52" y1="56" x2="148" y2="56" stroke={fill} strokeWidth="0.75" strokeOpacity="0.3" />
+        <line x1="60" y1="64" x2="140" y2="64" stroke={fill} strokeWidth="0.75" strokeOpacity="0.2" />
+        <line x1="66" y1="72" x2="134" y2="72" stroke={fill} strokeWidth="0.75" strokeOpacity="0.15" />
 
         {/* Wax seal on letter */}
         <circle cx="100" cy="90" r="12" fill={fill} opacity="0.9" />
@@ -109,11 +107,7 @@ export function EnvelopeIllustration({
           cy="90"
           r="9"
           fill="none"
-          stroke={
-            isDark
-              ? "rgba(245,220,200,0.2)"
-              : "rgba(255,245,230,0.25)"
-          }
+          stroke={isDark ? "rgba(245,220,200,0.2)" : "rgba(255,245,230,0.25)"}
           strokeWidth="0.75"
         />
         <text
@@ -143,3 +137,5 @@ export function EnvelopeIllustration({
     </div>
   )
 }
+
+export default EnvelopeIllustration

@@ -4,25 +4,25 @@ import Image from "next/image"
 import { useState } from "react"
 import { Download, QrCode } from "lucide-react"
 import { Button } from "@/components/Button"
+import { Card } from "@/components/Card"
 
 interface QrisCardProps {
   qrisUrl: string
   qrisName?: string
-  accent: string
-  borderAccent: string
-  isDark: boolean
+  /** @deprecated — terpusat via Tailwind */
+  accent?: string
+  /** @deprecated */
+  borderAccent?: string
+  /** @deprecated */
+  isDark?: boolean
+  /** @deprecated */
   surface?: string
 }
 
 const QrisCard = ({
   qrisUrl,
   qrisName = "Devi & Adhim",
-  accent,
-  borderAccent,
-  isDark,
-  surface,
 }: QrisCardProps) => {
-  const bg = surface ?? (isDark ? "#0A0A0A" : "#F8F8F8")
   const [downloading, setDownloading] = useState(false)
 
   const handleDownload = async () => {
@@ -51,68 +51,29 @@ const QrisCard = ({
 
   if (!qrisUrl) {
     return (
-      <div
-        className="dg-card flex w-full max-w-sm flex-col items-center gap-4 px-8 py-10 text-center"
-        style={{
-          background: bg,
-          border: `1px solid ${borderAccent}`,
-          borderRadius: "20px",
-          boxShadow: isDark
-            ? "0 25px 50px -12px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04)"
-            : "0 25px 50px -12px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04)",
-        }}
-      >
-        <div
-          className="flex h-16 w-16 items-center justify-center rounded-full"
-          style={{ background: `${accent}15`, border: `1px solid ${borderAccent}` }}
-        >
-          <QrCode className="h-7 w-7" style={{ color: accent }} />
+      <Card className="dg-card w-full max-w-sm items-center gap-4 px-8 py-10 text-center">
+        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-wedding-accent/10 border border-wedding-border-accent">
+          <QrCode className="h-7 w-7 text-wedding-accent" />
         </div>
-        <p className="font-sans text-sm leading-relaxed" style={{ color: isDark ? "#888" : "#555" }}>
+        <p className="font-sans text-sm leading-relaxed text-wedding-text-secondary">
           QRIS belum tersedia. Silakan hubungi mempelai untuk informasi pembayaran.
         </p>
-      </div>
+      </Card>
     )
   }
 
   return (
-    <div
-      className="dg-card group relative flex w-full max-w-sm flex-col items-center gap-4 px-6 py-7 text-center md:px-8"
-      style={{
-        background: bg,
-        border: `1px solid ${borderAccent}`,
-        borderRadius: "20px",
-        boxShadow: isDark
-          ? "0 25px 50px -12px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04)"
-          : "0 25px 50px -12px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04)",
-      }}
-    >
-      {/* Top accent line */}
-      <div
-        className="absolute left-6 right-6 top-0 h-px"
-        style={{ background: `linear-gradient(90deg, transparent, ${accent}, transparent)` }}
-      />
-      {/* Corner ornaments */}
-      <div className="absolute left-3 top-3 text-[8px] opacity-20" style={{ color: accent }}>
-        ❧
-      </div>
-      <div className="absolute right-3 top-3 text-[8px] opacity-20" style={{ color: accent, transform: "scaleX(-1)" }}>
-        ❧
-      </div>
-
+    <Card className="dg-card group w-full max-w-sm items-center gap-4 px-6 py-7 text-center md:px-8">
       {/* Label */}
       <div className="flex items-center gap-2">
-        <QrCode className="h-4 w-4" style={{ color: accent }} />
-        <span className="font-sans text-[10px] font-bold tracking-[0.2em] uppercase" style={{ color: accent }}>
+        <QrCode className="h-4 w-4 text-wedding-accent" />
+        <span className="font-sans text-[10px] font-bold tracking-[0.2em] uppercase text-wedding-accent">
           QRIS
         </span>
       </div>
 
       {/* QR Image */}
-      <div
-        className="relative overflow-hidden rounded-xl bg-white p-3"
-        style={{ border: `1px solid ${borderAccent}` }}
-      >
+      <div className="relative overflow-hidden rounded-xl bg-white p-3 border border-wedding-border-accent">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={qrisUrl}
@@ -129,9 +90,9 @@ const QrisCard = ({
 
       {/* Divider */}
       <div className="flex items-center gap-2">
-        <div className="h-px w-8" style={{ background: borderAccent }} />
-        <div className="h-1.5 w-1.5 rotate-45" style={{ background: accent, opacity: 0.6 }} />
-        <div className="h-px w-8" style={{ background: borderAccent }} />
+        <div className="h-px w-8 bg-wedding-border-accent" />
+        <div className="h-1.5 w-1.5 rotate-45 bg-wedding-accent opacity-60" />
+        <div className="h-px w-8 bg-wedding-border-accent" />
       </div>
 
       <p className="max-w-[28ch] font-sans text-xs leading-relaxed text-muted">
@@ -148,7 +109,7 @@ const QrisCard = ({
         <Download className="h-3.5 w-3.5" />
         {downloading ? "Mengunduh..." : "Download QRIS"}
       </Button>
-    </div>
+    </Card>
   )
 }
 

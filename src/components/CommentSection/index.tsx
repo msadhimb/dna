@@ -108,18 +108,6 @@ export const CommentSection = forwardRef<
   }))
   const isSubmitting = createComment.isPending
 
-  const accent = isDark ? "#FF2D55" : "#16A34A"
-  const dot = isDark ? "rgba(255,45,85,0.06)" : "rgba(212,175,55,0.06)"
-  const surface = isDark ? "#0A0A0A" : "#F8F8F8"
-  const textPrimary = isDark ? "#FFFFFF" : "#111111"
-  const textSecondary = isDark ? "#888888" : "#555555"
-  const textMuted = isDark ? "#444444" : "#AAAAAA"
-  const border = isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)"
-  const borderAccent = isDark ? "rgba(255,45,85,0.25)" : "rgba(22,163,74,0.25)"
-  const bgGradient = isDark
-    ? "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(255,45,85,0.06), transparent)"
-    : "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(212,175,55,0.06), transparent)"
-
   const imgBack = isDark
     ? (imageUrl as any)?.dark?.[1].link
     : (imageUrl as any)?.light?.[1].link
@@ -335,17 +323,23 @@ export const CommentSection = forwardRef<
       className="relative w-full overflow-hidden bg-background gsap-element"
       style={{ perspective: "1500px" }}
     >
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{
-          backgroundImage: `radial-gradient(circle, ${dot} 1px, transparent 0)`,
-          backgroundSize: "28px 28px",
-        }}
-      />
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{ background: bgGradient }}
-      />
+      {/* Lingkaran terpusat — hanya beberapa rem di luar content utama, tidak full background */}
+      <div className="pointer-events-none absolute left-1/2 top-[52%] h-[92vw] max-h-[560px] w-[92vw] max-w-[560px] -translate-x-1/2 -translate-y-1/2 rounded-full md:h-[860px] md:max-h-[860px] md:w-[860px] md:max-w-[860px] lg:h-[1040px] lg:max-h-[1040px] lg:w-[1040px] lg:max-w-[1040px] overflow-hidden">
+        <div
+          className="absolute inset-0 bg-wedding-dot opacity-50"
+          style={{
+            maskImage: "radial-gradient(circle, black 60%, transparent 78%)",
+            WebkitMaskImage: "radial-gradient(circle, black 60%, transparent 78%)",
+          }}
+        />
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(circle, color-mix(in srgb, var(--wedding-accent) 13%, transparent) 0%, color-mix(in srgb, var(--wedding-accent) 5%, transparent) 38%, transparent 72%)",
+          }}
+        />
+      </div>
 
       <FloatImages
         imgBack={imgBack}
@@ -371,36 +365,19 @@ export const CommentSection = forwardRef<
           eyebrow="Kartu Ucapan"
           title="Ucapan & Doa"
           description="Sematkan doa dan harapan terbaik Anda untuk Devi & Adhim. Setiap kata yang ditulis akan menjadi kenangan berharga."
-          textSecondary={textSecondary}
-          textPrimary={textPrimary}
         />
 
         <CommentForm
-          accent={accent}
-          border={border}
-          textSecondary={textSecondary}
-          textPrimary={textPrimary}
-          isDark={isDark}
-          surface={surface}
           onSubmit={handleFormSubmit}
           isSubmitting={isSubmitting}
           submitted={submitted}
           guestName={guestName}
         />
 
-        <CounterBadge
-          count={comments.length}
-          borderAccent={borderAccent}
-          textSecondary={textSecondary}
-        />
+        <CounterBadge count={comments.length} />
 
         <CommentList
           comments={comments}
-          surface={surface}
-          border={border}
-          textPrimary={textPrimary}
-          textSecondary={textSecondary}
-          textMuted={textMuted}
           hasMore={Boolean(hasNextPage)}
           isLoadingMore={isFetchingNextPage}
           onLoadMore={() => fetchNextPage()}

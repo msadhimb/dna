@@ -8,6 +8,7 @@ import { AttendanceToggle } from "./AttendanceToggle"
 import { Button } from "@/components/Button"
 import { FormInput } from "@/components/Form/FormInput"
 import { FormTextArea } from "@/components/Form/FormTextArea"
+import { Card } from "@/components/Card"
 
 interface FormValues {
   name: string
@@ -16,12 +17,18 @@ interface FormValues {
 }
 
 interface CommentFormProps {
-  accent: string
-  border: string
-  textSecondary: string
-  textPrimary: string
-  isDark: boolean
-  surface: string
+  /** @deprecated — terpusat via Tailwind */
+  accent?: string
+  /** @deprecated */
+  border?: string
+  /** @deprecated */
+  textSecondary?: string
+  /** @deprecated */
+  textPrimary?: string
+  /** @deprecated */
+  isDark?: boolean
+  /** @deprecated */
+  surface?: string
   onSubmit: (data: FormValues) => Promise<void>
   isSubmitting: boolean
   submitted: boolean
@@ -38,12 +45,6 @@ const schema = yup.object({
 })
 
 export function CommentForm({
-  accent,
-  border,
-  textSecondary,
-  textPrimary,
-  isDark,
-  surface,
   onSubmit,
   isSubmitting,
   submitted,
@@ -65,29 +66,13 @@ export function CommentForm({
 
   return (
     <FormProvider {...methods}>
-      <div
-        className="cs-form-wrap"
-        style={{
-          background: surface,
-          border: `1px solid ${border}`,
-          borderRadius: "16px",
-        }}
+      <Card
+        className="cs-form-wrap overflow-hidden p-0"
+        radius="20px"
       >
-        <div
-          className="flex items-center gap-3 px-8 py-5"
-          style={{
-            borderBottom: `1px solid ${border}`,
-            borderRadius: "16px 16px 0 0",
-          }}
-        >
-          <span
-            className="h-2 w-2 rounded-full"
-            style={{ background: accent }}
-          />
-          <span
-            className="font-sans text-[10px] md:text-[11px] font-bold tracking-[0.30em] uppercase"
-            style={{ color: textSecondary }}
-          >
+        <div className="flex items-center gap-3 px-8 py-5 border-b border-wedding-border rounded-t-[20px]">
+          <span className="h-2 w-2 rounded-full bg-wedding-accent" />
+          <span className="font-sans text-[10px] md:text-[11px] font-bold tracking-[0.30em] uppercase text-wedding-text-secondary">
             Tulis Ucapan
           </span>
         </div>
@@ -100,13 +85,9 @@ export function CommentForm({
                 control={methods.control}
                 render={({ field, fieldState }) => (
                   <FormInput
-                    accent={accent}
-                    borderColor={border}
                     label="Nama"
-                    labelColor={textSecondary}
                     error={fieldState.error?.message}
                     placeholder="Nama lengkap Anda"
-                    style={{ color: textPrimary }}
                     {...field}
                   />
                 )}
@@ -119,9 +100,7 @@ export function CommentForm({
                   <AttendanceToggle
                     value={field.value}
                     onChange={field.onChange}
-                    textSecondary={textSecondary}
                     label="Konfirmasi Kehadiran"
-                    labelColor={textSecondary}
                     error={fieldState.error?.message}
                   />
                 )}
@@ -133,14 +112,10 @@ export function CommentForm({
               control={methods.control}
               render={({ field, fieldState }) => (
                 <FormTextArea
-                  accent={accent}
-                  borderColor={border}
                   label="Ucapan & Doa"
-                  labelColor={textSecondary}
                   error={fieldState.error?.message}
                   rows={4}
                   placeholder="Tulis ucapan atau doa Anda untuk kedua mempelai..."
-                  style={{ color: textPrimary }}
                   {...field}
                 />
               )}
@@ -161,7 +136,7 @@ export function CommentForm({
             </Button>
           </div>
         </div>
-      </div>
+      </Card>
     </FormProvider>
   )
 }

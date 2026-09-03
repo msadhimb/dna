@@ -72,6 +72,14 @@
   --color-book-shadow: var(--book-shadow);
   --color-book-edge-light: var(--book-edge-light);
   --color-book-edge-dark: var(--book-edge-dark);
+  --color-wedding-accent: var(--wedding-accent);
+  --color-wedding-surface: var(--wedding-surface);
+  --color-wedding-text-primary: var(--wedding-text-primary);
+  --color-wedding-text-secondary: var(--wedding-text-secondary);
+  --color-wedding-text-muted: var(--wedding-text-muted);
+  --color-wedding-border: var(--wedding-border);
+  --color-wedding-border-accent: var(--wedding-border-accent);
+  --color-wedding-dot: var(--wedding-dot);
 }
 
 :root {
@@ -133,6 +141,18 @@
   --book-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.35);
   --book-edge-light: #f4ecd8;
   --book-edge-dark: #cbb98a;
+
+  /* Wedding centralized tokens — light */
+  --wedding-accent: #16A34A;
+  --wedding-surface: #F8F8F8;
+  --wedding-text-primary: #111111;
+  --wedding-text-secondary: #555555;
+  --wedding-text-muted: #AAAAAA;
+  --wedding-border: rgba(0, 0, 0, 0.08);
+  --wedding-border-accent: rgba(22, 163, 74, 0.25);
+  --wedding-dot: rgba(22, 163, 74, 0.06);
+  --wedding-bg-gradient: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(22, 163, 74, 0.06), transparent);
+  --wedding-card-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.04);
 }
 
 .dark {
@@ -193,6 +213,30 @@
   --book-shadow: 0 40px 100px -20px rgba(131, 32, 4, 0.25);
   --book-edge-light: #2a1c18;
   --book-edge-dark: #150c0a;
+
+  /* Wedding centralized tokens — dark */
+  --wedding-accent: #FF2D55;
+  --wedding-surface: #0A0A0A;
+  --wedding-text-primary: #FFFFFF;
+  --wedding-text-secondary: #888888;
+  --wedding-text-muted: #444444;
+  --wedding-border: rgba(255, 255, 255, 0.08);
+  --wedding-border-accent: rgba(255, 45, 85, 0.25);
+  --wedding-dot: rgba(255, 45, 85, 0.06);
+  --wedding-bg-gradient: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(255, 45, 85, 0.06), transparent);
+  --wedding-card-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+/* Wedding centralized utilities */
+.shadow-wedding-card {
+  box-shadow: var(--wedding-card-shadow);
+}
+.bg-wedding-dot {
+  background-image: radial-gradient(circle, var(--wedding-dot) 1px, transparent 0);
+  background-size: 28px 28px;
+}
+.bg-wedding-gradient {
+  background: var(--wedding-bg-gradient);
 }
 
 @layer base {

@@ -371,7 +371,7 @@ const MainView = ({
   const handleLoadingComplete = () => setIsLoaded(true)
 
   return (
-    <main ref={mainRef}>
+    <main ref={mainRef} className="bg-background">
       <Tools />
       {!isLoaded && <LoadingScreen onComplete={handleLoadingComplete} />}
 
@@ -404,7 +404,7 @@ const MainView = ({
           <BookFlip ref={bookFlipRef} theme={theme} />
         </div>
       </section>
-      <div className="flex flex-col gap-36">
+      <div className="flex flex-col gap-0 bg-background">
         <RomanticQuote />
         <CommentSection
           ref={commentRef}

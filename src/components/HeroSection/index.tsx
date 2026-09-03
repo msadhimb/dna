@@ -47,7 +47,8 @@ const HeroSection = () => {
               fill
               priority
               className="object-cover object-[80%_70%] dark:object-[60%_0%]"
-              sizes="100vw"
+              sizes="(max-width: 768px) 100vw, 100vw"
+              quality={85}
             />
           ) : (
             <div className="size-full bg-background" aria-hidden="true" />

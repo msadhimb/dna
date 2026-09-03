@@ -1,4 +1,5 @@
 import { Button } from "@/components/Button"
+import { Card } from "@/components/Card"
 import { CopyCheck, CopyIcon } from "lucide-react"
 import Image from "next/image"
 import { useState } from "react"
@@ -7,20 +8,19 @@ const BankAccountCard = ({
   svg,
   accountNumber,
   accountName,
-  accent,
-  borderAccent,
-  isDark,
-  surface,
 }: {
   svg: string
   accountNumber: string
   accountName: string
-  accent: string
-  borderAccent: string
-  isDark: boolean
+  /** @deprecated — terpusat via Tailwind */
+  accent?: string
+  /** @deprecated */
+  borderAccent?: string
+  /** @deprecated */
+  isDark?: boolean
+  /** @deprecated */
   surface?: string
 }) => {
-  const bg = surface ?? (isDark ? "#0A0A0A" : "#F8F8F8")
   const [copied, setCopied] = useState(false)
 
   const handleCopy = () => {
@@ -30,39 +30,7 @@ const BankAccountCard = ({
   }
 
   return (
-    <div
-      className="dg-card group relative w-full md:w-80 flex flex-col items-center gap-3 px-8 py-7 text-center transition-all duration-300"
-      style={{
-        background: bg,
-        border: `1px solid ${borderAccent}`,
-        borderRadius: "20px",
-        boxShadow: isDark
-          ? "0 25px 50px -12px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04)"
-          : "0 25px 50px -12px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04)",
-      }}
-    >
-      {/* Top accent line */}
-      <div
-        className="absolute left-6 right-6 top-0 h-px"
-        style={{
-          background: `linear-gradient(90deg, transparent, ${accent}, transparent)`,
-        }}
-      />
-
-      {/* Corner ornaments */}
-      <div
-        className="absolute left-3 top-3 text-[8px] opacity-20"
-        style={{ color: accent }}
-      >
-        ❧
-      </div>
-      <div
-        className="absolute right-3 top-3 text-[8px] opacity-20"
-        style={{ color: accent, transform: "scaleX(-1)" }}
-      >
-        ❧
-      </div>
-
+    <Card className="dg-card group w-full md:w-80 items-center gap-3 px-8 py-7 text-center transition-all duration-300">
       <Image src={svg} alt="bank" width={80} height={100} />
 
       {/* Account number */}
@@ -77,12 +45,9 @@ const BankAccountCard = ({
 
       {/* Divider */}
       <div className="flex items-center gap-2">
-        <div className="h-px w-8" style={{ background: borderAccent }} />
-        <div
-          className="h-1.5 w-1.5 rotate-45"
-          style={{ background: accent, opacity: 0.6 }}
-        />
-        <div className="h-px w-8" style={{ background: borderAccent }} />
+        <div className="h-px w-8 bg-wedding-border-accent" />
+        <div className="h-1.5 w-1.5 rotate-45 bg-wedding-accent opacity-60" />
+        <div className="h-px w-8 bg-wedding-border-accent" />
       </div>
 
       {/* Account name */}
@@ -108,7 +73,7 @@ const BankAccountCard = ({
           </>
         )}
       </Button>
-    </div>
+    </Card>
   )
 }
 

@@ -13,8 +13,10 @@ import {
 } from "@/components/Icon"
 import BankAccountCard from "./components/BankAccountCard"
 import QrisCard from "./components/QrisCard"
+import { Card } from "@/components/Card"
 import { useGuest } from "@/store/useGuest"
 import { useImageUrl } from "@/store/useImageUrl"
+import { cn } from "@/lib/utils"
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -35,17 +37,6 @@ export const DigitalGift = () => {
     qrisIcon?.link ??
     // fallback demo — ganti dengan file di supabase storage image-icon/qris.png
     "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=QRIS-Devi-Adhim-Wedding-Gift"
-
-  // ── Samakan token dengan RomanticQuote & CommentSection agar nyambung ──
-  const accent = isDark ? "#FF2D55" : "#16A34A"
-  const dot = isDark ? "rgba(255,45,85,0.06)" : "rgba(212,175,55,0.06)"
-  const surface = isDark ? "#0A0A0A" : "#F8F8F8"
-  const textPrimary = isDark ? "#FFFFFF" : "#111111"
-  const textSecondary = isDark ? "#888888" : "#555555"
-  const borderAccent = isDark ? "rgba(255,45,85,0.25)" : "rgba(22,163,74,0.25)"
-  const bgGradient = isDark
-    ? "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(255,45,85,0.06), transparent)"
-    : "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(212,175,55,0.06), transparent)"
 
   useGSAP(
     () => {
@@ -153,89 +144,75 @@ export const DigitalGift = () => {
       ref={sectionRef}
       className="dg-section relative w-full overflow-hidden bg-background"
     >
-      {/* Dot texture — sama dengan RomanticQuote & CommentSection */}
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{
-          backgroundImage: `radial-gradient(circle, ${dot} 1px, transparent 0)`,
-          backgroundSize: "28px 28px",
-        }}
-      />
-      {/* Ambient glow */}
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{ background: bgGradient }}
-      />
+      {/* Lingkaran terpusat — hanya beberapa rem di luar content utama, tidak full background */}
+      <div className="pointer-events-none absolute left-1/2 top-[48%] h-[92vw] max-h-[560px] w-[92vw] max-w-[560px] -translate-x-1/2 -translate-y-1/2 rounded-full md:h-[840px] md:max-h-[840px] md:w-[840px] md:max-w-[840px] lg:h-[1020px] lg:max-h-[1020px] lg:w-[1020px] lg:max-w-[1020px] overflow-hidden">
+        <div
+          className="absolute inset-0 bg-wedding-dot opacity-50"
+          style={{
+            maskImage: "radial-gradient(circle, black 60%, transparent 78%)",
+            WebkitMaskImage: "radial-gradient(circle, black 60%, transparent 78%)",
+          }}
+        />
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(circle, color-mix(in srgb, var(--wedding-accent) 13%, transparent) 0%, color-mix(in srgb, var(--wedding-accent) 5%, transparent) 40%, transparent 73%)",
+          }}
+        />
+      </div>
 
       <div className="dg-content relative z-10 mx-auto flex w-full max-w-5xl flex-col items-center gap-8 px-6 py-10 md:gap-10 md:px-10">
         {/* ── Bridge dari CommentSection ── */}
         <div className="dg-bridge flex w-full max-w-xs items-center gap-3 opacity-60">
-          <div className="h-px flex-1" style={{ background: borderAccent }} />
-          <div className="h-1 w-1 rotate-45" style={{ background: accent, opacity: 0.5 }} />
-          <div className="h-px flex-1" style={{ background: borderAccent }} />
+          <div className="h-px flex-1 bg-wedding-border-accent" />
+          <div className="h-1 w-1 rotate-45 bg-wedding-accent opacity-50" />
+          <div className="h-px flex-1 bg-wedding-border-accent" />
         </div>
 
         {/* ── Header — gaya SectionHeader agar nyambung ── */}
         <div className="dg-header flex flex-col items-center gap-6 text-center">
-          <p
-            className="dg-eyebrow font-sans text-[10px] font-semibold tracking-[0.5em] uppercase"
-            style={{ color: textSecondary }}
-          >
+          <p className="dg-eyebrow font-sans text-[10px] font-semibold tracking-[0.5em] uppercase text-wedding-text-secondary">
             Amplop Digital
           </p>
           <h2
-            className="dg-title-word font-signature font-bold leading-none"
+            className="dg-title-word font-signature font-bold leading-none text-wedding-text-primary"
             style={{
               fontSize: "clamp(3.5rem, 10vw, 6rem)",
-              color: textPrimary,
             }}
           >
             Wedding Gift
           </h2>
-          <p
-            className="dg-desc max-w-md font-sans text-sm leading-relaxed"
-            style={{ color: textSecondary }}
-          >
+          <p className="dg-desc max-w-md font-sans text-sm leading-relaxed text-wedding-text-secondary">
             Doa restu Anda adalah hadiah terindah. Namun jika berkenan berbagi tanda kasih, amplop digital ini kami sediakan dengan penuh terima kasih.
           </p>
         </div>
 
         {/* ── Envelope Illustration ── */}
         <div className="dg-envelope">
-          <EnvelopeIllustration accent={accent} isDark={isDark} />
+          <EnvelopeIllustration isDark={isDark} accent="var(--wedding-accent)" />
         </div>
 
         {/* ── Ornamental Divider — konsisten dengan CommentSection ── */}
         <div className="dg-ornament-1 w-full max-w-xs">
-          <OrnamentalDivider color={borderAccent} />
+          <OrnamentalDivider />
         </div>
 
-        {/* ── Message Card — surface & shadow sama dengan RomanticQuote ── */}
-        <div
-          className="dg-message group relative w-full max-w-lg px-8 py-8 text-center md:px-12 md:py-10"
-          style={{
-            background: surface,
-            border: `1px solid ${borderAccent}`,
-            borderRadius: "20px",
-            boxShadow: isDark
-              ? "0 25px 50px -12px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04)"
-              : "0 25px 50px -12px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.04)",
-          }}
-        >
-          {/* Wax seal overlapping top — sama seperti sebelumnya */}
+        {/* ── Message Card — menggunakan Card terpusat ── */}
+        <Card className="dg-message group w-full max-w-lg px-8 py-8 text-center md:px-12 md:py-10">
+          {/* Wax seal overlapping top */}
           <div
             className="absolute -top-9 left-1/2 -translate-x-1/2"
             style={{ zIndex: 10 }}
           >
-            <WaxSeal accent={accent} isDark={isDark} />
+            <WaxSeal isDark={isDark} accent="var(--wedding-accent)" />
           </div>
 
           {/* Names */}
           <p
-            className="font-signature font-bold"
+            className="font-signature font-bold text-wedding-text-primary"
             style={{
               fontSize: "clamp(2rem, 5vw, 3rem)",
-              color: textPrimary,
               lineHeight: 1.2,
               paddingTop: "16px",
             }}
@@ -243,62 +220,46 @@ export const DigitalGift = () => {
             Devi &amp; Adhim
           </p>
 
-          {/* Inner ornament — senada dengan RomanticQuote Separator */}
+          {/* Inner ornament */}
           <div className="mx-auto my-4 flex items-center gap-3">
-            <div
-              className="h-px flex-1 max-w-12"
-              style={{ background: borderAccent }}
-            />
+            <div className="h-px flex-1 max-w-12 bg-wedding-border-accent" />
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
               <path
                 d="M6 1 L7.5 4.5 L11 6 L7.5 7.5 L6 11 L4.5 7.5 L1 6 L4.5 4.5 Z"
-                fill={accent}
+                fill="var(--wedding-accent)"
                 opacity="0.6"
               />
             </svg>
-            <div
-              className="h-px flex-1 max-w-12"
-              style={{ background: borderAccent }}
-            />
+            <div className="h-px flex-1 max-w-12 bg-wedding-border-accent" />
           </div>
 
           {/* Message */}
-          <p
-            className="mx-auto max-w-sm font-sans text-sm font-light leading-relaxed"
-            style={{ color: textSecondary, lineHeight: 1.9 }}
-          >
+          <p className="mx-auto max-w-sm font-sans text-sm font-light leading-relaxed text-wedding-text-secondary" style={{ lineHeight: 1.9 }}>
             Doa restu Anda merupakan karunia yang sangat berarti bagi kami.
             Namun jika memberi adalah ungkapan kasih Anda, kami dengan rendah
             hati menerimanya.
           </p>
-        </div>
+        </Card>
 
         {/* ── Ornamental Divider ── */}
         <div className="dg-ornament-1 w-full max-w-xs">
-          <OrnamentalDivider color={borderAccent} />
+          <OrnamentalDivider />
         </div>
 
         {/* ── Tab Switcher — Bank / QRIS ── */}
         <div
-          className="dg-tabs flex items-center gap-1.5 rounded-full p-1.5"
+          className="dg-tabs flex items-center gap-1.5 rounded-full p-1.5 bg-wedding-surface border border-wedding-border-accent shadow-wedding-card"
           role="tablist"
           aria-label="Metode hadiah"
-          style={{
-            background: surface,
-            border: `1px solid ${borderAccent}`,
-            boxShadow: isDark
-              ? "0 8px 24px -12px rgba(0,0,0,0.5)"
-              : "0 8px 24px -12px rgba(0,0,0,0.12)",
-          }}
         >
           <button
             onClick={() => setActiveTab("bank")}
-            className="flex cursor-pointer items-center gap-2 rounded-full px-5 py-2.5 text-[11px] font-bold tracking-[0.14em] uppercase transition-all duration-200"
-            style={{
-              background: activeTab === "bank" ? accent : "transparent",
-              color: activeTab === "bank" ? "#ffffff" : textSecondary,
-              boxShadow: activeTab === "bank" ? `0 4px 12px ${accent}40` : "none",
-            }}
+            className={cn(
+              "flex cursor-pointer items-center gap-2 rounded-full px-5 py-2.5 text-[11px] font-bold tracking-[0.14em] uppercase transition-all duration-200",
+              activeTab === "bank"
+                ? "bg-wedding-accent text-white shadow-md"
+                : "bg-transparent text-wedding-text-secondary"
+            )}
             aria-selected={activeTab === "bank"}
             role="tab"
           >
@@ -307,12 +268,12 @@ export const DigitalGift = () => {
           </button>
           <button
             onClick={() => setActiveTab("qris")}
-            className="flex cursor-pointer items-center gap-2 rounded-full px-5 py-2.5 text-[11px] font-bold tracking-[0.14em] uppercase transition-all duration-200"
-            style={{
-              background: activeTab === "qris" ? accent : "transparent",
-              color: activeTab === "qris" ? "#ffffff" : textSecondary,
-              boxShadow: activeTab === "qris" ? `0 4px 12px ${accent}40` : "none",
-            }}
+            className={cn(
+              "flex cursor-pointer items-center gap-2 rounded-full px-5 py-2.5 text-[11px] font-bold tracking-[0.14em] uppercase transition-all duration-200",
+              activeTab === "qris"
+                ? "bg-wedding-accent text-white shadow-md"
+                : "bg-transparent text-wedding-text-secondary"
+            )}
             aria-selected={activeTab === "qris"}
             role="tab"
           >
@@ -333,10 +294,6 @@ export const DigitalGift = () => {
                 }
                 accountNumber="7130633280"
                 accountName="Selvia Agustin"
-                accent={accent}
-                borderAccent={borderAccent}
-                isDark={isDark}
-                surface={surface}
               />
             ) : (
               <>
@@ -346,10 +303,6 @@ export const DigitalGift = () => {
                   }
                   accountNumber="1819801119"
                   accountName="Salman Adhim"
-                  accent={accent}
-                  borderAccent={borderAccent}
-                  isDark={isDark}
-                  surface={surface}
                 />
                 <BankAccountCard
                   svg={
@@ -357,47 +310,33 @@ export const DigitalGift = () => {
                   }
                   accountNumber="7296154554"
                   accountName="Devi Yuliana"
-                  accent={accent}
-                  borderAccent={borderAccent}
-                  isDark={isDark}
-                  surface={surface}
                 />
               </>
             )}
           </div>
         ) : (
           <div className="dg-cards-wrapper relative z-10 flex w-full justify-center">
-            <QrisCard
-              qrisUrl={qrisUrl}
-              qrisName="Devi & Adhim"
-              accent={accent}
-              borderAccent={borderAccent}
-              isDark={isDark}
-              surface={surface}
-            />
+            <QrisCard qrisUrl={qrisUrl} qrisName="Devi & Adhim" />
           </div>
         )}
 
-        {/* ── Closing — gaya Footer agar transisi mulus ke Footer ── */}
+        {/* ── Closing ── */}
         <div className="dg-closing flex flex-col items-center gap-4 text-center">
-          <OrnamentalDivider color={borderAccent} size="small" />
+          <OrnamentalDivider size="small" />
 
-          <p
-            className="max-w-md font-sans text-sm font-light leading-relaxed italic"
-            style={{ color: textSecondary, lineHeight: 2 }}
-          >
+          <p className="max-w-md font-sans text-sm font-light leading-relaxed italic text-wedding-text-secondary" style={{ lineHeight: 2 }}>
             Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak,
             Ibu, dan Saudara/i berkenan hadir untuk memberikan doa restu.
           </p>
 
           <div className="flex items-center gap-3">
-            <div className="h-px w-6" style={{ background: borderAccent }} />
+            <div className="h-px w-6 bg-wedding-border-accent" />
             <div className="flex gap-1.5">
-              <div className="h-1 w-1 rotate-45" style={{ background: accent, opacity: 0.5 }} />
-              <div className="h-1 w-1 rotate-45" style={{ background: accent }} />
-              <div className="h-1 w-1 rotate-45" style={{ background: accent, opacity: 0.5 }} />
+              <div className="h-1 w-1 rotate-45 bg-wedding-accent opacity-50" />
+              <div className="h-1 w-1 rotate-45 bg-wedding-accent" />
+              <div className="h-1 w-1 rotate-45 bg-wedding-accent opacity-50" />
             </div>
-            <div className="h-px w-6" style={{ background: borderAccent }} />
+            <div className="h-px w-6 bg-wedding-border-accent" />
           </div>
         </div>
       </div>

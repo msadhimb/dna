@@ -1,8 +1,8 @@
 export function OrnamentalDivider({
-  color,
+  color = "var(--wedding-border-accent)",
   size = "default",
 }: {
-  color: string
+  color?: string
   size?: "default" | "small"
 }) {
   const w = size === "small" ? "80px" : "120px"

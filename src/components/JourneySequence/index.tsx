@@ -280,7 +280,7 @@ export const JourneySequence = forwardRef<
           }
           fill
           alt="Journey"
-          sizes="(max-width: 768px) 200vw, 100vw"
+          sizes="(max-width: 768px) 200vw, 150vw"
           quality={100}
           priority
           fetchPriority="high"

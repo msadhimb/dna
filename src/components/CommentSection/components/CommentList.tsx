@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react"
 import { CommentCard } from "./CommentCard"
+import { Card } from "@/components/Card"
 
 interface Comment {
   id: string
@@ -13,23 +14,29 @@ interface Comment {
 
 interface CommentListProps {
   comments: Comment[]
-  surface: string
-  border: string
-  textPrimary: string
-  textSecondary: string
-  textMuted: string
   hasMore: boolean
   isLoadingMore: boolean
   onLoadMore: () => void
+  /** @deprecated — terpusat via Tailwind */
+  surface?: string
+  /** @deprecated */
+  border?: string
+  /** @deprecated */
+  textPrimary?: string
+  /** @deprecated */
+  textSecondary?: string
+  /** @deprecated */
+  textMuted?: string
+  /** @deprecated */
+  borderAccent?: string
+  /** @deprecated */
+  accent?: string
+  /** @deprecated */
+  isDark?: boolean
 }
 
 export function CommentList({
   comments,
-  surface,
-  border,
-  textPrimary,
-  textSecondary,
-  textMuted,
   hasMore,
   isLoadingMore,
   onLoadMore,
@@ -52,11 +59,11 @@ export function CommentList({
 
   if (comments.length === 0) {
     return (
-      <div className="flex flex-col items-center gap-5 py-20">
-        <p className="font-sans text-base" style={{ color: textSecondary }}>
+      <Card className="flex flex-col items-center gap-5 py-14">
+        <p className="font-sans text-base text-wedding-text-secondary">
           Jadilah yang pertama menulis ucapan
         </p>
-      </div>
+      </Card>
     )
   }
 
@@ -70,11 +77,6 @@ export function CommentList({
             message={c.message}
             attendance={c.attendance}
             date={c.date}
-            surface={surface}
-            border={border}
-            textPrimary={textPrimary}
-            textSecondary={textSecondary}
-            textMuted={textMuted}
           />
         ))}
       </div>
