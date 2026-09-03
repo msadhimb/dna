@@ -1,11 +1,11 @@
 /**
- * @/components/icons — centralized SVG icon library
+ * @/components/Icons — centralized SVG icon library
  *
  * Semua SVG inline yang tersebar di proyek kini terpusat di sini.
  * Setiap ikon mendukung props `size` dan `color` secara konsisten.
  *
  * @example
- * import { Ornament, WideOrnament, CornerFlourish, FloralOrnament, OrnamentalDivider, WaxSeal, FooterFrame, TopBorder, EnvelopeIllustration } from "@/components/icons"
+ * import { Ornament, WideOrnament, CornerFlourish, FloralOrnament, OrnamentalDivider, WaxSeal, FooterFrame, TopBorder, EnvelopeIllustration } from "@/components/Icons"
  *
  * <Ornament size={120} color="#c9a227" />
  * <WideOrnament size="100%" color="currentColor" flip />

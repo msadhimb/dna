@@ -10,7 +10,7 @@ import {
   WaxSeal,
   OrnamentalDivider,
   EnvelopeIllustration,
-} from "@/components/Icon"
+} from "@/components/Icons"
 import BankAccountCard from "./components/BankAccountCard"
 import QrisCard from "./components/QrisCard"
 import { Card } from "@/components/Card"
