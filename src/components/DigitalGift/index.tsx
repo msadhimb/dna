@@ -15,7 +15,6 @@ import BankAccountCard from "./components/BankAccountCard"
 import QrisCard from "./components/QrisCard"
 import { Card } from "@/components/Card"
 import { useGuest } from "@/store/useGuest"
-import { useImageUrl } from "@/store/useImageUrl"
 import { cn } from "@/lib/utils"
 
 gsap.registerPlugin(ScrollTrigger)
@@ -23,20 +22,13 @@ gsap.registerPlugin(ScrollTrigger)
 export const DigitalGift = () => {
   const { resolvedTheme } = useTheme()
   const { guest } = useGuest()
-  const { imageUrl } = useImageUrl()
 
   const isDark = resolvedTheme === "dark"
   const sectionRef = useRef<HTMLElement>(null)
   const [activeTab, setActiveTab] = useState<"bank" | "qris">("bank")
 
-  // Cari QRIS dari storage image-icon (qris.png / qris.jpg / qrcode)
-  const qrisIcon = (imageUrl as any)?.icon?.find((item: any) =>
-    item?.name?.toLowerCase().includes("qris") || item?.name?.toLowerCase().includes("qr")
-  )
-  const qrisUrl: string =
-    qrisIcon?.link ??
-    // fallback demo — ganti dengan file di supabase storage image-icon/qris.png
-    "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=QRIS-Devi-Adhim-Wedding-Gift"
+  // QRIS lokal dari public/assets/qris/QRIS-Gopay.jpeg
+  const qrisUrl: string = "/assets/qris/QRIS-Gopay.jpeg"
 
   useGSAP(
     () => {
@@ -51,7 +43,13 @@ export const DigitalGift = () => {
       tl.fromTo(
         ".dg-bridge",
         { opacity: 0, scaleX: 0 },
-        { opacity: 1, scaleX: 1, duration: 0.6, ease: "power3.inOut", transformOrigin: "center" }
+        {
+          opacity: 1,
+          scaleX: 1,
+          duration: 0.6,
+          ease: "power3.inOut",
+          transformOrigin: "center",
+        }
       )
         .fromTo(
           ".dg-eyebrow",
@@ -62,7 +60,13 @@ export const DigitalGift = () => {
         .fromTo(
           ".dg-title-word",
           { opacity: 0, y: 32 },
-          { opacity: 1, y: 0, duration: 0.8, stagger: 0.08, ease: "power3.out" },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            stagger: 0.08,
+            ease: "power3.out",
+          },
           "-=0.3"
         )
         .fromTo(
@@ -150,7 +154,8 @@ export const DigitalGift = () => {
           className="absolute inset-0 bg-wedding-dot opacity-50"
           style={{
             maskImage: "radial-gradient(circle, black 60%, transparent 78%)",
-            WebkitMaskImage: "radial-gradient(circle, black 60%, transparent 78%)",
+            WebkitMaskImage:
+              "radial-gradient(circle, black 60%, transparent 78%)",
           }}
         />
         <div
@@ -184,18 +189,18 @@ export const DigitalGift = () => {
             Wedding Gift
           </h2>
           <p className="dg-desc max-w-md font-sans text-sm leading-relaxed text-wedding-text-secondary">
-            Doa restu Anda adalah hadiah terindah. Namun jika berkenan berbagi tanda kasih, amplop digital ini kami sediakan dengan penuh terima kasih.
+            Doa restu Anda adalah hadiah terindah. Namun jika berkenan berbagi
+            tanda kasih, amplop digital ini kami sediakan dengan penuh terima
+            kasih.
           </p>
         </div>
 
         {/* ── Envelope Illustration ── */}
         <div className="dg-envelope">
-          <EnvelopeIllustration isDark={isDark} accent="var(--wedding-accent)" />
-        </div>
-
-        {/* ── Ornamental Divider — konsisten dengan CommentSection ── */}
-        <div className="dg-ornament-1 w-full max-w-xs">
-          <OrnamentalDivider />
+          <EnvelopeIllustration
+            isDark={isDark}
+            accent="var(--wedding-accent)"
+          />
         </div>
 
         {/* ── Message Card — menggunakan Card terpusat ── */}
@@ -217,7 +222,7 @@ export const DigitalGift = () => {
               paddingTop: "16px",
             }}
           >
-            Devi &amp; Adhim
+            Adhim &amp; Devi
           </p>
 
           {/* Inner ornament */}
@@ -234,17 +239,15 @@ export const DigitalGift = () => {
           </div>
 
           {/* Message */}
-          <p className="mx-auto max-w-sm font-sans text-sm font-light leading-relaxed text-wedding-text-secondary" style={{ lineHeight: 1.9 }}>
+          <p
+            className="mx-auto max-w-sm font-sans text-sm font-light leading-relaxed text-wedding-text-secondary"
+            style={{ lineHeight: 1.9 }}
+          >
             Doa restu Anda merupakan karunia yang sangat berarti bagi kami.
             Namun jika memberi adalah ungkapan kasih Anda, kami dengan rendah
             hati menerimanya.
           </p>
         </Card>
-
-        {/* ── Ornamental Divider ── */}
-        <div className="dg-ornament-1 w-full max-w-xs">
-          <OrnamentalDivider />
-        </div>
 
         {/* ── Tab Switcher — Bank / QRIS ── */}
         <div
@@ -316,7 +319,7 @@ export const DigitalGift = () => {
           </div>
         ) : (
           <div className="dg-cards-wrapper relative z-10 flex w-full justify-center">
-            <QrisCard qrisUrl={qrisUrl} qrisName="Devi & Adhim" />
+            <QrisCard qrisUrl={qrisUrl} qrisName="WEDDING ADHIM & DEVI" />
           </div>
         )}
 
@@ -324,7 +327,10 @@ export const DigitalGift = () => {
         <div className="dg-closing flex flex-col items-center gap-4 text-center">
           <OrnamentalDivider size="small" />
 
-          <p className="max-w-md font-sans text-sm font-light leading-relaxed italic text-wedding-text-secondary" style={{ lineHeight: 2 }}>
+          <p
+            className="max-w-md font-sans text-sm font-light leading-relaxed italic text-wedding-text-secondary"
+            style={{ lineHeight: 2 }}
+          >
             Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak,
             Ibu, dan Saudara/i berkenan hadir untuk memberikan doa restu.
           </p>

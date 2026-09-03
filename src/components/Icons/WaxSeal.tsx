@@ -95,7 +95,7 @@ export function WaxSeal({ color, accent, isDark = false, size = 72, className, s
           fill={textColor}
           fontFamily="var(--font-signature), serif"
         >
-          D&amp;A
+          A&amp;D
         </text>
       </svg>
     </div>

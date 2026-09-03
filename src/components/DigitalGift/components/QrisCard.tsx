@@ -21,7 +21,7 @@ interface QrisCardProps {
 
 const QrisCard = ({
   qrisUrl,
-  qrisName = "Devi & Adhim",
+  qrisName = "WEDDING ADHIM & DEVI",
 }: QrisCardProps) => {
   const [downloading, setDownloading] = useState(false)
 
@@ -56,14 +56,15 @@ const QrisCard = ({
           <QrCode className="h-7 w-7 text-wedding-accent" />
         </div>
         <p className="font-sans text-sm leading-relaxed text-wedding-text-secondary">
-          QRIS belum tersedia. Silakan hubungi mempelai untuk informasi pembayaran.
+          QRIS belum tersedia. Silakan hubungi mempelai untuk informasi
+          pembayaran.
         </p>
       </Card>
     )
   }
 
   return (
-    <Card className="dg-card group w-full max-w-sm items-center gap-4 px-6 py-7 text-center md:px-8">
+    <Card className="dg-card group w-full max-w-lg items-center gap-4 px-6 py-7 text-center md:px-8">
       {/* Label */}
       <div className="flex items-center gap-2">
         <QrCode className="h-4 w-4 text-wedding-accent" />
@@ -73,20 +74,22 @@ const QrisCard = ({
       </div>
 
       {/* QR Image */}
-      <div className="relative overflow-hidden rounded-xl bg-white p-3 border border-wedding-border-accent">
+      <div className="relative overflow-hidden rounded-xl bg-white border border-wedding-border-accent">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={qrisUrl}
-          alt="QRIS Devi & Adhim"
+          alt="QRIS WEDDING ADHIM & DEVI"
           width={280}
           height={280}
-          className="h-auto w-[220px] object-contain md:w-[260px]"
+          className="h-auto w-64 object-contain md:w-88"
           loading="lazy"
         />
       </div>
 
       {/* Name */}
-      <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-muted">a.n. {qrisName}</p>
+      <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-muted">
+        a.n. {qrisName}
+      </p>
 
       {/* Divider */}
       <div className="flex items-center gap-2">
@@ -96,7 +99,8 @@ const QrisCard = ({
       </div>
 
       <p className="max-w-[28ch] font-sans text-xs leading-relaxed text-muted">
-        Pindai QR di atas dengan e-wallet / m-banking Anda. Satu QR untuk semua pembayaran.
+        Pindai QR di atas dengan e-wallet / m-banking Anda. Satu QR untuk semua
+        pembayaran.
       </p>
 
       {/* Download */}

@@ -119,7 +119,7 @@ export function EnvelopeIllustration({
           fill={isDark ? "#F5DCC8" : "#FFF5E6"}
           fontFamily="var(--font-signature), serif"
         >
-          D&amp;A
+          A&amp;D
         </text>
 
         {/* Corner fold on envelope body */}
