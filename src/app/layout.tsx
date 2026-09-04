@@ -4,11 +4,11 @@ import {
   Cormorant_Garamond,
   Alex_Brush,
 } from "next/font/google"
-
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils"
 import ClientProviders from "@/components/ClientProviders"
+import { Metadata } from "next"
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" })
 
@@ -28,6 +28,11 @@ const alexBrush = Alex_Brush({
   variable: "--font-signature",
   weight: ["400"],
 })
+
+export const metadata: Metadata = {
+  title: "Devi & Adhim",
+  description: "Wedding Invitation",
+}
 
 export default function RootLayout({
   children,
