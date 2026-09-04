@@ -29,6 +29,9 @@ export async function GET(request: NextRequest) {
   )
   const search = request.nextUrl.searchParams.get("search")?.trim() ?? ""
   const guestFrom = request.nextUrl.searchParams.get("guest_from")?.trim() ?? ""
+  const mantuStatusParam = request.nextUrl.searchParams.get("mantu_status")
+  const unduhMantuStatusParam =
+    request.nextUrl.searchParams.get("unduh_mantu_status")
   const allowedSort = ["full_name", "id"]
   const requestedSort =
     request.nextUrl.searchParams.get("sortBy") ?? "full_name"
@@ -43,6 +46,12 @@ export async function GET(request: NextRequest) {
     .order(sortBy, { ascending })
   if (search) query = query.ilike("full_name", `%${search}%`)
   if (guestFrom) query = query.eq("guest_from", guestFrom)
+  if (mantuStatusParam === "true") query = query.eq("mantu_status", true)
+  if (mantuStatusParam === "false") query = query.eq("mantu_status", false)
+  if (unduhMantuStatusParam === "true")
+    query = query.eq("unduh_mantu_status", true)
+  if (unduhMantuStatusParam === "false")
+    query = query.eq("unduh_mantu_status", false)
   const from = (page - 1) * pageSize
   const { data, error, count } = await query.range(from, from + pageSize - 1)
   if (error) return bad(error.message, 500)
