@@ -115,7 +115,16 @@ export const JourneySequence = forwardRef<
           .to(
             textContainerRef.current,
             {
-              y: dist("-190", "-180"),
+              y: (() => {
+                const vh = window.innerHeight
+                const initialTop = isMobile
+                  ? Math.min(160, vh * 0.29 - 84)
+                  : Math.min(176, vh * 0.3 - 104)
+                const textH = textContainerRef.current?.offsetHeight ?? (isMobile ? 70 : 80)
+                const imageUpY = isMobile ? 0 : 110
+                const gapPush = 18
+                return imageUpY - gapPush - textH - initialTop
+              })(),
               duration: 1,
               ease: "none",
             },
@@ -232,7 +241,7 @@ export const JourneySequence = forwardRef<
       <div
         ref={textContainerRef}
         id="journey-text-container"
-        className="gsap-element absolute top-40 md:top-44 z-10 flex flex-col items-center gap-4 text-center md:gap-6"
+        className="gsap-element absolute z-10 flex flex-col items-center gap-4 text-center md:gap-6 top-[min(160px,calc(29vh-84px))] md:top-[min(176px,calc(30vh-104px))]"
         style={{ willChange: "transform" }}
       >
         <span className="font-sans text-[9px] font-medium tracking-[0.55em] text-muted uppercase md:text-xs">
@@ -242,14 +251,14 @@ export const JourneySequence = forwardRef<
           <h1
             ref={textLeftRef}
             id="journey-text-left"
-            className="gsap-element inline-block text-muted font-sans text-3xl font-bold tracking-[0.15em] md:text-7xl md:tracking-[0.2em]"
+            className="gsap-element inline-block text-muted font-sans text-3xl font-bold tracking-[0.15em] md:text-6xl md:tracking-[0.2em]"
           >
             {theme === "light" ? "FOREVER" : "ETERNAL"}
           </h1>
           <h1
             ref={textRightRef}
             id="journey-text-right"
-            className="gsap-element inline-block text-muted font-sans text-3xl font-bold tracking-[0.15em]  md:text-7xl  dark:from-primary dark:via-primary dark:to-primary/70"
+            className="gsap-element inline-block text-muted font-sans text-3xl font-bold tracking-[0.15em]  md:text-6xl  dark:from-primary dark:via-primary dark:to-primary/70"
           >
             {theme === "light" ? "BEGINS" : "VOWS"}
           </h1>
