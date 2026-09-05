@@ -1,26 +1,32 @@
 import * as React from "react"
 
 interface WaxSealProps {
-  
   color?: string
-  
+
   accent?: string
-  
+
   isDark?: boolean
-  
+
   size?: number | string
   className?: string
   style?: React.CSSProperties
 }
 
-
-export function WaxSeal({ color, accent, isDark = false, size = 72, className, style }: WaxSealProps) {
+export function WaxSeal({
+  color,
+  accent,
+  isDark = false,
+  size = 72,
+  className,
+  style,
+}: WaxSealProps) {
   const finalColor = color ?? accent ?? "var(--wedding-accent)"
   const fill = finalColor
   const glow = isDark ? "rgba(160,40,10,0.4)" : "rgba(22,163,74,0.06)"
   const textColor = isDark ? "#F5DCC8" : "#FFF5E6"
 
-  const numericSize = typeof size === "number" ? size : parseInt(size as string, 10) || 72
+  const numericSize =
+    typeof size === "number" ? size : parseInt(size as string, 10) || 72
   const sizeStr = typeof size === "number" ? `${size}px` : (size as string)
   const viewSize = numericSize
   const cx = viewSize / 2
@@ -33,7 +39,6 @@ export function WaxSeal({ color, accent, isDark = false, size = 72, className, s
       className={`relative flex items-center justify-center ${className ?? ""}`}
       style={{ width: sizeStr, height: sizeStr, ...style }}
     >
-      
       <div
         className="absolute rounded-full blur-xl"
         style={{
@@ -42,7 +47,7 @@ export function WaxSeal({ color, accent, isDark = false, size = 72, className, s
           background: glow,
         }}
       />
-      
+
       <svg
         width={viewSize}
         height={viewSize}
@@ -53,7 +58,6 @@ export function WaxSeal({ color, accent, isDark = false, size = 72, className, s
         style={{ color: fill }}
         aria-hidden="true"
       >
-        
         {[...Array(12)].map((_, i) => {
           const angle = (i * 30 * Math.PI) / 180
           const blobAngle = angle + (i % 2 === 0 ? 0.2 : -0.2)
@@ -71,9 +75,9 @@ export function WaxSeal({ color, accent, isDark = false, size = 72, className, s
             />
           )
         })}
-        
+
         <circle cx={cx} cy={cy} r={r1} fill={fill} />
-        
+
         <circle
           cx={cx}
           cy={cy}
@@ -82,7 +86,7 @@ export function WaxSeal({ color, accent, isDark = false, size = 72, className, s
           stroke={isDark ? "rgba(245,220,200,0.15)" : "rgba(255,245,230,0.2)"}
           strokeWidth="1"
         />
-        
+
         <text
           x={cx}
           y={cy + viewSize * 0.06}
@@ -92,7 +96,7 @@ export function WaxSeal({ color, accent, isDark = false, size = 72, className, s
           fill={textColor}
           fontFamily="var(--font-signature), serif"
         >
-          A&amp;D
+          D&amp;A
         </text>
       </svg>
     </div>
