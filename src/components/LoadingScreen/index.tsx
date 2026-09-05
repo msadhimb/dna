@@ -12,6 +12,7 @@ const MESSAGES = [
   "Eve sedang bekerja",
   "Hampir Sampai",
   "Loading...",
+  "Tunggu sebentar lagi",
 ]
 
 export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete }) => {
@@ -74,26 +75,24 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete }) => {
   return (
     <div
       ref={loadingScreenRef}
-      className="loading-screen fixed inset-0 z-[100] flex items-center justify-center bg-background px-6 text-foreground"
+      className="loading-screen fixed inset-0 z-100 flex items-center justify-center bg-background px-6 text-foreground"
     >
-      <div className="flex flex-col items-center gap-5 text-center">
+      <div className="flex flex-col items-center gap-2 text-center">
         <p
           ref={messageRef}
-          className="max-w-md font-serif text-lg italic leading-relaxed tracking-wide md:text-xl"
+          className="max-w-md font-serif leading-relaxed tracking-wide text-2xl md:text-4xl"
           aria-live="polite"
         >
           {MESSAGES[msgIndex]}
         </p>
         <div className="flex flex-col items-center gap-2">
-          <div className="h-px w-24 overflow-hidden rounded-full bg-foreground/10">
+          <div className="h-1 w-32 overflow-hidden rounded-full bg-foreground/10">
             <div
-              className="h-full bg-primary transition-all duration-500 ease-out"
+              className="h-full bg-muted dark:bg-primary transition-all duration-500 ease-out"
               style={{ width: `${progress}%` }}
             />
           </div>
-          <p className="font-sans  font-medium tracking-[0.35em]">
-            {progress}%
-          </p>
+          <p className="font-sans font-medium">{progress}%</p>
         </div>
       </div>
     </div>
