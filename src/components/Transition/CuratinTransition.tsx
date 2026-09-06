@@ -6,7 +6,7 @@ import React, {
   forwardRef,
   useEffect,
 } from "react"
-import gsap from "gsap"
+import { gsap } from "@/lib/gsap"
 
 interface CurtainTransitionProps {
   frames: React.ReactNode[]

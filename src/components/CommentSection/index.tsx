@@ -8,8 +8,7 @@ import {
   useEffect,
 } from "react"
 import { useTheme } from "next-themes"
-import gsap from "gsap"
-import { ScrollTrigger } from "gsap/ScrollTrigger"
+import { gsap, ScrollTrigger } from "@/lib/gsap"
 import {
   FloatImages,
   SectionHeader,
@@ -21,8 +20,6 @@ import { useImageUrl } from "@/store/useImageUrl"
 import { useComments } from "@/hooks/useComments"
 import { useToast } from "@/hooks/use-toast"
 import type { Attendance } from "@/types/comment"
-
-gsap.registerPlugin(ScrollTrigger)
 
 interface Comment {
   id: string

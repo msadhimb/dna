@@ -8,16 +8,13 @@ import React, {
   useState,
 } from "react"
 import { useTheme } from "next-themes"
-import gsap from "gsap"
-import { ScrollTrigger } from "gsap/ScrollTrigger"
+import { gsap, ScrollTrigger } from "@/lib/gsap"
 import { cn } from "@/lib/utils"
 import Cover from "./components/Cover"
 import useResponsive from "@/hooks/useResponsive"
 import BookPages from "./components/BookPages"
 import { getTimeline } from "./helper/getTimeline"
 import { defaultPages } from "./helper/defaultPages"
-
-gsap.registerPlugin(ScrollTrigger)
 
 export interface BookFlipRef {
   getTimeline: () => gsap.core.Timeline

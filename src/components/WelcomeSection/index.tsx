@@ -6,7 +6,7 @@ import React, {
   useState,
   useEffect,
 } from "react"
-import gsap from "gsap"
+import { gsap } from "@/lib/gsap"
 import { Music2, Hand } from "lucide-react"
 import { useAudio } from "@/store/useAudio"
 

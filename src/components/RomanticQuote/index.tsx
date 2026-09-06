@@ -2,13 +2,10 @@
 
 import { forwardRef, useImperativeHandle, useRef, useEffect } from "react"
 import { useTheme } from "next-themes"
-import gsap from "gsap"
-import { ScrollTrigger } from "gsap/ScrollTrigger"
+import { gsap } from "@/lib/gsap"
 import { Separator } from "../ui/separator"
 import useResponsive from "@/hooks/useResponsive"
 import { Card } from "@/components/Card"
-
-gsap.registerPlugin(ScrollTrigger)
 
 export interface RomanticQuoteRef {
   getTimeline: () => gsap.core.Timeline

@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import { useRef, useImperativeHandle, forwardRef } from "react"
-import gsap from "gsap"
+import { gsap } from "@/lib/gsap"
 import { cn } from "@/lib/utils"
 import useResponsive from "@/hooks/useResponsive"
 import { useImageUrl } from "@/store/useImageUrl"

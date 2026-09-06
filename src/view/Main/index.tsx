@@ -22,20 +22,13 @@ import DigitalGift from "@/components/DigitalGift"
 import CommentSection, { CommentSectionRef } from "@/components/CommentSection"
 import Footer from "@/components/Footer"
 import Image from "next/image"
-import gsap from "gsap"
-import { ScrollTrigger } from "gsap/ScrollTrigger"
-import { useGSAP } from "@gsap/react"
 import { Tools } from "@/components/Tools"
 import { useImageUrl } from "@/store/useImageUrl"
 import { useGuest, Guest } from "@/store/useGuest"
+import { registerGSAP } from "@/lib/gsap"
+import { usePinnedScrollSequence } from "@/hooks/usePinnedScrollSequence"
 
-if (typeof window !== "undefined") {
-  gsap.registerPlugin(ScrollTrigger)
-  ScrollTrigger.config({
-    ignoreMobileResize: true,
-    autoRefreshEvents: "visibilitychange,DOMContentLoaded,load",
-  })
-}
+registerGSAP()
 
 const MainView = ({
   guestId,
@@ -65,11 +58,6 @@ const MainView = ({
   const journeyRef = useRef<JourneySequenceRef>(null)
   const bookFlipRef = useRef<BookFlipRef>(null)
   const commentRef = useRef<CommentSectionRef>(null)
-  const curtainTlRef = useRef<gsap.core.Timeline | null>(null)
-  const journeyTlRef = useRef<gsap.core.Timeline | null>(null)
-  const bookFlipTlRef = useRef<gsap.core.Timeline | null>(null)
-  const commentTlRef = useRef<gsap.core.Timeline | null>(null)
-  const masterTlRef = useRef<gsap.core.Timeline | null>(null)
 
   const PREVIEW_FRAMES = [
     {
@@ -171,193 +159,12 @@ const MainView = ({
     setMounted(true)
   }, [])
 
-  useGSAP(
-    () => {
-      if (!isLoaded) return
-
-      const masterTrigger = document.getElementById("master-trigger")
-      const journeyWrapper = document.getElementById("journey-wrapper")
-      const bookFlipWrapper = document.getElementById("book-flip-wrapper")
-
-      if (
-        !masterTrigger ||
-        !journeyWrapper ||
-        !bookFlipWrapper ||
-        !welcomeRef.current ||
-        !curtainRef.current ||
-        !journeyRef.current ||
-        !bookFlipRef.current ||
-        !commentRef.current
-      )
-        return
-
-      const isMobileSetup = window.innerWidth < 768
-
-      // Promote kedua wrapper ke GPU compositor layer sejak awal
-      gsap.set(journeyWrapper, {
-        opacity: 0,
-        force3D: true,
-        willChange: "transform, opacity",
-      })
-      gsap.set(bookFlipWrapper, {
-        opacity: 0,
-        y: "100%",
-        force3D: true,
-        willChange: "transform, opacity",
-      })
-
-      const curtainTl = curtainRef.current.getTimeline()
-      const journeyTl = journeyRef.current.getTimeline()
-      const bookFlipTl = bookFlipRef.current.getTimeline()
-
-      // Welcome exit timeline — dijalankan pertama sebelum curtain
-      // WelcomeSection ada di dalam master-trigger sebagai overlay z-50
-      const welcomeTl = welcomeRef.current.getTimeline()
-
-      const wDur = welcomeTl.totalDuration() || 1
-      const cDur = curtainTl.totalDuration() || 1
-      const jDur = journeyTl.totalDuration() || 1
-      const bDur = bookFlipTl.totalDuration() || 1
-
-      // 500% adalah base scroll distance; welcome menambah proporsi ekstra
-      const totalScrollHeight =
-        ((wDur + cDur + jDur + bDur) / (cDur + jDur + bDur)) * 500
-
-      const curtainWrapper = gsap.timeline()
-      curtainWrapper.add(curtainTl)
-      curtainTlRef.current = curtainWrapper
-
-      const journeyWrapperTl = gsap.timeline()
-      journeyWrapperTl.to(journeyWrapper, { opacity: 1, duration: 0.2 })
-      journeyWrapperTl.add(journeyTl)
-
-      journeyTlRef.current = journeyWrapperTl
-
-      // Di mobile, gunakan durasi lebih panjang agar animasi tidak terasa
-      // patah saat scrub lag (scrub: 2 = 2 detik untuk menyesuaikan)
-      const transitionDuration = isMobileSetup ? 1.2 : 0.6
-
-      const bookFlipWrapperTl = gsap.timeline()
-      bookFlipWrapperTl.to(
-        [journeyWrapper, bookFlipWrapper],
-        {
-          y: (i) => (i === 0 ? "-100%" : "0%"),
-          opacity: 1,
-          duration: transitionDuration,
-          ease: "none", // linear lebih smooth untuk scrub vs power2
-          force3D: true,
-        },
-        "<"
-      )
-      bookFlipWrapperTl.add(bookFlipTl)
-
-      bookFlipTlRef.current = bookFlipWrapperTl
-
-      // Smoothing terlalu tinggi membuat Welcome terlihat berhenti di tengah
-      // pada swipe Android karena timeline tertinggal jauh dari posisi scroll.
-      const masterTl = gsap.timeline({
-        scrollTrigger: {
-          trigger: masterTrigger,
-          start: "top top",
-          end: `+=${totalScrollHeight}%`,
-          pin: true,
-          pinSpacing: true,
-          scrub: isMobileSetup ? 1 : 1.5,
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
-        },
-      })
-
-      // Welcome exit → curtain → journey → bookflip (satu master pin, zero handoff)
-      masterTl.add(welcomeTl)
-      masterTl.add(curtainWrapper)
-      masterTl.add(journeyWrapperTl)
-      masterTl.add(bookFlipWrapperTl)
-
-      const commentWrapperTl = gsap.timeline()
-      const commentTl = commentRef.current?.getTimeline()
-      if (commentTl) {
-        commentWrapperTl.add(commentTl)
-        masterTl.add(commentWrapperTl)
-      }
-
-      commentTlRef.current = commentWrapperTl
-      masterTlRef.current = masterTl
-    },
-    { scope: mainRef, dependencies: [isLoaded] }
+  // Orkestrasi pinned scroll dipindah ke hook terpisah
+  usePinnedScrollSequence(
+    mainRef,
+    { welcomeRef, curtainRef, journeyRef, bookFlipRef, commentRef },
+    { isLoaded, theme }
   )
-
-  useEffect(() => {
-    const cWrapper = curtainTlRef.current
-    const jWrapper = journeyTlRef.current
-    const bWrapper = bookFlipTlRef.current
-    const coWrapper = commentTlRef.current
-
-    if (
-      !cWrapper ||
-      !jWrapper ||
-      !bWrapper ||
-      !coWrapper ||
-      !curtainRef.current ||
-      !journeyRef.current ||
-      !bookFlipRef.current ||
-      !commentRef.current
-    )
-      return
-
-    const savedCProgress = cWrapper.progress()
-    const savedJProgress = jWrapper.progress()
-    const savedBProgress = bWrapper.progress()
-    const savedCoProgress = coWrapper?.progress() ?? 0
-
-    cWrapper.progress(0, true)
-    jWrapper.progress(0, true)
-    bWrapper.progress(0, true)
-    coWrapper?.progress(0, true)
-
-    cWrapper.clear()
-    jWrapper.clear()
-    bWrapper.clear()
-    coWrapper?.clear()
-
-    const journeyWrap = document.getElementById("journey-wrapper")
-    if (journeyWrap) gsap.set(journeyWrap, { clearProps: "all" })
-
-    const bookFlipWrap = document.getElementById("book-flip-wrapper")
-    if (bookFlipWrap) gsap.set(bookFlipWrap, { clearProps: "all" })
-
-    const newCurtainTl = curtainRef.current.getTimeline()
-    const newJourneyTl = journeyRef.current.getTimeline()
-    const newBookFlipTl = bookFlipRef.current.getTimeline()
-    const newCommentTl = commentRef.current.getTimeline()
-
-    cWrapper.add(newCurtainTl)
-    jWrapper.to(journeyWrap, { opacity: 1, duration: 0.2 })
-    jWrapper.add(newJourneyTl)
-
-    if (coWrapper) {
-      coWrapper.add(newCommentTl)
-      coWrapper.progress(savedCoProgress, true)
-    }
-
-    const isMobileTheme = window.innerWidth < 768
-    bWrapper.to(
-      [journeyWrap, bookFlipWrap],
-      {
-        y: (i) => (i === 0 ? "-100%" : "0%"),
-        opacity: 1,
-        duration: isMobileTheme ? 1.2 : 0.6,
-        ease: "none", // linear = konsisten dengan setup utama (scrub-friendly)
-        force3D: true,
-      },
-      "<"
-    )
-    bWrapper.add(newBookFlipTl)
-
-    cWrapper.progress(savedCProgress, true)
-    jWrapper.progress(savedJProgress, true)
-    bWrapper.progress(savedBProgress, true)
-  }, [theme])
 
   if (!mounted) {
     return (
