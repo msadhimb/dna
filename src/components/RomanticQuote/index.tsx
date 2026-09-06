@@ -44,16 +44,27 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
 
       card.style.setProperty("--mouse-x", `${pctX * 100}%`)
       card.style.setProperty("--mouse-y", `${pctY * 100}%`)
-      gsap.to(card.querySelector(".rq-shine"), { opacity: 1, duration: 0.15 })
+      card.style.willChange = "transform"
+      gsap.to(card.querySelector(".rq-shine"), { opacity: 1, duration: 0.15, overwrite: true })
     }
 
     const onMouseLeave = () => {
       targetX.current = 0
       targetY.current = 0
-      gsap.to(card.querySelector(".rq-shine"), { opacity: 0, duration: 0.5 })
+      gsap.to(card.querySelector(".rq-shine"), { opacity: 0, duration: 0.5, overwrite: true })
     }
 
     const animate = () => {
+      const dx = targetX.current - currentX.current
+      const dy = targetY.current - currentY.current
+      // skip RAF work jika idle (hemat CPU)
+      if (Math.abs(dx) < 0.01 && Math.abs(dy) < 0.01) {
+        if (Math.abs(currentX.current) < 0.01 && Math.abs(currentY.current) < 0.01) {
+          card.style.willChange = "auto"
+        }
+        rafRef.current = requestAnimationFrame(animate)
+        return
+      }
       currentX.current = lerp(currentX.current, targetX.current, 0.06)
       currentY.current = lerp(currentY.current, targetY.current, 0.06)
 
@@ -186,7 +197,6 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
             style={
               {
                 transformStyle: "preserve-3d",
-                willChange: "transform",
                 "--mouse-x": "50%",
                 "--mouse-y": "50%",
               } as React.CSSProperties

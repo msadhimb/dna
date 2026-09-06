@@ -47,12 +47,7 @@ export const JourneySequence = forwardRef<
         }
 
         tl.set([groomBioRef.current, brideBioRef.current], { opacity: 0 }, 0)
-        // force-promote ke GPU compositor layer sejak awal agar scale tidak trigger repaint
-        tl.set(
-          journeyImgElement,
-          { scale: 1, x: 0, y: 0, z: 0.01, force3D: true },
-          0
-        )
+        tl.set(journeyImgElement, { scale: 1, x: 0, y: 0, force3D: true }, 0)
 
         tl.to(journeyImageRef.current, {
           width: dist("85vw", "60vw"),
@@ -242,7 +237,6 @@ export const JourneySequence = forwardRef<
         ref={textContainerRef}
         id="journey-text-container"
         className="gsap-element absolute z-10 flex flex-col items-center gap-4 text-center md:gap-6 top-[min(160px,calc(29vh-84px))] md:top-[min(176px,calc(30vh-104px))]"
-        style={{ willChange: "transform" }}
       >
         <span className="font-sans text-[9px] font-medium tracking-[0.55em] text-muted uppercase md:text-xs">
           Our Story
@@ -268,10 +262,7 @@ export const JourneySequence = forwardRef<
       <div
         ref={journeyImageRef}
         className="gsap-element relative z-0 h-[42vh] w-[85vw] overflow-hidden rounded-2xl md:h-[40vh] md:w-[40vw] md:rounded-3xl"
-        style={{
-          borderRadius: "24px",
-          willChange: "transform",
-        }}
+        style={{ borderRadius: "24px" }}
       >
         <Image
           key={
@@ -291,17 +282,18 @@ export const JourneySequence = forwardRef<
           priority
           fetchPriority="high"
           className="journey-inner-img object-cover"
-          style={{ willChange: "transform", transform: "translateZ(0)" }}
         />
       </div>
 
-      {/* Groom Bio Overlay (Left Side) */}
+      {/* Groom Bio Overlay - bottom on mobile/tablet/landscape, side only on xl */}
       <div
         ref={groomBioRef}
         className={cn(
           "gsap-element absolute inset-x-0 bottom-0 z-50 flex w-screen flex-col gap-3 opacity-0",
           "items-center justify-end text-center bg-linear-to-t from-black/90 via-black/60 to-transparent pt-24 pb-12 px-6",
-          "lg:inset-y-0 sm:bottom-auto sm:right-0 sm:left-auto sm:h-full sm:w-1/2 sm:items-end sm:justify-center sm:text-right sm:bg-linear-to-l sm:from-black/85 sm:via-black/45 sm:pt-0 sm:pb-0 sm:px-12"
+          "xl:inset-y-0 xl:bottom-auto xl:right-0 xl:left-auto xl:h-full xl:w-1/2 xl:items-end xl:justify-center xl:text-right xl:bg-linear-to-l xl:from-black/85 xl:via-black/45 xl:pt-0 xl:pb-0 xl:px-12",
+          // landscape tablet/phone dengan tinggi kecil tetap bottom
+          "max-[1024px]:landscape:inset-x-0 max-[1024px]:landscape:bottom-0 max-[1024px]:landscape:top-auto max-[1024px]:landscape:h-auto max-[1024px]:landscape:w-screen max-[1024px]:landscape:items-center max-[1024px]:landscape:justify-end max-[1024px]:landscape:text-center max-[1024px]:landscape:pt-24 max-[1024px]:landscape:pb-12"
         )}
       >
         <span className="font-sans text-[10px] font-semibold tracking-[0.5em] text-[#f2dfa0] uppercase sm:text-xs dark:text-muted">
@@ -310,14 +302,14 @@ export const JourneySequence = forwardRef<
         <h2 className="font-signature text-5xl leading-[1.1] font-bold tracking-wide text-[#f2dfa0] [text-shadow:0_4px_20px_rgba(0,0,0,0.5)] sm:text-7xl  dark:text-primary">
           Muhamad Salman Adhim Baqy
         </h2>
-        <span className="h-px w-16 bg-linear-to-r from-transparent via-[#d4af37] to-transparent sm:bg-linear-to-l sm:from-[#d4af37] sm:via-transparent sm:to-transparent sm:w-24 dark:via-primary sm:dark:from-primary" />
+        <span className="h-px w-16 bg-linear-to-r from-transparent via-[#d4af37] to-transparent xl:bg-linear-to-l xl:from-[#d4af37] xl:via-transparent xl:to-transparent xl:w-24 dark:via-primary xl:dark:from-primary" />
 
-        <div className="mt-2 flex flex-col items-center gap-2 sm:items-end">
+        <div className="mt-2 flex flex-col items-center gap-2 xl:items-end">
           <p className="font-serif text-[11px] font-normal tracking-[0.4em] text-[#e9cf7a] dark:text-white italic uppercase sm:text-xs">
             Putra dari
           </p>
 
-          <div className="flex flex-col items-center gap-0.5 md:items-end">
+          <div className="flex flex-col items-center gap-0.5 xl:items-end">
             <p className="font-serif text-base leading-snug font-medium tracking-[0.03em] text-white md:text-xl">
               Suprapto Wibowo
             </p>
@@ -330,7 +322,7 @@ export const JourneySequence = forwardRef<
             &
           </span>
 
-          <div className="flex flex-col items-center md:items-end gap-0.5">
+          <div className="flex flex-col items-center xl:items-end gap-0.5">
             <p className="font-serif text-base leading-snug font-medium tracking-[0.03em] text-white md:text-xl">
               Christiana Sri Budhi H.
             </p>
@@ -341,15 +333,15 @@ export const JourneySequence = forwardRef<
         </div>
       </div>
 
-      {/* Bride Bio Overlay (Right Side) */}
+      {/* Bride Bio Overlay - bottom on mobile/tablet/landscape, side only on xl */}
       <div
         ref={brideBioRef}
         className={cn(
           "gsap-element absolute inset-x-0 bottom-0 z-50 flex w-screen flex-col gap-3 opacity-0",
           "items-center justify-end text-center bg-gradient-to-t from-black/90 via-black/60 to-transparent pt-24 pb-12 px-6",
-          "md:inset-y-0 md:bottom-auto md:left-0 md:right-auto md:h-full md:w-1/2 md:items-start md:justify-center md:text-left md:bg-gradient-to-r md:from-black/85 md:via-black/45 md:pt-0 md:pb-0 md:px-12"
+          "xl:inset-y-0 xl:bottom-auto xl:left-0 xl:right-auto xl:h-full xl:w-1/2 xl:items-start xl:justify-center xl:text-left xl:bg-gradient-to-r xl:from-black/85 xl:via-black/45 xl:pt-0 xl:pb-0 xl:px-12",
+          "max-[1024px]:landscape:inset-x-0 max-[1024px]:landscape:bottom-0 max-[1024px]:landscape:top-auto max-[1024px]:landscape:h-auto max-[1024px]:landscape:w-screen max-[1024px]:landscape:items-center max-[1024px]:landscape:justify-end max-[1024px]:landscape:text-center max-[1024px]:landscape:pt-24 max-[1024px]:landscape:pb-12"
         )}
-        style={{ willChange: "transform" }}
       >
         <span className="font-sans text-[10px] font-semibold tracking-[0.5em] text-[#f2dfa0] uppercase md:text-xs dark:text-muted">
           The Bride
@@ -357,14 +349,14 @@ export const JourneySequence = forwardRef<
         <h2 className="font-signature text-5xl leading-[1.1] font-bold tracking-wide text-[#f2dfa0] [text-shadow:0_4px_20px_rgba(0,0,0,0.5)] md:text-7xl dark:text-primary">
           Devi Yuliana Nurhaliza
         </h2>
-        <span className="h-px w-16 bg-gradient-to-r from-transparent via-[#d4af37] to-transparent md:bg-gradient-to-r md:from-[#d4af37] md:via-transparent md:to-transparent md:w-24 dark:via-primary md:dark:from-primary" />
+        <span className="h-px w-16 bg-gradient-to-r from-transparent via-[#d4af37] to-transparent xl:bg-gradient-to-r xl:from-[#d4af37] xl:via-transparent xl:to-transparent xl:w-24 dark:via-primary xl:dark:from-primary" />
 
-        <div className="mt-2 flex flex-col items-center gap-2 md:items-start">
+        <div className="mt-2 flex flex-col items-center gap-2 xl:items-start">
           <p className="font-serif text-[11px] font-normal tracking-[0.4em] text-[#e9cf7a] dark:text-white italic uppercase md:text-xs">
             Putri dari
           </p>
 
-          <div className="flex flex-col items-center gap-0.5 md:items-start">
+          <div className="flex flex-col items-center gap-0.5 xl:items-start">
             <p className="font-serif text-base leading-snug font-medium tracking-[0.03em] text-white md:text-xl">
               Deden Herman K.
             </p>
@@ -377,7 +369,7 @@ export const JourneySequence = forwardRef<
             &
           </span>
 
-          <div className="flex flex-col items-center md:items-start gap-0.5">
+          <div className="flex flex-col items-center xl:items-start gap-0.5">
             <p className="font-serif text-base leading-snug font-medium tracking-[0.03em] text-white md:text-xl">
               Selvia A. D.
             </p>

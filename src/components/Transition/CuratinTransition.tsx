@@ -35,39 +35,12 @@ export const CurtainTransition = forwardRef<
       tl.set(heroSection, {
         opacity: 1,
       })
-      tl.set(leftHalfRef.current, {
-        xPercent: 0,
-        x: 0,
-        z: 0.01,
-        force3D: true,
-      })
-
-      tl.set(rightHalfRef.current, {
-        xPercent: 0,
-        x: 0,
-        z: 0.01,
-        force3D: true,
-      })
-
-      tl.set(".curtain-bg", {
-        scaleX: 0.001,
-        scaleY: 0.001,
-        force3D: true,
-        z: 0.01,
-      })
-
+      tl.set(leftHalfRef.current, { xPercent: 0, x: 0 })
+      tl.set(rightHalfRef.current, { xPercent: 0, x: 0 })
+      tl.set(".curtain-bg", { scaleX: 0.001, scaleY: 0.001 })
       frames.forEach((_, i) => {
-        tl.set(`.photo-bg-${i}`, {
-          scale: 0.001,
-          force3D: true,
-          z: 0.01,
-        })
-
-        tl.set(`.photo-inner-${i}`, {
-          y: "30%",
-          force3D: true,
-          z: 0.01,
-        })
+        tl.set(`.photo-bg-${i}`, { scale: 0.001 })
+        tl.set(`.photo-inner-${i}`, { y: "30%" })
       })
 
       
@@ -82,7 +55,6 @@ export const CurtainTransition = forwardRef<
             { scaleY: 1, duration: 0.7, ease: "power3.out" },
             { scaleX: 1, duration: 0.6, ease: "expo.inOut" },
           ],
-          force3D: true,
         },
         ">0.5"
       )
@@ -93,11 +65,11 @@ export const CurtainTransition = forwardRef<
         const pos = i === 0 ? "-=0.3" : `-=${FRAME_DUR - STAGGER}`
         tl.to(
           `.photo-bg-${i}`,
-          { scale: 1, duration: FRAME_DUR, ease: "power2.out", force3D: true },
+          { scale: 1, duration: FRAME_DUR, ease: "power2.out" },
           pos
         ).to(
           `.photo-inner-${i}`,
-          { y: "0%", duration: IMAGE_DUR, ease: "power3.out", force3D: true },
+          { y: "0%", duration: IMAGE_DUR, ease: "power3.out" },
           "<"
         )
       })
@@ -114,20 +86,15 @@ export const CurtainTransition = forwardRef<
         "heroFade"
       ).to(journeyWrapper, { opacity: 1, pointerEvents: "auto" }, "heroFade")
 
-      // Split curtain kiri dan kanan — diperlambat agar smooth, ease tetap expo.inOut
+      // Split curtain — visual sama, tanpa force3D/willChange permanen
       if (leftHalfRef.current && rightHalfRef.current) {
-        tl.set([leftHalfRef.current, rightHalfRef.current], {
-          willChange: "transform",
-          force3D: true,
-          z: 0.01,
-        })
         tl.to(
           leftHalfRef.current,
-          { xPercent: -100, duration: 1.6, ease: "expo.inOut", force3D: true, z: 0.01 },
+          { xPercent: -100, duration: 1.6, ease: "expo.inOut" },
           "split"
         ).to(
           rightHalfRef.current,
-          { xPercent: 100, duration: 1.6, ease: "expo.inOut", force3D: true, z: 0.01 },
+          { xPercent: 100, duration: 1.6, ease: "expo.inOut" },
           "split"
         )
       }
@@ -137,19 +104,14 @@ export const CurtainTransition = forwardRef<
   }))
 
   const contentJSX = (
-    <div
-      className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center"
-      style={{ contain: "paint" }}
-    >
+    <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
       <div
         className="curtain-bg absolute inset-0 bg-primary"
         style={{
-          transform: "translateZ(0) scale(0.001)",
+          transform: "scale(0.001)",
           transformOrigin: "center center",
           zIndex: 0,
-          willChange: "transform",
           backfaceVisibility: "hidden",
-          contain: "paint",
         }}
       />
 
@@ -158,12 +120,10 @@ export const CurtainTransition = forwardRef<
           key={i}
           className={`photo-bg-${i} absolute inset-0 overflow-hidden`}
           style={{
-            transform: "translateZ(0) scale(0.001)",
+            transform: "scale(0.001)",
             transformOrigin: "center center",
             zIndex: i + 1,
-            willChange: "transform",
             backfaceVisibility: "hidden",
-            contain: "paint",
           }}
         >
           <div
@@ -175,9 +135,7 @@ export const CurtainTransition = forwardRef<
               width: "130%",
               height: "130%",
               transform: "translate3d(0,30%,0)",
-              willChange: "transform",
               backfaceVisibility: "hidden",
-              contain: "paint",
             }}
           >
             {frame}
@@ -188,24 +146,13 @@ export const CurtainTransition = forwardRef<
   )
 
   return (
-    <div
-      className="pointer-events-none absolute inset-0 z-50 flex"
-      style={{ contain: "paint" }}
-    >
+    <div className="pointer-events-none absolute inset-0 z-50 flex">
       <div
         ref={leftHalfRef}
         className="relative h-full w-1/2 overflow-hidden"
-        style={{
-          willChange: "transform",
-          contain: "paint",
-          transform: "translateZ(0)",
-          backfaceVisibility: "hidden",
-        }}
+        style={{ backfaceVisibility: "hidden" }}
       >
-        <div
-          className="absolute top-0 left-0 h-full w-screen"
-          style={{ contain: "paint", transform: "translateZ(0)", backfaceVisibility: "hidden" }}
-        >
+        <div className="absolute top-0 left-0 h-full w-screen" style={{ backfaceVisibility: "hidden" }}>
           {contentJSX}
         </div>
       </div>
@@ -213,17 +160,9 @@ export const CurtainTransition = forwardRef<
       <div
         ref={rightHalfRef}
         className="relative h-full w-1/2 overflow-hidden"
-        style={{
-          willChange: "transform",
-          contain: "paint",
-          transform: "translateZ(0)",
-          backfaceVisibility: "hidden",
-        }}
+        style={{ backfaceVisibility: "hidden" }}
       >
-        <div
-          className="absolute top-0 right-0 h-full w-screen"
-          style={{ contain: "paint", transform: "translateZ(0)", backfaceVisibility: "hidden" }}
-        >
+        <div className="absolute top-0 right-0 h-full w-screen" style={{ backfaceVisibility: "hidden" }}>
           {contentJSX}
         </div>
       </div>

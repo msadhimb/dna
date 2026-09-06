@@ -56,8 +56,11 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
     const coverBack = cover?.back
 
     const { resolvedTheme } = useTheme()
-    const { dist } = useResponsive()
+    const { dist, isMobile, isIpadPortrait } = useResponsive()
+    const isDesktop = !isMobile
     const isFirstRender = useRef(true)
+    const bookWidth = isIpadPortrait ? "min(72vw, 520px)" : dist(width, "min(85vw, 420px)")
+    const bookHeight = isIpadPortrait ? "min(62dvh, 680px)" : dist(height, "min(68dvh, 600px)")
     const sectionRef = useRef<HTMLDivElement>(null)
     const bookRef = useRef<HTMLDivElement>(null)
     const coverRef = useRef<HTMLDivElement>(null)
@@ -68,7 +71,6 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
     const coverBackShadowRef = useRef<HTMLDivElement>(null)
     const pageFrontShadowRefs = useRef<(HTMLDivElement | null)[]>([])
     const pageBackShadowRefs = useRef<(HTMLDivElement | null)[]>([])
-    const isDesktop = typeof window !== "undefined" && window.innerWidth >= 768
 
     const [isSpinning, setIsSpinning] = useState(false)
 
@@ -108,9 +110,10 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
             coverBackShadowRef,
             pageFrontShadowRefs,
             pageBackShadowRefs,
+            isDesktop,
           }),
         }) as any,
-      []
+      [isDesktop]
     )
 
     useEffect(() => {
@@ -318,8 +321,8 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
           ref={bookRef}
           className="relative max-w-full pointer-events-auto max-[390px]:scale-[0.96] max-[375px]:scale-[0.92]"
           style={{
-            width: dist(width, "min(85vw, 420px)"),
-            height: dist(height, "min(68dvh, 600px)"),
+            width: bookWidth,
+            height: bookHeight,
             maxHeight:
               "calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 32px)",
             transformStyle: "preserve-3d",

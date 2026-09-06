@@ -12,32 +12,39 @@ export const defaultPages = ({ isDark }: { isDark: boolean }) => {
       <div className="flex flex-col gap-3 sm:gap-5 items-center max-[390px]:gap-3">
         <CornerFlourishes color={isDark ? "#d4af37" : "#c9a227"} />
         <Ornament color={isDark ? "#d4af37" : "#c9a227"} />
-        <span className="font-serif font-bold text-[clamp(10px,2.6vw,13px)] sm:text-sm tracking-[0.32em] sm:tracking-[0.4em] text-[#9a865a] uppercase dark:text-[#a38d53]">
-          Hari Pernikahan
-        </span>
 
         {showBothDates ? (
           <div className="flex flex-col items-center gap-3 sm:gap-5 max-[390px]:gap-2.5">
-            <div className="flex flex-col items-center">
-              <span className="font-signature leading-tight text-[#1e1a14] dark:text-[#e0d8d0] text-[clamp(1.45rem,6.4vw,2.25rem)] sm:text-4xl">
-                12 Desember 2026
+            <div className="flex flex-col items-center gap-2">
+              <span className="font-serif font-bold text-[clamp(10px,2.6vw,13px)] sm:text-sm tracking-[0.32em] sm:tracking-[0.4em] text-[#9a865a] uppercase dark:text-[#a38d53]">
+                Hari Pernikahan
               </span>
-              <span className="font-serif leading-tight text-[#1e1a14] dark:text-[#e0d8d0] text-[clamp(0.9rem,3.6vw,1.5rem)] sm:text-2xl">
-                9.00 AM - 3.00 PM
-              </span>
+              <div className="flex flex-col items-center">
+                <span className="font-signature leading-tight text-[#1e1a14] dark:text-[#e0d8d0] text-[clamp(1.45rem,6.4vw,2.25rem)] sm:text-4xl">
+                  12 Desember 2026
+                </span>
+                <span className="font-serif leading-tight text-[#1e1a14] dark:text-[#e0d8d0] text-[clamp(0.9rem,3.6vw,1.5rem)] sm:text-2xl">
+                  9.00 AM - 3.00 PM
+                </span>
+              </div>
             </div>
 
             <span className="font-serif font-bold tracking-[0.3em] uppercase text-[#9a865a] dark:text-[#a38d53] text-[clamp(0.8rem,3vw,1.25rem)] sm:text-xl">
               &
             </span>
 
-            <div className="flex flex-col items-center">
-              <span className="font-signature leading-tight text-[#1e1a14] dark:text-[#e0d8d0] text-[clamp(1.45rem,6.4vw,2.25rem)] sm:text-4xl">
-                26 Desember 2026
+            <div className="flex flex-col items-center gap-2">
+              <span className="font-serif font-bold text-[clamp(10px,2.6vw,13px)] sm:text-sm tracking-[0.32em] sm:tracking-[0.4em] text-[#9a865a] uppercase dark:text-[#a38d53]">
+                Hari Unduh Mantu
               </span>
-              <span className="font-serif leading-tight text-[#1e1a14] dark:text-[#e0d8d0] text-[clamp(0.9rem,3.6vw,1.5rem)] sm:text-2xl">
-                9.00 AM - 3.00 PM
-              </span>
+              <div className="flex flex-col items-center">
+                <span className="font-signature leading-tight text-[#1e1a14] dark:text-[#e0d8d0] text-[clamp(1.45rem,6.4vw,2.25rem)] sm:text-4xl">
+                  26 Desember 2026
+                </span>
+                <span className="font-serif leading-tight text-[#1e1a14] dark:text-[#e0d8d0] text-[clamp(0.9rem,3.6vw,1.5rem)] sm:text-2xl">
+                  11.00 AM - 1.00 PM
+                </span>
+              </div>
             </div>
           </div>
         ) : (
@@ -46,7 +53,7 @@ export const defaultPages = ({ isDark }: { isDark: boolean }) => {
               {guest?.mantu_status ? "12 Desember 2026" : "26 Desember 2026"}
             </span>
             <span className="font-serif leading-tight text-[#1e1a14] dark:text-[#e0d8d0] text-[clamp(0.95rem,3.8vw,1.5rem)] sm:text-2xl">
-              9.00 AM - 3.00 PM
+              {guest?.mantu_status ? "9.00 AM - 3.00 PM" : "11.00 AM - 1.00 PM"}
             </span>
           </div>
         )}
@@ -62,20 +69,86 @@ export const defaultPages = ({ isDark }: { isDark: boolean }) => {
           Lokasi
         </span>
         <span className="font-signature leading-tight text-[#1e1a14] dark:text-[#e0d8d0] text-[clamp(1.3rem,5.6vw,1.875rem)] sm:text-3xl">
-          Gedung Pernikahan
+          {guest?.mantu_status ? "Gedung Pernikahan" : "Gedung Unduh Mantu"}
         </span>
 
-        <iframe
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.645103116751!2d106.6326327!3d-6.178238399999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f8d465b9f9c5%3A0x880e353b4abebf2f!2sDPD%20KNPI%20Tangerang!5e0!3m2!1sen!2sid!4v1786944064704!5m2!1sen!2sid"
-          width="600"
-          height="250"
-          className="w-full max-w-sm overflow-hidden rounded-lg h-[clamp(145px,38vw,250px)] sm:h-[250px] max-[390px]:h-[150px]"
-          loading="lazy"
-          referrerPolicy="strict-origin-when-cross-origin"
-        />
-
+        <div
+          className="w-full max-w-sm pointer-events-auto"
+          style={{ pointerEvents: "auto", position: "relative", zIndex: 50 }}
+        >
+          <iframe
+            src={
+              guest?.mantu_status && !showBothDates
+                ? "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3957.114132730096!2d110.50774771193014!3d-7.341078292636948!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7a79d27a7fa11d%3A0x233a2a304f948f!2sHotel%20Laras%20Asri%20Resort%20and%20Spa!5e0!3m2!1sid!2sid!4v1788679413970!5m2!1sid!2sid"
+                : "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.645103116751!2d106.6326327!3d-6.178238399999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f8d465b9f9c5%3A0x880e353b4abebf2f!2sDPD%20KNPI%20Tangerang!5e0!3m2!1sen!2sid!4v1786944064704!5m2!1sen!2sid"
+            }
+            width="600"
+            height="250"
+            className="w-full overflow-hidden rounded-lg pointer-events-auto"
+            style={{ pointerEvents: "auto", touchAction: "pan-x pan-y" }}
+            loading="lazy"
+            referrerPolicy="strict-origin-when-cross-origin"
+            allowFullScreen
+          />
+        </div>
         <Ornament color={isDark ? "#d4af37" : "#c9a227"} flip />
       </div>
     </>,
+    ...(showBothDates
+      ? [
+          <>
+            <div className="flex flex-col gap-3 sm:gap-5 items-center max-[390px]:gap-3 w-full">
+              <CornerFlourishes color={isDark ? "#d4af37" : "#c9a227"} />
+              <Ornament color={isDark ? "#d4af37" : "#c9a227"} />
+              <span className="font-serif tracking-[0.32em] sm:tracking-[0.4em] font-bold text-[#9a865a] uppercase dark:text-[#a38d53] text-[clamp(10px,2.6vw,13px)] sm:text-sm">
+                Lokasi
+              </span>
+              <span className="font-signature leading-tight text-[#1e1a14] dark:text-[#e0d8d0] text-[clamp(1.3rem,5.6vw,1.875rem)] sm:text-3xl">
+                Gedung Unduh Mantu
+              </span>
+
+              <div
+                className="w-full max-w-sm pointer-events-auto"
+                style={{
+                  pointerEvents: "auto",
+                  position: "relative",
+                  zIndex: 50,
+                }}
+              >
+                <iframe
+                  src={
+                    "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3957.114132730096!2d110.50774771193014!3d-7.341078292636948!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7a79d27a7fa11d%3A0x233a2a304f948f!2sHotel%20Laras%20Asri%20Resort%20and%20Spa!5e0!3m2!1sid!2sid!4v1788679413970!5m2!1sid!2sid"
+                  }
+                  width="600"
+                  height="250"
+                  className="w-full overflow-hidden rounded-lg pointer-events-auto"
+                  style={{ pointerEvents: "auto", touchAction: "pan-x pan-y" }}
+                  loading="lazy"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  allowFullScreen
+                />
+              </div>
+
+              <Ornament color={isDark ? "#d4af37" : "#c9a227"} flip />
+            </div>
+          </>,
+          <>
+            <div className="flex flex-col gap-3 sm:gap-5 items-center max-[390px]:gap-3 w-full">
+              <CornerFlourishes color={isDark ? "#d4af37" : "#c9a227"} />
+              <Ornament color={isDark ? "#d4af37" : "#c9a227"} />
+              <span className="font-serif tracking-[0.32em] sm:tracking-[0.4em] font-bold text-[#9a865a] uppercase dark:text-[#a38d53] text-[clamp(10px,2.6vw,13px)] sm:text-sm">
+                Harapan
+              </span>
+              <span className="font-serif leading-tight text-[#1e1a14] dark:text-[#e0d8d0] text-lg">
+                Merupakan kehormatan dan kebahagiaan bagi kami apabila
+                Bapak/Ibu/Saudara/i dapat berkenan hadir untuk memberikan doa
+                restu kepada kedua mempelai
+              </span>
+
+              <Ornament color={isDark ? "#d4af37" : "#c9a227"} flip />
+            </div>
+          </>,
+        ]
+      : []),
   ]
 }

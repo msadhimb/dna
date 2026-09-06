@@ -58,19 +58,13 @@ export function usePinnedScrollSequence(
       )
         return
 
-      const isMobileSetup = window.innerWidth < 768
+      const isMobileSetup =
+        window.innerWidth < 768 ||
+        (window.innerWidth <= 1024 && window.innerHeight > window.innerWidth)
 
-      gsap.set(journeyWrapper, {
-        opacity: 0,
-        force3D: true,
-        willChange: "transform, opacity",
-      })
-      gsap.set(bookFlipWrapper, {
-        opacity: 0,
-        y: "100%",
-        force3D: true,
-        willChange: "transform, opacity",
-      })
+      // initial state tanpa willChange permanen (hemat compositor layer)
+      gsap.set(journeyWrapper, { opacity: 0 })
+      gsap.set(bookFlipWrapper, { opacity: 0, y: "100%" })
 
       const welcomeTl = refs.welcomeRef.current.getTimeline()
       const curtainTl = refs.curtainRef.current.getTimeline()
@@ -179,20 +173,9 @@ export function usePinnedScrollSequence(
     if (journeyWrap) gsap.set(journeyWrap, { clearProps: "all" })
     if (bookFlipWrap) gsap.set(bookFlipWrap, { clearProps: "all" })
 
-    // Restore initial wrapper states (seperti build awal)
-    if (journeyWrap)
-      gsap.set(journeyWrap, {
-        opacity: 0,
-        force3D: true,
-        willChange: "transform, opacity",
-      })
-    if (bookFlipWrap)
-      gsap.set(bookFlipWrap, {
-        opacity: 0,
-        y: "100%",
-        force3D: true,
-        willChange: "transform, opacity",
-      })
+    // Restore initial wrapper states tanpa willChange permanen
+    if (journeyWrap) gsap.set(journeyWrap, { opacity: 0 })
+    if (bookFlipWrap) gsap.set(bookFlipWrap, { opacity: 0, y: "100%" })
 
     const newCurtainTl = refs.curtainRef.current.getTimeline()
     const newJourneyTl = refs.journeyRef.current.getTimeline()
@@ -209,7 +192,9 @@ export function usePinnedScrollSequence(
       coWrapper.progress(savedCo, true)
     }
 
-    const isMobileTheme = window.innerWidth < 768
+    const isMobileTheme =
+      window.innerWidth < 768 ||
+      (window.innerWidth <= 1024 && window.innerHeight > window.innerWidth)
     bWrapper.to(
       [journeyWrap, bookFlipWrap],
       {
@@ -227,7 +212,8 @@ export function usePinnedScrollSequence(
     jWrapper.progress(savedJ, true)
     bWrapper.progress(savedB, true)
 
-    ScrollTrigger.refresh()
+    // Refresh pin di frame berikutnya agar tidak bentrok dengan BookFlip spin (hemat jank)
+    requestAnimationFrame(() => ScrollTrigger.refresh())
   }, [theme, isLoaded])
 
   return { masterTlRef }

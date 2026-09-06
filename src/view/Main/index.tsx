@@ -184,7 +184,6 @@ const MainView = ({
       <section
         id="master-trigger"
         className="gsap-element relative h-screen w-full overflow-hidden bg-background"
-        style={{ willChange: "transform" }}
       >
         <div className="absolute inset-0 z-0">
           <HeroSection />
@@ -205,7 +204,7 @@ const MainView = ({
 
         <div
           id="book-flip-wrapper"
-          className="gsap-element pointer-events-none absolute inset-0 z-20 flex h-full w-full flex-col justify-center overflow-hidden bg-background opacity-0"
+          className="gsap-element pointer-events-auto absolute inset-0 z-20 flex h-full w-full flex-col justify-center overflow-hidden bg-background opacity-0"
         >
           <BookFlip ref={bookFlipRef} theme={theme} />
         </div>

@@ -48,10 +48,11 @@ const BookPages = ({
                     transform: "translateZ(1px)",
                     backfaceVisibility: "hidden",
                     WebkitBackfaceVisibility: "hidden",
+                    pointerEvents: "auto",
                   }}
                 >
                   
-                  <div className="relative w-full flex flex-col items-center justify-center gap-3 sm:gap-4 px-5 py-6 sm:px-7 sm:py-9 max-[390px]:px-4 max-[390px]:py-5 text-center border-r border-border">
+                  <div className="relative w-full flex flex-col items-center justify-center gap-3 sm:gap-4 px-5 py-6 sm:px-7 sm:py-9 max-[390px]:px-4 max-[390px]:py-5 text-center border-r border-border pointer-events-auto" style={{ pointerEvents: "auto" }}>
                     {resolvedPages[leftIndex] ?? null}
                   </div>
                   <div
@@ -102,9 +103,12 @@ const BookPages = ({
                   transform: "translateZ(1px)",
                   backfaceVisibility: "hidden",
                   WebkitBackfaceVisibility: "hidden",
+                  pointerEvents: "auto",
                 }}
               >
-                {pageContent}
+                <div className="pointer-events-auto w-full flex flex-col items-center justify-center" style={{ pointerEvents: "auto" }}>
+                  {pageContent}
+                </div>
                 <div
                   ref={(el) => {
                     pageFrontShadowRefs.current[pageIndex] = el

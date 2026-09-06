@@ -9,6 +9,7 @@ export const getTimeline = ({
   coverBackShadowRef,
   pageFrontShadowRefs,
   pageBackShadowRefs,
+  isDesktop: isDesktopProp,
 }: {
   gsap: any
   pageRefs: React.MutableRefObject<(HTMLDivElement | null)[]>
@@ -20,6 +21,7 @@ export const getTimeline = ({
   coverBackShadowRef: React.MutableRefObject<HTMLDivElement | null>
   pageFrontShadowRefs: React.MutableRefObject<(HTMLDivElement | null)[]>
   pageBackShadowRefs: React.MutableRefObject<(HTMLDivElement | null)[]>
+  isDesktop?: boolean
 }) => {
   return () => {
     const tl = gsap.timeline()
@@ -75,7 +77,7 @@ export const getTimeline = ({
     gsap.set(ribbonRef.current, { opacity: 1, y: 0 })
     gsap.set(shadowNodes, { opacity: 0 })
 
-    const isDesktop = window.innerWidth >= 768
+    const isDesktop = typeof isDesktopProp === "boolean" ? isDesktopProp : window.innerWidth >= 768
 
     tl.to(bookRef.current, {
       opacity: 1,
@@ -154,7 +156,7 @@ export const getTimeline = ({
             { opacity: 0.55, duration: 0.6, yoyo: true, repeat: 1 },
             "<"
           )
-          .set(pageEl, { zIndex: baseZIndex + 15 }, "<0.6")
+          .set(pageEl, { zIndex: 5 }, "<0.6")
           .to(
             bookRef.current,
             {
@@ -218,7 +220,7 @@ export const getTimeline = ({
             { opacity: 0.55, duration: 0.5, yoyo: true, repeat: 1 },
             "<"
           )
-          .set(pageEl, { zIndex: baseZIndex + 15 }, "<0.5")
+          .set(pageEl, { zIndex: 5 }, "<0.5")
           .to(
             bookRef.current,
             {
