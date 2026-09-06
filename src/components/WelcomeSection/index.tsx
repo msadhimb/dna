@@ -7,7 +7,7 @@ import React, {
   useEffect,
 } from "react"
 import gsap from "gsap"
-import { Music2 } from "lucide-react"
+import { Music2, Hand } from "lucide-react"
 import { useAudio } from "@/store/useAudio"
 
 export interface WelcomeSectionRef {
@@ -45,10 +45,8 @@ export const WelcomeSection = forwardRef<
       const tl = gsap.timeline()
       if (!containerRef.current || !textRef.current) return tl
 
-      // State awal tanpa force3D/willChange agar first paint di mobile tidak
-      // mengalokasi 2 compositor layer sebelum animasi dibutuhkan.
-      gsap.set(containerRef.current, { opacity: 1, y: 0, clearProps: "willChange" })
-      gsap.set(textRef.current, { y: 0, opacity: 1, clearProps: "willChange" })
+      gsap.set(containerRef.current, { opacity: 1, y: 0, force3D: true })
+      gsap.set(textRef.current, { y: 0, opacity: 1, force3D: true })
 
       tl.to(containerRef.current, {
         opacity: 0,
@@ -58,8 +56,6 @@ export const WelcomeSection = forwardRef<
         force3D: true,
       })
 
-      // GSAP otomatis promote ke GPU selama tween; clear setelah scrub selesai
-      // ditangani oleh ScrollTrigger scrub, tidak perlu set permanen di sini.
       return tl
     },
   }))
@@ -75,10 +71,12 @@ export const WelcomeSection = forwardRef<
       ref={containerRef}
       onClick={handleTap}
       className="absolute inset-0 z-50 flex h-full w-full cursor-pointer flex-col items-center justify-center overflow-hidden bg-background"
+      style={{ willChange: "transform, opacity" }}
     >
       <div
         ref={textRef}
         className="flex w-full max-w-5xl flex-col items-center justify-center px-4 text-center"
+        style={{ willChange: "transform, opacity" }}
       >
         <p className="mb-5 font-serif text-[10px] font-semibold tracking-[0.55em] text-foreground/55 uppercase md:text-xs">
           {guestName ? "Kepada Tamu Kehormatan" : "You Are Invited"}
