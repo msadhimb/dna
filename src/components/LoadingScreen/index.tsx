@@ -36,6 +36,8 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete }) => {
           y: -8,
           duration: 0.3,
           ease: "power2.in",
+          overwrite: "auto",
+          force3D: true,
           onComplete: () => {
             setMsgIndex((prev) => (prev + 1) % MESSAGES.length)
           },
@@ -52,17 +54,25 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete }) => {
       gsap.fromTo(
         messageRef.current,
         { opacity: 0, y: 8 },
-        { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }
+        { opacity: 1, y: 0, duration: 0.4, ease: "power2.out", force3D: true, overwrite: "auto" }
       )
     }
   }, [msgIndex])
 
-  usePreloadImages(setProgress, () => {
+  // Throttle progress -> React state agar tidak re-render tiap batch decode
+  const rafProgressRef = useRef<number | null>(null)
+  const throttledSetProgress = (p: number) => {
+    if (rafProgressRef.current) cancelAnimationFrame(rafProgressRef.current)
+    rafProgressRef.current = requestAnimationFrame(() => setProgress(p))
+  }
+
+  usePreloadImages(throttledSetProgress, () => {
     gsap.to(loadingScreenRef.current, {
       opacity: 0,
       duration: 0.8,
       delay: 0.5,
       ease: "power2.inOut",
+      overwrite: "auto",
       onComplete: () => {
         if (loadingScreenRef.current) {
           loadingScreenRef.current.style.pointerEvents = "none"
@@ -88,8 +98,8 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete }) => {
         <div className="flex flex-col items-center gap-2">
           <div className="h-1 w-32 overflow-hidden rounded-full bg-foreground/10">
             <div
-              className="h-full bg-muted dark:bg-primary transition-all duration-500 ease-out"
-              style={{ width: `${progress}%` }}
+              className="h-full bg-muted dark:bg-primary transition-[width] duration-500 ease-out"
+              style={{ width: `${progress}%`, willChange: "width" }}
             />
           </div>
           <p className="font-sans font-medium">{progress}%</p>
