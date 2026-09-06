@@ -2,8 +2,28 @@
 
 import { GalleryVerticalEndIcon } from "lucide-react"
 import Login from "@/view/Admin/Login"
-import { useEffect, useState } from "react"
+import { Suspense, useEffect, useState } from "react"
 import { useTheme } from "next-themes"
+import { useSearchParams, useRouter } from "next/navigation"
+import { toast } from "sonner"
+
+function LoginErrorHandler() {
+  const searchParams = useSearchParams()
+  const router = useRouter()
+
+  useEffect(() => {
+    const err = searchParams.get("error")
+    if (!err) return
+    if (err === "config") {
+      toast.error("Konfigurasi admin belum diatur. Hubungi administrator.")
+    } else if (err === "unauthorized") {
+      toast.error("Email tidak diizinkan sebagai admin.")
+    }
+    router.replace("/login")
+  }, [searchParams, router])
+
+  return null
+}
 
 export default function LoginPage() {
   const { resolvedTheme } = useTheme()
@@ -30,6 +50,9 @@ export default function LoginPage() {
 
   return (
     <div className="grid min-h-svh lg:grid-cols-2 font-manrope">
+      <Suspense fallback={null}>
+        <LoginErrorHandler />
+      </Suspense>
       <div className="flex flex-col gap-4 p-6 md:p-10">
         <div className="flex justify-center gap-2 md:justify-start">
           <div className="flex items-center gap-2 font-medium">

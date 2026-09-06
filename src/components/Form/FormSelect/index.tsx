@@ -71,6 +71,28 @@ const FormSelect = ({
   const [open, setOpen] = React.useState(false)
   const [valueInput, setValueInput] = React.useState("")
   const [selectedOption, setSelectedOption] = React.useState<any>(null)
+  const [triggerWidth, setTriggerWidth] = React.useState<number | undefined>(
+    undefined
+  )
+
+  React.useEffect(() => {
+    if (!open) return
+    const el = buttonRef.current
+    if (!el) return
+    const updateWidth = () => {
+      if (buttonRef.current) {
+        setTriggerWidth(buttonRef.current.offsetWidth)
+      }
+    }
+    updateWidth()
+    const resizeObserver = new ResizeObserver(updateWidth)
+    resizeObserver.observe(el)
+    window.addEventListener("resize", updateWidth)
+    return () => {
+      resizeObserver.disconnect()
+      window.removeEventListener("resize", updateWidth)
+    }
+  }, [open])
 
   
   
@@ -325,7 +347,11 @@ const FormSelect = ({
             />
           </Button>
         </PopoverTrigger>
-        <PopoverContent style={{ width: buttonRef?.current?.offsetWidth }}>
+        <PopoverContent
+          style={
+            triggerWidth !== undefined ? { width: triggerWidth } : undefined
+          }
+        >
           <Command shouldFilter={!isAsync}>
             {searchable && (
               <div className="pt-0 py-3 ">

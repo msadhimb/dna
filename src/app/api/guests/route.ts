@@ -1,23 +1,48 @@
 import { NextRequest, NextResponse } from "next/server"
 import { cookies } from "next/headers"
 import { createClient } from "@/utils/supabase/server"
+import {
+  checkRateLimit,
+  sanitizeSearchParam,
+  getClaimEmail,
+  isEmailAllowed,
+  safeErrorResponse,
+  internalErrorResponse,
+  logServerError,
+  applySecurityHeaders,
+} from "@/lib/security"
 
 const FIELDS =
   "id, full_name, guest_from, mantu_status, unduh_mantu_status, guest_total"
 
+const ALLOWED_GUEST_FROM = new Set([
+  "devis_family_neighbor",
+  "devis_father",
+  "devis_mother",
+  "pagar_ayu",
+  "adhim_family",
+  "adhim_friends",
+  "general",
+])
+
 async function adminClient() {
   const client = createClient(await cookies())
   const { data } = await client.auth.getClaims()
-  return data?.claims ? client : null
+  if (!data?.claims) return null
+  const email = getClaimEmail(data.claims)
+  if (!isEmailAllowed(email)) return null
+  return client
 }
 
 function bad(message: string, status = 400) {
-  return NextResponse.json({ error: message }, { status })
+  return safeErrorResponse(message, status)
 }
 
 export async function GET(request: NextRequest) {
+  const rate = checkRateLimit(request, { keyPrefix: "guests-get", limit: 60, windowMs: 60_000 })
+  if (!rate.allowed) return applySecurityHeaders(rate.response)
   const client = await adminClient()
-  if (!client) return bad("Unauthorized", 401)
+  if (!client) return applySecurityHeaders(safeErrorResponse("Unauthorized", 401))
 
   const page = Math.max(
     Number(request.nextUrl.searchParams.get("page") ?? "1"),
@@ -27,8 +52,9 @@ export async function GET(request: NextRequest) {
     Math.max(Number(request.nextUrl.searchParams.get("pageSize") ?? "20"), 1),
     100
   )
-  const search = request.nextUrl.searchParams.get("search")?.trim() ?? ""
-  const guestFrom = request.nextUrl.searchParams.get("guest_from")?.trim() ?? ""
+  const search = sanitizeSearchParam(request.nextUrl.searchParams.get("search") ?? "", 100)
+  const guestFromRaw = sanitizeSearchParam(request.nextUrl.searchParams.get("guest_from") ?? "", 50)
+  const guestFrom = ALLOWED_GUEST_FROM.has(guestFromRaw) ? guestFromRaw : ""
   const mantuStatusParam = request.nextUrl.searchParams.get("mantu_status")
   const unduhMantuStatusParam =
     request.nextUrl.searchParams.get("unduh_mantu_status")
@@ -44,7 +70,10 @@ export async function GET(request: NextRequest) {
     .from("guests")
     .select(FIELDS, { count: "exact" })
     .order(sortBy, { ascending })
-  if (search) query = query.ilike("full_name", `%${search}%`)
+  if (search) {
+    const escaped = search.replace(/[%_\\]/g, "\\$&")
+    query = query.ilike("full_name", `%${escaped}%`)
+  }
   if (guestFrom) query = query.eq("guest_from", guestFrom)
   if (mantuStatusParam === "true") query = query.eq("mantu_status", true)
   if (mantuStatusParam === "false") query = query.eq("mantu_status", false)
@@ -54,35 +83,45 @@ export async function GET(request: NextRequest) {
     query = query.eq("unduh_mantu_status", false)
   const from = (page - 1) * pageSize
   const { data, error, count } = await query.range(from, from + pageSize - 1)
-  if (error) return bad(error.message, 500)
+  if (error) {
+    logServerError("GET /api/guests", error)
+    return applySecurityHeaders(internalErrorResponse())
+  }
 
   const totalItems = count ?? 0
-  return NextResponse.json({
-    data: { guests: data ?? [] },
-    pagination: {
-      page,
-      pageSize,
-      totalItems,
-      totalPages: Math.max(1, Math.ceil(totalItems / pageSize)),
-    },
-  })
+  return applySecurityHeaders(
+    NextResponse.json({
+      data: { guests: data ?? [] },
+      pagination: {
+        page,
+        pageSize,
+        totalItems,
+        totalPages: Math.max(1, Math.ceil(totalItems / pageSize)),
+      },
+    })
+  )
 }
 
 export async function POST(request: NextRequest) {
+  const rate = checkRateLimit(request, { keyPrefix: "guests-post", limit: 20, windowMs: 60_000 })
+  if (!rate.allowed) return applySecurityHeaders(rate.response)
   const client = await adminClient()
-  if (!client) return bad("Unauthorized", 401)
+  if (!client) return applySecurityHeaders(safeErrorResponse("Unauthorized", 401))
   const body = await request.json().catch(() => null)
-  const guests = Array.isArray(body) ? body : (body?.guests ?? [body])
-  if (!guests.length) return bad("Data tamu kosong")
+  const rawGuests = Array.isArray(body) ? body : (body?.guests ?? [body])
+  if (!rawGuests.length || rawGuests.length > 100) return applySecurityHeaders(safeErrorResponse(rawGuests.length > 100 ? "Maksimal 100 tamu per request" : "Data tamu kosong", 400))
 
   let inserted = 0
   let updated = 0
   const ids: string[] = []
-  for (const input of guests) {
-    const full_name = String(input?.full_name ?? "").trim()
-    if (!full_name) continue
-    const payload: any = { full_name, guest_from: input?.guest_from }
-    if (Number.isInteger(input?.guest_total) && input.guest_total >= 0)
+  for (const input of rawGuests) {
+    const full_name = String(input?.full_name ?? "").trim().slice(0, 100)
+    if (!full_name || full_name.length < 2) continue
+    const guestFromRaw = typeof input?.guest_from === "string" ? input.guest_from.trim().slice(0, 50) : ""
+    const guest_from = ALLOWED_GUEST_FROM.has(guestFromRaw) ? guestFromRaw : null
+    const payload: Record<string, unknown> = { full_name }
+    if (guest_from) payload.guest_from = guest_from
+    if (Number.isInteger(input?.guest_total) && input.guest_total >= 0 && input.guest_total <= 100)
       payload.guest_total = input.guest_total
 
     if (typeof input.mantu_status === "boolean")
@@ -95,7 +134,10 @@ export async function POST(request: NextRequest) {
       .select("id")
       .eq("full_name", full_name)
       .maybeSingle()
-    if (findError) return bad(findError.message, 500)
+    if (findError) {
+      logServerError("POST /api/guests lookup", findError)
+      return applySecurityHeaders(internalErrorResponse())
+    }
     const result = existing
       ? await client
           .from("guests")
@@ -104,13 +146,15 @@ export async function POST(request: NextRequest) {
           .select("id")
           .single()
       : await client.from("guests").insert(payload).select("id").single()
-    if (result.error) return bad(result.error.message, 500)
+    if (result.error) {
+      logServerError("POST /api/guests write", result.error)
+      return applySecurityHeaders(internalErrorResponse())
+    }
     if (result.data?.id) ids.push(result.data.id)
     if (existing) updated++
     else inserted++
   }
-  return NextResponse.json(
-    { success: true, inserted, updated, ids },
-    { status: 201 }
+  return applySecurityHeaders(
+    NextResponse.json({ success: true, inserted, updated, ids }, { status: 201 })
   )
 }

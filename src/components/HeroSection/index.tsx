@@ -96,12 +96,13 @@ const HeroSection = () => {
 
           <a
             href="#our-journey"
-            className="group flex flex-col items-center gap-2 text-primary"
+            aria-label="Mulai perjalanan undangan"
+            className="group flex flex-col items-center gap-2 text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 rounded-md px-2 py-1"
           >
             <span className="text-[9px] font-medium tracking-[0.4em] uppercase transition-colors group-hover:text-white/60">
               Mulai Perjalanan
             </span>
-            <ChevronDown className="animate-gentle-bounce h-4 w-4 text-primary transition-colors group-hover:text-white/60" />
+            <ChevronDown className="animate-gentle-bounce h-4 w-4 text-primary transition-colors group-hover:text-white/60" aria-hidden="true" />
           </a>
         </div>
       </div>

@@ -9,8 +9,12 @@ const PAGE_SIZE = 10
 
 async function request<T>(url: string, options?: RequestInit): Promise<T> {
   const response = await fetch(url, {
+    credentials: "same-origin",
     ...options,
-    headers: { "Content-Type": "application/json", ...options?.headers },
+    headers: {
+      "Content-Type": "application/json",
+      ...options?.headers,
+    },
   })
 
   const body = await response.json().catch(() => null)

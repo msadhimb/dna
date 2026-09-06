@@ -75,24 +75,38 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete }) => {
   return (
     <div
       ref={loadingScreenRef}
+      role="status"
+      aria-label="Memuat undangan"
+      aria-busy={progress < 100}
       className="loading-screen fixed inset-0 z-100 flex items-center justify-center bg-background px-6 text-foreground"
     >
-      <div className="flex flex-col items-center gap-2 text-center">
+      <div className="flex flex-col items-center gap-4 text-center">
         <p
           ref={messageRef}
           className="max-w-md font-serif leading-relaxed tracking-wide text-2xl md:text-4xl"
           aria-live="polite"
+          aria-atomic="true"
         >
           {MESSAGES[msgIndex]}
         </p>
-        <div className="flex flex-col items-center gap-2">
-          <div className="h-1 w-32 overflow-hidden rounded-full bg-foreground/10">
+        <div className="flex w-full max-w-xs flex-col items-center gap-3">
+          <div
+            className="h-1.5 w-32 overflow-hidden rounded-full bg-foreground/10"
+            role="progressbar"
+            aria-valuenow={progress}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-label="Progres memuat"
+          >
             <div
               className="h-full bg-muted dark:bg-primary transition-all duration-500 ease-out"
               style={{ width: `${progress}%` }}
             />
           </div>
-          <p className="font-sans font-medium">{progress}%</p>
+          <p className="font-sans text-sm font-medium tabular-nums" aria-live="polite">
+            {progress}%
+          </p>
+          <p className="font-sans text-xs text-muted-foreground">Menyiapkan foto dan musik...</p>
         </div>
       </div>
     </div>

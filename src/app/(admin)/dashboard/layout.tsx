@@ -4,6 +4,7 @@ import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import { AppSidebar } from "@/components/ui/app-sidebar"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
+import { getClaimEmail, isEmailAllowed } from "@/lib/security"
 
 export default async function DashboardLayout({
   children,
@@ -13,6 +14,17 @@ export default async function DashboardLayout({
   const supabase = createClient(await cookies())
   const { data } = await supabase.auth.getClaims()
   if (!data?.claims) redirect("/login")
+
+  const email = getClaimEmail(data.claims)
+  // Defense in depth: enforce allowlist here as well (fail closed)
+  const { getAdminAllowlist } = await import("@/lib/security")
+  const allowlist = getAdminAllowlist()
+  if (allowlist.length === 0) {
+    redirect("/login?error=config")
+  }
+  if (!email || !isEmailAllowed(email)) {
+    redirect("/login?error=unauthorized")
+  }
 
   return (
     <div className="font-manrope">

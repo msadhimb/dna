@@ -30,8 +30,16 @@ const alexBrush = Alex_Brush({
 })
 
 export const metadata: Metadata = {
-  title: "Devi & Adhim",
-  description: "Wedding Invitation",
+  title: "Devi & Adhim — Wedding Invitation 12·12·2026",
+  description: "Undangan pernikahan Devi & Adhim — 12 Desember 2026. Mohon doa restu dan kehadiran Anda.",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://example.com"),
+  openGraph: {
+    title: "Devi & Adhim — Wedding Invitation",
+    description: "Undangan pernikahan Devi & Adhim — 12 Desember 2026",
+    type: "website",
+    locale: "id_ID",
+  },
+  robots: { index: false, follow: false },
 }
 
 export default function RootLayout({
@@ -53,6 +61,12 @@ export default function RootLayout({
       )}
     >
       <body>
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[9999] focus:rounded-md focus:bg-foreground focus:px-4 focus:py-2 focus:text-background"
+        >
+          Lewati ke konten utama
+        </a>
         <ThemeProvider>
           <ClientProviders>{children}</ClientProviders>
         </ThemeProvider>

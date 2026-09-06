@@ -2,6 +2,21 @@ import { NextRequest, NextResponse } from "next/server"
 import { cookies } from "next/headers"
 import { createClient } from "@/utils/supabase/server"
 import type { Attendance } from "@/types/comment"
+import {
+  checkRateLimit,
+  verifyGuestToken,
+  extractGuestToken,
+  isValidUUID,
+  isValidGuestName,
+  isValidComment,
+  sanitizeSearchParam,
+  getClaimEmail,
+  isEmailAllowed,
+  safeErrorResponse,
+  internalErrorResponse,
+  logServerError,
+  applySecurityHeaders,
+} from "@/lib/security"
 
 const ATTENDANCE: Attendance[] = ["hadir", "tidak_hadir", "ragu"]
 const DB_ATTENDANCE = {
@@ -11,14 +26,26 @@ const DB_ATTENDANCE = {
 } as const
 
 function error(message: string, status = 400) {
-  return NextResponse.json({ error: message }, { status })
+  return safeErrorResponse(message, status)
 }
 
 async function supabase() {
   return createClient(await cookies())
 }
 
+function requireAdmin(claims: unknown): boolean {
+  const email = getClaimEmail(claims)
+  return isEmailAllowed(email)
+}
+
 export async function GET(request: NextRequest) {
+  const rate = checkRateLimit(request, {
+    keyPrefix: "comments-get",
+    limit: 60,
+    windowMs: 60_000,
+  })
+  if (!rate.allowed) return applySecurityHeaders(rate.response)
+
   const isAdminQuery = request.nextUrl.searchParams.has("page")
   const limit = Math.min(
     Math.max(Number(request.nextUrl.searchParams.get("limit") ?? "10"), 1),
@@ -29,7 +56,7 @@ export async function GET(request: NextRequest) {
     0
   )
   const client = await supabase()
-  let query = client
+  const query = client
     .from("comments")
     .select("id, guest_id, name, comment, attendance, created_at, updated_at")
     .order("created_at", { ascending: false })
@@ -37,7 +64,8 @@ export async function GET(request: NextRequest) {
 
   if (isAdminQuery) {
     const { data: claims } = await client.auth.getClaims()
-    if (!claims?.claims) return error("Unauthorized", 401)
+    if (!claims?.claims || !requireAdmin(claims.claims))
+      return applySecurityHeaders(safeErrorResponse("Unauthorized", 401))
     const page = Math.max(
       Number(request.nextUrl.searchParams.get("page") ?? "1"),
       1
@@ -46,7 +74,10 @@ export async function GET(request: NextRequest) {
       Math.max(Number(request.nextUrl.searchParams.get("pageSize") ?? "20"), 1),
       100
     )
-    const search = request.nextUrl.searchParams.get("search")?.trim() ?? ""
+    const search = sanitizeSearchParam(
+      request.nextUrl.searchParams.get("search") ?? "",
+      100
+    )
     const requestedSort =
       request.nextUrl.searchParams.get("sortBy") ?? "created_at"
     const sortBy = [
@@ -66,17 +97,22 @@ export async function GET(request: NextRequest) {
         { count: "exact" }
       )
       .order(sortBy, { ascending })
-    if (search)
+    if (search) {
+      const escaped = search.replace(/[%_\\]/g, "\\$&").replace(/[,]/g, "")
       adminQuery = adminQuery.or(
-        `name.ilike.%${search}%,comment.ilike.%${search}%`
+        `name.ilike.%${escaped}%,comment.ilike.%${escaped}%`
       )
+    }
     const from = (page - 1) * pageSize
     const {
       data,
       error: adminError,
       count,
     } = await adminQuery.range(from, from + pageSize - 1)
-    if (adminError) return error(adminError.message, 500)
+    if (adminError) {
+      logServerError("GET /api/comments admin", adminError)
+      return applySecurityHeaders(internalErrorResponse())
+    }
 
     const guestIds = [
       ...new Set((data ?? []).map((item) => item.guest_id).filter(Boolean)),
@@ -90,7 +126,10 @@ export async function GET(request: NextRequest) {
         .from("guests")
         .select("id, full_name")
         .in("id", guestIds)
-      if (guestsError) return error(guestsError.message, 500)
+      if (guestsError) {
+        logServerError("GET /api/comments guests", guestsError)
+        return applySecurityHeaders(internalErrorResponse())
+      }
       guests?.forEach((guest) => guestsById.set(guest.id, guest))
     }
     const comments = (data ?? []).map((item) => ({
@@ -104,43 +143,85 @@ export async function GET(request: NextRequest) {
             : "maybe",
     }))
     const totalItems = count ?? 0
-    return NextResponse.json({
-      data: { comments },
-      pagination: {
-        page,
-        pageSize,
-        totalItems,
-        totalPages: Math.max(1, Math.ceil(totalItems / pageSize)),
-      },
-    })
+    return applySecurityHeaders(
+      NextResponse.json({
+        data: { comments },
+        pagination: {
+          page,
+          pageSize,
+          totalItems,
+          totalPages: Math.max(1, Math.ceil(totalItems / pageSize)),
+        },
+      })
+    )
   }
 
   const { data, error: dbError } = await query
 
-  if (dbError) return error(dbError.message, 500)
-  return NextResponse.json(
-    data?.map((item) => ({
-      ...item,
-      attendance:
-        item.attendance === "attend"
-          ? "hadir"
-          : item.attendance === "absence"
-            ? "tidak_hadir"
-            : "ragu",
-    })) ?? []
+  if (dbError) {
+    logServerError("GET /api/comments", dbError)
+    return applySecurityHeaders(internalErrorResponse())
+  }
+  return applySecurityHeaders(
+    NextResponse.json(
+      data?.map((item) => ({
+        ...item,
+        attendance:
+          item.attendance === "attend"
+            ? "hadir"
+            : item.attendance === "absence"
+              ? "tidak_hadir"
+              : "ragu",
+      })) ?? []
+    )
   )
 }
 
 export async function POST(request: NextRequest) {
+  const rate = checkRateLimit(request, {
+    keyPrefix: "comments-post",
+    limit: 5,
+    windowMs: 60_000,
+  })
+  if (!rate.allowed) return applySecurityHeaders(rate.response)
+
   const body = await request.json().catch(() => null)
   const { guest_id: guestId, name, comment, attendance } = body ?? {}
 
-  if (!guestId || typeof name !== "string" || name.trim().length < 2)
-    return error("Nama minimal 2 karakter")
-  if (typeof comment !== "string" || comment.trim().length < 5)
-    return error("Ucapan minimal 5 karakter")
+  if (!guestId || typeof guestId !== "string" || !isValidUUID(guestId))
+    return applySecurityHeaders(safeErrorResponse("ID tamu tidak valid.", 400))
+  const token = extractGuestToken(request)
+  if (!token) {
+    return applySecurityHeaders(
+      safeErrorResponse("Token tamu tidak valid.", 401)
+    )
+  }
+  if (!verifyGuestToken(guestId, token)) {
+    return applySecurityHeaders(
+      safeErrorResponse("Token tamu tidak valid.", 403)
+    )
+  }
+
+  // fail closed if HMAC secret missing — a valid token cannot exist without the secret
+  try {
+    const { getGuestHmacSecret } = await import("@/lib/security")
+    getGuestHmacSecret()
+  } catch {
+    logServerError("POST /api/comments", "Missing GUEST_HMAC_SECRET")
+    return applySecurityHeaders(internalErrorResponse())
+  }
+  if (typeof name !== "string" || !isValidGuestName(name))
+    return applySecurityHeaders(
+      safeErrorResponse("Nama minimal 2 dan maksimal 100 karakter.", 400)
+    )
+  if (typeof comment !== "string" || !isValidComment(comment))
+    return applySecurityHeaders(
+      safeErrorResponse("Ucapan minimal 5 dan maksimal 1000 karakter.", 400)
+    )
   if (!ATTENDANCE.includes(attendance))
-    return error("Status kehadiran tidak valid")
+    return applySecurityHeaders(
+      safeErrorResponse("Status kehadiran tidak valid.", 400)
+    )
 
   const client = await supabase()
   const { data: guest, error: guestError } = await client
@@ -149,31 +230,40 @@ export async function POST(request: NextRequest) {
     .eq("id", guestId)
     .maybeSingle()
 
-  if (guestError) return error(guestError.message, 500)
-  if (!guest) return error("Tamu tidak ditemukan", 404)
+  if (guestError) {
+    logServerError("POST /api/comments guest lookup", guestError)
+    return applySecurityHeaders(internalErrorResponse())
+  }
+  if (!guest)
+    return applySecurityHeaders(safeErrorResponse("Tamu tidak ditemukan", 404))
 
   const { data, error: dbError } = await client
     .from("comments")
     .insert({
       guest_id: guestId,
-      name: name.trim(),
-      comment: comment.trim(),
+      name: name.trim().slice(0, 100),
+      comment: comment.trim().slice(0, 1000),
       attendance: DB_ATTENDANCE[attendance as Attendance],
     })
     .select("id, guest_id, name, comment, attendance, created_at, updated_at")
     .single()
 
-  if (dbError) return error(dbError.message, 500)
-  return NextResponse.json(
-    {
-      ...data,
-      attendance:
-        data.attendance === "attend"
-          ? "hadir"
-          : data.attendance === "absence"
-            ? "tidak_hadir"
-            : "ragu",
-    },
-    { status: 201 }
+  if (dbError) {
+    logServerError("POST /api/comments insert", dbError)
+    return applySecurityHeaders(internalErrorResponse())
+  }
+  return applySecurityHeaders(
+    NextResponse.json(
+      {
+        ...data,
+        attendance:
+          data.attendance === "attend"
+            ? "hadir"
+            : data.attendance === "absence"
+              ? "tidak_hadir"
+              : "ragu",
+      },
+      { status: 201 }
+    )
   )
 }

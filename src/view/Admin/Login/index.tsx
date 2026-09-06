@@ -26,6 +26,28 @@ const Login = ({ className, ...props }: React.ComponentProps<"form">) => {
 
       if (error) throw error
 
+      // Verify allowlist server-side before showing success
+      const res = await fetch("/api/auth/check-allowlist", { method: "GET" })
+      const data = await res.json().catch(() => null)
+
+      if (!res.ok || !data?.allowed) {
+        await supabase.auth.signOut()
+        const reason = data?.reason as string | undefined
+        const serverMsg = data?.error as string | undefined
+        const message =
+          reason === "config"
+            ? serverMsg ?? "Konfigurasi admin belum diatur. Hubungi administrator."
+            : reason === "unauthorized"
+              ? serverMsg ?? "Email tidak diizinkan sebagai admin."
+              : serverMsg ?? "Login gagal"
+
+        toast.error(message, {
+          id: toastId,
+          duration: 4000,
+        })
+        return
+      }
+
       toast.success("Login berhasil", {
         id: toastId,
         duration: 1000,
@@ -33,9 +55,11 @@ const Login = ({ className, ...props }: React.ComponentProps<"form">) => {
 
       router.push("/dashboard")
     } catch (error: unknown) {
-      toast.error("Login gagal", {
+      const msg = error instanceof Error ? error.message : "Login gagal"
+      // Ensure no success toast remains; replace with error
+      toast.error(msg === "Login gagal" ? "Login gagal" : msg, {
         id: toastId,
-        duration: 3000,
+        duration: 4000,
       })
     }
   }

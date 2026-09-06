@@ -177,7 +177,7 @@ const MainView = ({
   const handleLoadingComplete = () => setIsLoaded(true)
 
   return (
-    <main ref={mainRef} className="bg-background">
+    <main ref={mainRef} id="main-content" className="bg-background">
       <Tools />
       {!isLoaded && <LoadingScreen onComplete={handleLoadingComplete} />}
 

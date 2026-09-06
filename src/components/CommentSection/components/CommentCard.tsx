@@ -48,21 +48,24 @@ export function CommentCard({
       }}
     >
       <div className="flex flex-col items-start gap-2">
-        <h3 className="font-signature text-2xl leading-tight tracking-[0.1em] font-bold text-wedding-text-primary">
+        <h3 className="font-signature text-2xl leading-tight tracking-[0.1em] font-bold text-wedding-text-primary wrap-break-word">
           {name}
         </h3>
         <AttendanceBadge status={attendance} />
       </div>
 
-      <p className="font-sans text-xs leading-relaxed md:text-sm text-wedding-text-secondary">
+      <p className="font-sans text-xs leading-relaxed md:text-sm text-wedding-text-secondary wrap-break-word whitespace-pre-wrap">
         {message}
       </p>
 
       <div className="mt-auto flex items-center gap-3">
         <span className="h-px flex-1 bg-wedding-border" />
-        <span className="font-sans text-[9px] font-semibold tracking-[0.3em] uppercase text-wedding-text-muted">
+        <time
+          dateTime={date}
+          className="font-sans text-[9px] font-semibold tracking-[0.3em] uppercase text-wedding-text-muted"
+        >
           {date}
-        </span>
+        </time>
       </div>
     </Card>
   )

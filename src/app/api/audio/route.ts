@@ -1,6 +1,7 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import fs from "fs"
 import path from "path"
+import { checkRateLimit, applySecurityHeaders, logServerError } from "@/lib/security"
 
 export const dynamic = "force-dynamic"
 
@@ -16,7 +17,9 @@ function toTitle(filename: string) {
   }
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const rate = checkRateLimit(request, { keyPrefix: "audio", limit: 30, windowMs: 60_000 })
+  if (!rate.allowed) return applySecurityHeaders(rate.response)
   const audioDir = path.join(process.cwd(), "public", "audio")
 
   try {
@@ -40,9 +43,11 @@ export async function GET() {
         src: `/audio/${encodeURIComponent(name)}`,
       }))
 
-    return NextResponse.json({ data: tracks })
+    const res = NextResponse.json({ data: tracks })
+    res.headers.set("Cache-Control", "public, max-age=300, stale-while-revalidate=60")
+    return applySecurityHeaders(res)
   } catch (err) {
-    console.error("[GET /api/audio] error", err)
-    return NextResponse.json({ data: [] }, { status: 500 })
+    logServerError("GET /api/audio", err)
+    return applySecurityHeaders(NextResponse.json({ data: [] }, { status: 500 }))
   }
 }

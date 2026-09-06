@@ -93,6 +93,53 @@ export const CommentSection = forwardRef<
   } = useComments(guestId)
   const { toast } = useToast()
   const [submitted, setSubmitted] = useState(false)
+
+  // ── Guest HMAC permission check ──
+  const [isAllowed, setIsAllowed] = useState<boolean | null>(null)
+  const [permissionMsg, setPermissionMsg] = useState<string | null>(null)
+  const [isCheckingPermission, setIsCheckingPermission] = useState(false)
+
+  useEffect(() => {
+    if (!guestId) {
+      setIsAllowed(false)
+      setPermissionMsg("Tautan undangan tidak lengkap. Buka halaman undangan melalui URL dengan ID tamu.")
+      return
+    }
+    let cancelled = false
+    const check = async () => {
+      setIsCheckingPermission(true)
+      try {
+        const res = await fetch(`/api/auth/check-guest?guest_id=${encodeURIComponent(guestId)}`, {
+          credentials: "same-origin",
+        })
+        const data = await res.json().catch(() => null)
+        if (cancelled) return
+        if (res.ok && data?.allowed) {
+          setIsAllowed(true)
+          setPermissionMsg(null)
+        } else {
+          setIsAllowed(false)
+          setPermissionMsg(
+            data?.error ??
+              "Anda tidak memiliki izin untuk menambahkan komentar. Jika peringatan ini salah hubungi pengirim link ini."
+          )
+        }
+      } catch {
+        if (!cancelled) {
+          setIsAllowed(false)
+          setPermissionMsg(
+            "Anda tidak memiliki izin untuk menambahkan komentar. Jika peringatan ini salah hubungi pengirim link ini."
+          )
+        }
+      } finally {
+        if (!cancelled) setIsCheckingPermission(false)
+      }
+    }
+    check()
+    return () => {
+      cancelled = true
+    }
+  }, [guestId])
   const comments: Comment[] = remoteComments.map((comment) => ({
     id: comment.id,
     name: comment.name,
@@ -282,6 +329,15 @@ export const CommentSection = forwardRef<
       })
       return
     }
+    if (isAllowed === false) {
+      toast({
+        title: "Tidak memiliki izin",
+        description:
+          permissionMsg ??
+          "Anda tidak memiliki izin untuk menambahkan komentar. Jika peringatan ini salah hubungi pengirim link ini.",
+      })
+      return
+    }
 
     const loadingToast = toast({
       title: "Mengirim ucapan...",
@@ -369,6 +425,9 @@ export const CommentSection = forwardRef<
           isSubmitting={isSubmitting}
           submitted={submitted}
           guestName={guestName}
+          disabled={isAllowed === false}
+          isCheckingPermission={isCheckingPermission}
+          permissionMsg={permissionMsg}
         />
 
         <CounterBadge count={comments.length} />

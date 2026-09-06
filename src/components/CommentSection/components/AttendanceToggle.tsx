@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils"
 interface AttendanceToggleProps {
   value: "hadir" | "tidak_hadir" | "ragu"
   onChange: (v: "hadir" | "tidak_hadir" | "ragu") => void
+  disabled?: boolean
   
   textSecondary?: string
   label?: string
@@ -27,6 +28,7 @@ export function AttendanceToggle({
   onChange,
   label,
   error,
+  disabled = false,
 }: AttendanceToggleProps) {
   return (
     <div className="flex flex-col gap-2">
@@ -44,9 +46,10 @@ export function AttendanceToggle({
               <button
                 key={opt}
                 type="button"
+                disabled={disabled}
                 onClick={() => onChange(opt)}
                 className={cn(
-                  "flex-1 rounded-lg border-2 py-2 md:py-3.5 px-2 font-sans text-[10px] md:text-[11px] font-bold tracking-[0.15em] uppercase transition-all duration-200",
+                  "flex-1 rounded-lg border-2 py-2 md:py-3.5 px-2 font-sans text-[10px] md:text-[11px] font-bold tracking-[0.15em] uppercase transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none",
                   !isActive && "text-wedding-text-secondary border-wedding-border"
                 )}
                 style={{
