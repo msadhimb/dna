@@ -67,6 +67,8 @@ interface DataTableProps<TData> {
   filterPlaceholder?: string
   
   actions?: ActionItem<TData>[]
+  filters?: Record<string, any>
+  toolbarExtra?: React.ReactNode
 }
 
 const PAGE_SIZE_OPTIONS = [5, 10, 20, 30, 50]
@@ -77,6 +79,8 @@ export function DataTable<TData>({
   fetcher,
   filterPlaceholder = "Search...",
   actions,
+  filters,
+  toolbarExtra,
 }: DataTableProps<TData>) {
   
   const [page, setPage] = React.useState(1)
@@ -99,6 +103,11 @@ export function DataTable<TData>({
     return () => clearTimeout(timer)
   }, [search])
 
+  // reset to page 1 when external filters change
+  React.useEffect(() => {
+    setPage(1)
+  }, [JSON.stringify(filters ?? {})])
+
   
   const sortDir = sorting[0]?.desc === false ? "asc" : "desc"
 
@@ -108,6 +117,7 @@ export function DataTable<TData>({
     search: debouncedSearch,
     sortBy: sorting[0]?.id ?? "full_name",
     sortDir,
+    ...(filters ?? {}),
   }
 
   
@@ -239,14 +249,16 @@ export function DataTable<TData>({
 
   return (
     <div className="space-y-4 max-w-screen">
-      <div className="flex items-center gap-2 py-2">
+      <div className="flex flex-col gap-3 py-2 sm:flex-row sm:items-center sm:justify-between">
         <Input
           placeholder={filterPlaceholder}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="max-w-sm"
+          className="w-full sm:max-w-[240px] lg:max-w-sm"
         />
-        
+        {toolbarExtra && (
+          <div className="flex flex-wrap items-center gap-2">{toolbarExtra}</div>
+        )}
       </div>
 
       <ScrollArea

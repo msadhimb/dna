@@ -4,32 +4,32 @@ import React, { useState, useRef } from "react"
 import { DataTable } from "@/components/DataTable"
 import useGuestsList from "./store"
 import {
-  ChevronDown,
   Download,
   FileSpreadsheet,
   Loader2,
   UserPlus,
+  XCircle,
 } from "lucide-react"
+import { FaWhatsapp } from "react-icons/fa"
 import { toast } from "sonner"
 import { useQueryClient } from "@tanstack/react-query"
 import { useConfirm } from "@/components/ConfirmDialog/store"
 import * as XLSX from "xlsx"
 import ModalImport from "./components/ModalImport"
+import ModalShareWa from "./components/ModalShareWa"
 import GuestFormModal from "@/components/GuestFormModal"
 import { actions, columns } from "./tables/columns"
 import { Button } from "@/components/Button"
 import { guestFromList } from "@/helper/guestFormList"
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { Badge } from "@/components/ui/badge"
+import { Switch } from "@/components/ui/switch"
 
 const GuestsListView = () => {
   const { getGuestsData, deleteGuest, importGuests } = useGuestsList()
@@ -45,6 +45,30 @@ const GuestsListView = () => {
   const [guestModalOpen, setGuestModalOpen] = useState(false)
   const [editingGuest, setEditingGuest] = useState<any | null>(null)
   const [isExporting, setIsExporting] = useState(false)
+
+  // Share WA modal
+  const [shareGlobalOpen, setShareGlobalOpen] = useState(false)
+
+  // Filters - backend only
+  const [guestFromFilter, setGuestFromFilter] = useState<string>("all")
+  const [mantuOnly, setMantuOnly] = useState(false)
+  const [unduhOnly, setUnduhOnly] = useState(false)
+
+  const tableFilters = React.useMemo(() => {
+    const f: Record<string, any> = {}
+    if (guestFromFilter !== "all") f.guest_from = guestFromFilter
+    if (mantuOnly) f.mantu_status = true
+    if (unduhOnly) f.unduh_mantu_status = true
+    return f
+  }, [guestFromFilter, mantuOnly, unduhOnly])
+
+  const hasActiveFilters = guestFromFilter !== "all" || mantuOnly || unduhOnly
+
+  const handleResetFilters = () => {
+    setGuestFromFilter("all")
+    setMantuOnly(false)
+    setUnduhOnly(false)
+  }
 
   const handleCopyLink = (id: string) => {
     const origin = typeof window !== "undefined" ? window.location.origin : ""
@@ -285,7 +309,7 @@ const GuestsListView = () => {
             dan import data massal dari Excel.
           </p>
         </div>
-        <div className="grid grid-cols-2 gap-2 w-full sm:gap-3 lg:flex lg:w-auto lg:flex-wrap lg:items-center lg:gap-3">
+        <div className="flex flex-col gap-2 w-full sm:flex-row sm:items-center sm:gap-3 lg:w-auto">
           <input
             type="file"
             ref={fileInputRef}
@@ -295,100 +319,178 @@ const GuestsListView = () => {
           />
           <Button
             onClick={handleOpenCreate}
-            className="col-span-2 flex w-full items-center justify-center gap-2 hover:cursor-pointer lg:col-span-1 lg:w-auto"
+            className="flex w-full items-center justify-center gap-2 hover:cursor-pointer sm:w-auto"
           >
             <UserPlus className="size-4" />
             Tambah Tamu
           </Button>
           <Button
             onClick={triggerFileSelect}
-            className="flex w-full items-center justify-center gap-2 hover:cursor-pointer lg:w-auto"
+            className="flex w-full items-center justify-center gap-2 hover:cursor-pointer sm:w-auto"
             variant="outline"
           >
             <FileSpreadsheet className="size-4 text-muted" />
             Import Excel
           </Button>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                disabled={isExporting}
-                className="flex w-full items-center justify-center gap-2 hover:cursor-pointer lg:w-auto"
-              >
-                {isExporting ? (
-                  <Loader2 className="size-4 animate-spin" />
-                ) : (
-                  <Download className="size-4 text-muted" />
-                )}
-                Export Tamu
-                <ChevronDown className="size-3 opacity-60" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="font-manrope w-64">
-              <DropdownMenuLabel>Export Berdasarkan</DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() => handleExport({}, "Semua Tamu")}
-                className="cursor-pointer"
-              >
-                <Download className="size-4 text-muted" />
-                Export Semua Tamu
-              </DropdownMenuItem>
-
-              <DropdownMenuSeparator />
-
-              <DropdownMenuSub>
-                <DropdownMenuSubTrigger className="cursor-pointer">
-                  <FileSpreadsheet className="size-4 mr-2 text-muted" />
-                  Tamu Dari
-                </DropdownMenuSubTrigger>
-                <DropdownMenuSubContent className="font-manrope">
-                  {guestFromList.map((item) => (
-                    <DropdownMenuItem
-                      key={item.id}
-                      onClick={() =>
-                        handleExport(
-                          { guest_from: item.id },
-                          `Tamu Dari - ${item.name}`
-                        )
-                      }
-                      className="cursor-pointer"
-                    >
-                      {item.name}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuSubContent>
-              </DropdownMenuSub>
-
-              <DropdownMenuItem
-                onClick={() =>
-                  handleExport({ mantu_status: true }, "Tamu Mantu")
-                }
-                className="cursor-pointer"
-              >
-                Tamu Mantu
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() =>
-                  handleExport({ unduh_mantu_status: true }, "Tamu Unduh Mantu")
-                }
-                className="cursor-pointer"
-              >
-                Tamu Unduh Mantu
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
         </div>
       </div>
 
       <DataTable
         columns={columns({ handleCopyLink })}
-        actions={actions({ handleOpenEdit, deleteGuest, confirm, queryClient })}
+        actions={actions({
+          handleOpenEdit,
+          deleteGuest,
+          confirm,
+          queryClient,
+        })}
         queryKey="guests"
         fetcher={getGuestsData}
         filterColumn="guests_name"
         filterPlaceholder="Search guests..."
+        filters={tableFilters}
+        toolbarExtra={
+          <>
+            <Select value={guestFromFilter} onValueChange={setGuestFromFilter}>
+              <SelectTrigger className="h-8 w-full bg-background sm:w-[180px]">
+                <SelectValue placeholder="Tamu Dari" />
+              </SelectTrigger>
+              <SelectContent className="font-manrope">
+                <SelectItem value="all">Semua Tamu Dari</SelectItem>
+                {guestFromList.map((item) => (
+                  <SelectItem key={item.id} value={item.id}>
+                    {item.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <div className="flex items-center gap-2 rounded-lg border border-input bg-background px-2.5 py-1">
+              <span className="text-xs font-medium text-foreground whitespace-nowrap">
+                Mantu
+              </span>
+              <Switch
+                checked={mantuOnly}
+                onCheckedChange={setMantuOnly}
+                aria-label="Filter tamu mantu"
+                size="sm"
+              />
+            </div>
+
+            <div className="flex items-center gap-2 rounded-lg border border-input bg-background px-2.5 py-1">
+              <span className="text-xs font-medium text-foreground whitespace-nowrap">
+                Unduh
+              </span>
+              <Switch
+                checked={unduhOnly}
+                onCheckedChange={setUnduhOnly}
+                aria-label="Filter tamu unduh mantu"
+                size="sm"
+              />
+            </div>
+
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={isExporting}
+              onClick={() => {
+                const parts: string[] = []
+                if (guestFromFilter !== "all") {
+                  const name =
+                    guestFromList.find((x) => x.id === guestFromFilter)
+                      ?.name ?? guestFromFilter
+                  parts.push(name)
+                }
+                if (mantuOnly) parts.push("Mantu")
+                if (unduhOnly) parts.push("Unduh Mantu")
+                const label = parts.length ? parts.join(" - ") : "Semua Tamu"
+                handleExport(tableFilters, label)
+              }}
+              className="gap-1.5 h-8"
+            >
+              {isExporting ? (
+                <Loader2 className="size-3.5 animate-spin" />
+              ) : (
+                <Download className="size-3.5 text-muted" />
+              )}
+              Export
+            </Button>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShareGlobalOpen(true)}
+              className="gap-1.5 h-8 border-[#25D366]/20 bg-[#25D366]/10 hover:bg-[#25D366]/20 text-foreground"
+            >
+              <FaWhatsapp className="size-3.5 text-[#25D366]" />
+              Share WA
+            </Button>
+
+            {hasActiveFilters && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleResetFilters}
+                className="gap-1.5 h-8"
+              >
+                <XCircle className="size-3.5 text-muted" />
+                Reset
+              </Button>
+            )}
+          </>
+        }
       />
+      {hasActiveFilters && (
+        <div className="flex flex-wrap items-center gap-2 -mt-2">
+          {guestFromFilter !== "all" && (
+            <Badge
+              variant="outline"
+              className="gap-1.5 border-muted bg-muted/20 py-1 text-xs font-normal"
+            >
+              <span className="text-muted-foreground">Tamu Dari:</span>
+              <span className="font-medium text-foreground">
+                {guestFromList.find((x) => x.id === guestFromFilter)?.name ??
+                  guestFromFilter}
+              </span>
+              <button
+                onClick={() => setGuestFromFilter("all")}
+                className="ml-1 rounded-full p-0.5 hover:bg-muted"
+              >
+                <XCircle className="size-3 text-muted-foreground" />
+              </button>
+            </Badge>
+          )}
+          {mantuOnly && (
+            <Badge
+              variant="outline"
+              className="gap-1.5 border-muted bg-muted/20 py-1 text-xs font-normal"
+            >
+              <span className="text-muted-foreground">Mantu:</span>
+              <span className="font-medium text-foreground">Ya</span>
+              <button
+                onClick={() => setMantuOnly(false)}
+                className="ml-1 rounded-full p-0.5 hover:bg-muted"
+              >
+                <XCircle className="size-3 text-muted-foreground" />
+              </button>
+            </Badge>
+          )}
+          {unduhOnly && (
+            <Badge
+              variant="outline"
+              className="gap-1.5 border-muted bg-muted/20 py-1 text-xs font-normal"
+            >
+              <span className="text-muted-foreground">Unduh Mantu:</span>
+              <span className="font-medium text-foreground">Ya</span>
+              <button
+                onClick={() => setUnduhOnly(false)}
+                className="ml-1 rounded-full p-0.5 hover:bg-muted"
+              >
+                <XCircle className="size-3 text-muted-foreground" />
+              </button>
+            </Badge>
+          )}
+        </div>
+      )}
 
       <ModalImport
         isPreviewOpen={isPreviewOpen}
@@ -399,6 +501,11 @@ const GuestsListView = () => {
         setFile={setFile}
         handleImportSubmit={handleImportSubmit}
         isImporting={isImporting}
+      />
+
+      <ModalShareWa
+        open={shareGlobalOpen}
+        onOpenChange={setShareGlobalOpen}
       />
 
       {!editingGuest && (

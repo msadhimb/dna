@@ -270,7 +270,7 @@ const GuestFormModal = (props: GuestFormModalProps) => {
   const renderActions = () =>
     isModal ? (
       <DialogFooter
-        className={` py-4 border-t border-border bg-muted dark:bg-border`}
+        className={`flex flex-col-reverse sm:flex-row justify-center sm:justify-center items-center gap-2 py-4 border-t border-border bg-muted dark:bg-border !m-0 !mx-0 !mb-0 my-auto`}
       >
         <Button
           type="button"
@@ -317,7 +317,7 @@ const GuestFormModal = (props: GuestFormModalProps) => {
   if (isModal) {
     return (
       <Dialog open={props.open} onOpenChange={props.onOpenChange}>
-        <DialogContent className="max-w-2xl! gap-8">{content}</DialogContent>
+        <DialogContent className="max-w-2xl! flex flex-col justify-center gap-8 !p-0 overflow-hidden max-h-[90vh]">{content}</DialogContent>
       </Dialog>
     )
   }

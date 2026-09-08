@@ -52,11 +52,11 @@ export async function PATCH(
       return bad("Jumlah tamu harus berupa angka bulat positif")
     payload.guest_total = body.guest_total
   }
-  if (!Object.keys(payload).length) return bad("Tidak ada data yang diubah")
   if (typeof body?.mantu_status === "boolean")
     payload.mantu_status = body.mantu_status
   if (typeof body?.unduh_mantu_status === "boolean")
     payload.unduh_mantu_status = body.unduh_mantu_status
+  if (!Object.keys(payload).length) return bad("Tidak ada data yang diubah")
 
   const { data, error } = await client
     .from("guests")

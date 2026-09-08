@@ -31,7 +31,7 @@ const ModalImport = ({
 }) => {
   return (
     <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
-      <DialogContent className="sm:max-w-xl font-manrope max-h-[90vh] flex flex-col ">
+      <DialogContent className="sm:max-w-xl font-manrope max-h-[90vh] flex flex-col justify-center">
         <DialogHeader className="mb-2 shrink-0">
           <DialogTitle className="flex items-center gap-2 text-lg font-bold text-foreground">
             <FileSpreadsheet className="size-5 text-emerald-500" />
@@ -49,7 +49,7 @@ const ModalImport = ({
         </DialogHeader>
 
         
-        <div className="flex-1 overflow-y-auto border border-border rounded-lg mb-4">
+        <div className="overflow-y-auto max-h-[40vh] border border-border rounded-lg mb-4">
           <table className="w-full text-left border-collapse text-xs">
             <thead className="sticky top-0 bg-muted  border-b border-border">
               <tr>
@@ -117,7 +117,7 @@ const ModalImport = ({
           </p>
         </div>
 
-        <DialogFooter className="gap-2 shrink-0 sm:justify-end">
+        <DialogFooter className="gap-2 flex flex-col-reverse sm:flex-row justify-center sm:justify-center items-center !m-0 !mx-0 !mb-0 my-auto">
           <Button
             variant="destructive"
             onClick={() => {
