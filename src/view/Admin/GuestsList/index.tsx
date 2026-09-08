@@ -275,17 +275,17 @@ const GuestsListView = () => {
 
   return (
     <div className="font-manrope w-full max-w-full space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-border pb-5">
-        <div>
-          <h1 className="text-3xl font-bold font-sans text-foreground tracking-[0.2em] uppercase">
+      <div className="flex flex-col gap-4 border-b border-border pb-5 lg:flex-row lg:items-center lg:justify-between">
+        <div className="min-w-0">
+          <h1 className="font-sans text-2xl font-bold tracking-[0.15em] text-foreground uppercase sm:text-3xl sm:tracking-[0.2em]">
             Daftar Tamu Undangan
           </h1>
-          <p className="text-md text-muted-foreground mt-1">
+          <p className="mt-1 text-sm text-muted-foreground sm:text-base">
             Kelola data tamu undangan pernikahan, salin link undangan personal,
             dan import data massal dari Excel.
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="grid grid-cols-2 gap-2 w-full sm:gap-3 lg:flex lg:w-auto lg:flex-wrap lg:items-center lg:gap-3">
           <input
             type="file"
             ref={fileInputRef}
@@ -295,17 +295,17 @@ const GuestsListView = () => {
           />
           <Button
             onClick={handleOpenCreate}
-            className="flex items-center gap-2 hover:cursor-pointer"
+            className="col-span-2 flex w-full items-center justify-center gap-2 hover:cursor-pointer lg:col-span-1 lg:w-auto"
           >
             <UserPlus className="size-4" />
             Tambah Tamu
           </Button>
           <Button
             onClick={triggerFileSelect}
-            className="flex items-center gap-2 hover:cursor-pointer"
+            className="flex w-full items-center justify-center gap-2 hover:cursor-pointer lg:w-auto"
             variant="outline"
           >
-            <FileSpreadsheet className="size-4 text-emerald-500" />
+            <FileSpreadsheet className="size-4 text-muted" />
             Import Excel
           </Button>
 
@@ -314,12 +314,12 @@ const GuestsListView = () => {
               <Button
                 variant="outline"
                 disabled={isExporting}
-                className="flex items-center gap-2 hover:cursor-pointer"
+                className="flex w-full items-center justify-center gap-2 hover:cursor-pointer lg:w-auto"
               >
                 {isExporting ? (
                   <Loader2 className="size-4 animate-spin" />
                 ) : (
-                  <Download className="size-4 text-blue-500" />
+                  <Download className="size-4 text-muted" />
                 )}
                 Export Tamu
                 <ChevronDown className="size-3 opacity-60" />
@@ -331,7 +331,7 @@ const GuestsListView = () => {
                 onClick={() => handleExport({}, "Semua Tamu")}
                 className="cursor-pointer"
               >
-                <Download className="size-4" />
+                <Download className="size-4 text-muted" />
                 Export Semua Tamu
               </DropdownMenuItem>
 
@@ -339,7 +339,7 @@ const GuestsListView = () => {
 
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger className="cursor-pointer">
-                  <FileSpreadsheet className="size-4 mr-2" />
+                  <FileSpreadsheet className="size-4 mr-2 text-muted" />
                   Tamu Dari
                 </DropdownMenuSubTrigger>
                 <DropdownMenuSubContent className="font-manrope">
