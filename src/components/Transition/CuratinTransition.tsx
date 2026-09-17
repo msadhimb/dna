@@ -43,8 +43,6 @@ export const CurtainTransition = forwardRef<
         tl.set(`.photo-inner-${i}`, { y: "30%" })
       })
 
-      
-      
       // Curtain muncul: titik kecil → garis vertikal → melebar penuh
       // Gunakan keyframes agar transisi antar fase mulus tanpa discontinuity
       tl.to(
@@ -59,7 +57,6 @@ export const CurtainTransition = forwardRef<
         ">0.5"
       )
 
-      
       // Frame photos slideIn satu per satu
       frames.forEach((_, i) => {
         const pos = i === 0 ? "-=0.3" : `-=${FRAME_DUR - STAGGER}`
@@ -74,7 +71,6 @@ export const CurtainTransition = forwardRef<
         )
       })
 
-      
       // Fade hero halus sebelum split
       tl.to(
         heroSection,
@@ -112,6 +108,7 @@ export const CurtainTransition = forwardRef<
           transformOrigin: "center center",
           zIndex: 0,
           backfaceVisibility: "hidden",
+          willChange: "transform",
         }}
       />
 
@@ -124,6 +121,7 @@ export const CurtainTransition = forwardRef<
             transformOrigin: "center center",
             zIndex: i + 1,
             backfaceVisibility: "hidden",
+            willChange: "transform",
           }}
         >
           <div
@@ -136,6 +134,7 @@ export const CurtainTransition = forwardRef<
               height: "130%",
               transform: "translate3d(0,30%,0)",
               backfaceVisibility: "hidden",
+              willChange: "transform",
             }}
           >
             {frame}
@@ -146,13 +145,16 @@ export const CurtainTransition = forwardRef<
   )
 
   return (
-    <div className="pointer-events-none absolute inset-0 z-50 flex">
+    <div className="pointer-events-none fixed inset-0 z-50 flex">
       <div
         ref={leftHalfRef}
         className="relative h-full w-1/2 overflow-hidden"
-        style={{ backfaceVisibility: "hidden" }}
+        style={{ backfaceVisibility: "hidden", willChange: "transform" }}
       >
-        <div className="absolute top-0 left-0 h-full w-screen" style={{ backfaceVisibility: "hidden" }}>
+        <div
+          className="absolute top-0 left-0 h-full w-screen"
+          style={{ backfaceVisibility: "hidden", isolation: "isolate" }}
+        >
           {contentJSX}
         </div>
       </div>
@@ -160,9 +162,12 @@ export const CurtainTransition = forwardRef<
       <div
         ref={rightHalfRef}
         className="relative h-full w-1/2 overflow-hidden"
-        style={{ backfaceVisibility: "hidden" }}
+        style={{ backfaceVisibility: "hidden", willChange: "transform" }}
       >
-        <div className="absolute top-0 right-0 h-full w-screen" style={{ backfaceVisibility: "hidden" }}>
+        <div
+          className="absolute top-0 right-0 h-full w-screen"
+          style={{ backfaceVisibility: "hidden", isolation: "isolate" }}
+        >
           {contentJSX}
         </div>
       </div>
