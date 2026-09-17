@@ -18,6 +18,10 @@ const useGuestsList = create<GuestsListProps>(() => ({
       query.set("mantu_status", String(params.mantu_status))
     if (typeof params.unduh_mantu_status === "boolean")
       query.set("unduh_mantu_status", String(params.unduh_mantu_status))
+    if (typeof params.physical_invitation === "boolean")
+      query.set("physical_invitation", String(params.physical_invitation))
+    if (typeof params.sended === "boolean")
+      query.set("sended", String(params.sended))
 
     const response = await clientApi({
       url: `/guests?${query.toString()}`,

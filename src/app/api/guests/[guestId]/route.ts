@@ -3,7 +3,7 @@ import { cookies } from "next/headers"
 import { createClient } from "@/utils/supabase/server"
 
 const FIELDS =
-  "id, full_name, mantu_status, unduh_mantu_status, guest_from, guest_total"
+  "id, full_name, mantu_status, unduh_mantu_status, guest_from, guest_total, physical_invitation, sended"
 
 async function getAdmin() {
   const client = createClient(await cookies())
@@ -56,6 +56,10 @@ export async function PATCH(
     payload.mantu_status = body.mantu_status
   if (typeof body?.unduh_mantu_status === "boolean")
     payload.unduh_mantu_status = body.unduh_mantu_status
+  if (typeof body?.physical_invitation === "boolean")
+    payload.physical_invitation = body.physical_invitation
+  if (typeof body?.sended === "boolean")
+    payload.sended = body.sended
   if (!Object.keys(payload).length) return bad("Tidak ada data yang diubah")
 
   const { data, error } = await client

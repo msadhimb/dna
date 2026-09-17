@@ -13,10 +13,10 @@ export const columns = ({
   },
   {
     accessorKey: "guest_from",
-    header: "Tamu Dari",
+    header: () => <div className="min-w-40">Tamu Dari</div>,
     cell: ({ row }: { row: any }) => {
       return (
-        <div>
+        <div className="min-w-40">
           {
             guestFromList.find(
               (guestFrom) => guestFrom.id === row.original.guest_from
@@ -57,6 +57,21 @@ export const columns = ({
     },
   },
   {
+    accessorKey: "physical_invitation",
+    header: () => <div className="text-center">Undangan Fisik</div>,
+    cell: ({ row }: { row: any }) => {
+      return (
+        <div className="flex justify-center">
+          {row.original.physical_invitation === true ? (
+            <Check className="h-4 w-4 text-green-500" />
+          ) : (
+            <X className="h-4 w-4 text-red-500" />
+          )}
+        </div>
+      )
+    },
+  },
+  {
     accessorKey: "guest_total",
     header: () => <div className="text-center">Jumlah Tamu</div>,
     cell: ({ row }: { row: any }) => {
@@ -76,6 +91,21 @@ export const columns = ({
         >
           {`${origin}/${id}`}
         </button>
+      )
+    },
+  },
+  {
+    accessorKey: "sended",
+    header: () => <div className="text-center">Terkirim di Whatsapp</div>,
+    cell: ({ row }: { row: any }) => {
+      return (
+        <div className="flex justify-center">
+          {row.original.sended === true ? (
+            <Check className="h-4 w-4 text-green-500" />
+          ) : (
+            <X className="h-4 w-4 text-red-500" />
+          )}
+        </div>
       )
     },
   },

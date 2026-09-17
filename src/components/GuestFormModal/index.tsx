@@ -159,7 +159,6 @@ const GuestFormModal = (props: GuestFormModalProps) => {
 
   const renderFields = () => (
     <div className={`flex flex-col gap-5`}>
-      
       <Controller
         control={form.control}
         name="full_name"
@@ -177,7 +176,6 @@ const GuestFormModal = (props: GuestFormModalProps) => {
         )}
       />
 
-      
       <Controller
         control={form.control}
         name="guest_from"
@@ -238,7 +236,6 @@ const GuestFormModal = (props: GuestFormModalProps) => {
         />
       </div>
 
-      
       {generatedLink && (
         <div className="flex flex-col gap-2">
           <Label className="font-sans text-[10px] md:text-[11px] font-bold tracking-[0.30em] uppercase">
@@ -270,7 +267,7 @@ const GuestFormModal = (props: GuestFormModalProps) => {
   const renderActions = () =>
     isModal ? (
       <DialogFooter
-        className={`flex flex-col-reverse sm:flex-row justify-center sm:justify-center items-center gap-2 py-4 border-t border-border bg-muted dark:bg-border !m-0 !mx-0 !mb-0 my-auto`}
+        className={`flex flex-col-reverse sm:flex-row justify-end items-center gap-2 py-4 border-t border-border bg-muted dark:bg-border !m-0 !mx-0 px-6 !mb-0 my-auto`}
       >
         <Button
           type="button"
@@ -300,7 +297,7 @@ const GuestFormModal = (props: GuestFormModalProps) => {
   const content = (
     <>
       {isModal ? (
-        <div className="p-3 pb-0 flex flex-col gap-8">
+        <div className="px-6 py-6 pb-0 flex flex-col gap-8">
           {renderHeader()}
           {renderFields()}
         </div>
@@ -317,12 +314,13 @@ const GuestFormModal = (props: GuestFormModalProps) => {
   if (isModal) {
     return (
       <Dialog open={props.open} onOpenChange={props.onOpenChange}>
-        <DialogContent className="max-w-2xl! flex flex-col justify-center gap-8 !p-0 overflow-hidden max-h-[90vh]">{content}</DialogContent>
+        <DialogContent className="max-w-2xl! flex flex-col justify-center gap-8 !p-0 overflow-hidden max-h-[90vh]">
+          {content}
+        </DialogContent>
       </Dialog>
     )
   }
 
-  
   return (
     <div className="w-full h-full flex items-center justify-center">
       <div className="bg-card border border-border rounded-xl shadow-sm w-2xl flex flex-col gap-8 p-8">

@@ -4,12 +4,16 @@ import React, { useState, useRef } from "react"
 import { DataTable } from "@/components/DataTable"
 import useGuestsList from "./store"
 import {
+  Check,
+  ChevronsUpDown,
   Download,
   FileSpreadsheet,
+  Filter,
   Loader2,
   UserPlus,
   XCircle,
 } from "lucide-react"
+import { cn } from "@/lib/utils"
 import { FaWhatsapp } from "react-icons/fa"
 import { toast } from "sonner"
 import { useQueryClient } from "@tanstack/react-query"
@@ -30,6 +34,19 @@ import {
 } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { Switch } from "@/components/ui/switch"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command"
 
 const GuestsListView = () => {
   const { getGuestsData, deleteGuest, importGuests } = useGuestsList()
@@ -53,21 +70,32 @@ const GuestsListView = () => {
   const [guestFromFilter, setGuestFromFilter] = useState<string>("all")
   const [mantuOnly, setMantuOnly] = useState(false)
   const [unduhOnly, setUnduhOnly] = useState(false)
+  const [physicalOnly, setPhysicalOnly] = useState(false)
+  const [sendedOnly, setSendedOnly] = useState(false)
 
   const tableFilters = React.useMemo(() => {
     const f: Record<string, any> = {}
     if (guestFromFilter !== "all") f.guest_from = guestFromFilter
     if (mantuOnly) f.mantu_status = true
     if (unduhOnly) f.unduh_mantu_status = true
+    if (physicalOnly) f.physical_invitation = true
+    if (sendedOnly) f.sended = true
     return f
-  }, [guestFromFilter, mantuOnly, unduhOnly])
+  }, [guestFromFilter, mantuOnly, unduhOnly, physicalOnly, sendedOnly])
 
-  const hasActiveFilters = guestFromFilter !== "all" || mantuOnly || unduhOnly
+  const hasActiveFilters =
+    guestFromFilter !== "all" ||
+    mantuOnly ||
+    unduhOnly ||
+    physicalOnly ||
+    sendedOnly
 
   const handleResetFilters = () => {
     setGuestFromFilter("all")
     setMantuOnly(false)
     setUnduhOnly(false)
+    setPhysicalOnly(false)
+    setSendedOnly(false)
   }
 
   const handleCopyLink = (id: string) => {
@@ -122,6 +150,9 @@ const GuestsListView = () => {
             const unduhKey = Object.keys(row).find((key) =>
               /unduh|unduh.*mantu/i.test(key)
             )
+            const physicalKey = Object.keys(row).find((key) =>
+              /physical|fisik|cetak/i.test(key)
+            )
             const full_name = nameKey ? String(row[nameKey] ?? "").trim() : ""
 
             const parseBool = (val: any) => {
@@ -140,6 +171,8 @@ const GuestsListView = () => {
             }
             if (mantuKey) payload.mantu_status = parseBool(row[mantuKey])
             if (unduhKey) payload.unduh_mantu_status = parseBool(row[unduhKey])
+            if (physicalKey)
+              payload.physical_invitation = parseBool(row[physicalKey])
 
             return payload
           })
@@ -216,6 +249,8 @@ const GuestsListView = () => {
       guest_from?: string
       mantu_status?: boolean
       unduh_mantu_status?: boolean
+      physical_invitation?: boolean
+      sended?: boolean
     },
     label: string
   ) => {
@@ -257,6 +292,7 @@ const GuestsListView = () => {
           "-",
         "Tamu Mantu": g.mantu_status ? "Ya" : "Tidak",
         "Tamu Unduh Mantu": g.unduh_mantu_status ? "Ya" : "Tidak",
+        "Undangan Fisik": g.physical_invitation ? "Ya" : "Tidak",
         "Jumlah Tamu": g.guest_total ?? 0,
         "Link Undangan":
           typeof window !== "undefined"
@@ -271,6 +307,7 @@ const GuestsListView = () => {
         { wch: 25 },
         { wch: 13 },
         { wch: 18 },
+        { wch: 15 },
         { wch: 13 },
         { wch: 45 },
       ]
@@ -350,43 +387,126 @@ const GuestsListView = () => {
         filters={tableFilters}
         toolbarExtra={
           <>
-            <Select value={guestFromFilter} onValueChange={setGuestFromFilter}>
-              <SelectTrigger className="h-8 w-full bg-background sm:w-[180px]">
-                <SelectValue placeholder="Tamu Dari" />
-              </SelectTrigger>
-              <SelectContent className="font-manrope">
-                <SelectItem value="all">Semua Tamu Dari</SelectItem>
-                {guestFromList.map((item) => (
-                  <SelectItem key={item.id} value={item.id}>
-                    {item.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  className={cn(
+                    "w-[180px] justify-between h-8 text-sm font-normal",
+                    guestFromFilter === "all" && "text-muted-foreground"
+                  )}
+                >
+                  {guestFromFilter === "all"
+                    ? "Semua Tamu Dari"
+                    : (guestFromList.find((x) => x.id === guestFromFilter)
+                        ?.name ?? "Tamu Dari")}
+                  <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                className="w-[25rem] p-0 font-manrope"
+                align="end"
+              >
+                <Command>
+                  <CommandInput placeholder="Cari..." className="h-9" />
+                  <CommandList>
+                    <CommandEmpty>Tidak ditemukan.</CommandEmpty>
+                    <CommandGroup>
+                      <CommandItem
+                        value="all"
+                        onSelect={() => setGuestFromFilter("all")}
+                      >
+                        <Check
+                          className={cn(
+                            "mr-2 size-4",
+                            guestFromFilter === "all"
+                              ? "opacity-100"
+                              : "opacity-0"
+                          )}
+                        />
+                        Semua Tamu Dari
+                      </CommandItem>
+                      {guestFromList.map((item) => (
+                        <CommandItem
+                          value={item.id}
+                          key={item.id}
+                          onSelect={() => setGuestFromFilter(item.id)}
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 size-4",
+                              item.id === guestFromFilter
+                                ? "opacity-100"
+                                : "opacity-0"
+                            )}
+                          />
+                          {item.name}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
 
-            <div className="flex items-center gap-2 rounded-lg border border-input bg-background px-2.5 py-1">
-              <span className="text-xs font-medium text-foreground whitespace-nowrap">
-                Mantu
-              </span>
-              <Switch
-                checked={mantuOnly}
-                onCheckedChange={setMantuOnly}
-                aria-label="Filter tamu mantu"
-                size="sm"
-              />
-            </div>
-
-            <div className="flex items-center gap-2 rounded-lg border border-input bg-background px-2.5 py-1">
-              <span className="text-xs font-medium text-foreground whitespace-nowrap">
-                Unduh
-              </span>
-              <Switch
-                checked={unduhOnly}
-                onCheckedChange={setUnduhOnly}
-                aria-label="Filter tamu unduh mantu"
-                size="sm"
-              />
-            </div>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" size="sm" className="gap-1.5 h-8">
+                  <Filter className="size-3.5 text-muted" />
+                  Filter Lanjutan
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-56 p-4" align="end">
+                <div className="space-y-4">
+                  <h4 className="font-medium leading-none text-sm">
+                    Filter Status
+                  </h4>
+                  <div className="grid gap-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-medium text-foreground">
+                        Mantu
+                      </span>
+                      <Switch
+                        checked={mantuOnly}
+                        onCheckedChange={setMantuOnly}
+                        size="sm"
+                      />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-medium text-foreground">
+                        Unduh Mantu
+                      </span>
+                      <Switch
+                        checked={unduhOnly}
+                        onCheckedChange={setUnduhOnly}
+                        size="sm"
+                      />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-medium text-foreground">
+                        Undangan Fisik
+                      </span>
+                      <Switch
+                        checked={physicalOnly}
+                        onCheckedChange={setPhysicalOnly}
+                        size="sm"
+                      />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-medium text-foreground">
+                        WA Terkirim
+                      </span>
+                      <Switch
+                        checked={sendedOnly}
+                        onCheckedChange={setSendedOnly}
+                        size="sm"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
 
             <Button
               variant="outline"
@@ -396,12 +516,14 @@ const GuestsListView = () => {
                 const parts: string[] = []
                 if (guestFromFilter !== "all") {
                   const name =
-                    guestFromList.find((x) => x.id === guestFromFilter)
-                      ?.name ?? guestFromFilter
+                    guestFromList.find((x) => x.id === guestFromFilter)?.name ??
+                    guestFromFilter
                   parts.push(name)
                 }
                 if (mantuOnly) parts.push("Mantu")
                 if (unduhOnly) parts.push("Unduh Mantu")
+                if (physicalOnly) parts.push("Undangan Fisik")
+                if (sendedOnly) parts.push("WA Terkirim")
                 const label = parts.length ? parts.join(" - ") : "Semua Tamu"
                 handleExport(tableFilters, label)
               }}
@@ -489,6 +611,36 @@ const GuestsListView = () => {
               </button>
             </Badge>
           )}
+          {physicalOnly && (
+            <Badge
+              variant="outline"
+              className="gap-1.5 border-muted bg-muted/20 py-1 text-xs font-normal"
+            >
+              <span className="text-muted-foreground">Undangan Fisik:</span>
+              <span className="font-medium text-foreground">Ya</span>
+              <button
+                onClick={() => setPhysicalOnly(false)}
+                className="ml-1 rounded-full p-0.5 hover:bg-muted"
+              >
+                <XCircle className="size-3 text-muted-foreground" />
+              </button>
+            </Badge>
+          )}
+          {sendedOnly && (
+            <Badge
+              variant="outline"
+              className="gap-1.5 border-muted bg-muted/20 py-1 text-xs font-normal"
+            >
+              <span className="text-muted-foreground">WA Terkirim:</span>
+              <span className="font-medium text-foreground">Ya</span>
+              <button
+                onClick={() => setSendedOnly(false)}
+                className="ml-1 rounded-full p-0.5 hover:bg-muted"
+              >
+                <XCircle className="size-3 text-muted-foreground" />
+              </button>
+            </Badge>
+          )}
         </div>
       )}
 
@@ -503,10 +655,7 @@ const GuestsListView = () => {
         isImporting={isImporting}
       />
 
-      <ModalShareWa
-        open={shareGlobalOpen}
-        onOpenChange={setShareGlobalOpen}
-      />
+      <ModalShareWa open={shareGlobalOpen} onOpenChange={setShareGlobalOpen} />
 
       {!editingGuest && (
         <GuestFormModal

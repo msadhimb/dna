@@ -3,7 +3,7 @@ import { cookies } from "next/headers"
 import { createClient } from "@/utils/supabase/server"
 
 const FIELDS =
-  "id, full_name, guest_from, mantu_status, unduh_mantu_status, guest_total"
+  "id, full_name, guest_from, mantu_status, unduh_mantu_status, guest_total, physical_invitation, sended"
 
 async function adminClient() {
   const client = createClient(await cookies())
@@ -32,6 +32,8 @@ export async function GET(request: NextRequest) {
   const mantuStatusParam = request.nextUrl.searchParams.get("mantu_status")
   const unduhMantuStatusParam =
     request.nextUrl.searchParams.get("unduh_mantu_status")
+  const physicalInvitationParam = request.nextUrl.searchParams.get("physical_invitation")
+  const sendedParam = request.nextUrl.searchParams.get("sended")
   const allowedSort = ["full_name", "id"]
   const requestedSort =
     request.nextUrl.searchParams.get("sortBy") ?? "full_name"
@@ -52,6 +54,10 @@ export async function GET(request: NextRequest) {
     query = query.eq("unduh_mantu_status", true)
   if (unduhMantuStatusParam === "false")
     query = query.eq("unduh_mantu_status", false)
+  if (physicalInvitationParam === "true") query = query.eq("physical_invitation", true)
+  if (physicalInvitationParam === "false") query = query.eq("physical_invitation", false)
+  if (sendedParam === "true") query = query.eq("sended", true)
+  if (sendedParam === "false") query = query.eq("sended", false)
   const from = (page - 1) * pageSize
   const { data, error, count } = await query.range(from, from + pageSize - 1)
   if (error) return bad(error.message, 500)
@@ -90,6 +96,12 @@ export async function POST(request: NextRequest) {
 
     if (typeof input.unduh_mantu_status === "boolean")
       payload.unduh_mantu_status = input.unduh_mantu_status
+
+    if (typeof input.physical_invitation === "boolean")
+      payload.physical_invitation = input.physical_invitation
+
+    if (typeof input.sended === "boolean")
+      payload.sended = input.sended
     const { data: existing, error: findError } = await client
       .from("guests")
       .select("id")

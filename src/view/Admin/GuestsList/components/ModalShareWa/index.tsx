@@ -111,6 +111,15 @@ const ModalShareWa = ({ open, onOpenChange }: Props) => {
       ? `https://wa.me/${cleanPhone}?text=${encoded}`
       : `https://wa.me/?text=${encoded}`
     window.open(waUrl, "_blank", "noopener,noreferrer")
+
+    if (selectedGuestId) {
+      clientApi({
+        url: `/guests/${selectedGuestId}`,
+        method: "PATCH",
+        data: { sended: true },
+      }).catch((err) => console.error("Failed to update sended status:", err))
+    }
+
     toast.success(
       cleanPhone
         ? `Membuka chat ${selectedGuest.full_name}…`

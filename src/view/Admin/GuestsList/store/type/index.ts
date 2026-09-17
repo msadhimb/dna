@@ -23,6 +23,8 @@ export type GetGuestsParams = {
   guest_from?: string
   mantu_status?: boolean
   unduh_mantu_status?: boolean
+  physical_invitation?: boolean
+  sended?: boolean
 }
 
 export type GetGuestsResponse = {
@@ -37,6 +39,8 @@ export type ImportGuestInput = {
 
   mantu_status?: boolean
   unduh_mantu_status?: boolean
+  physical_invitation?: boolean
+  sended?: boolean
 }
 
 export type GuestsListProps = {

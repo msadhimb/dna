@@ -31,8 +31,8 @@ const ModalImport = ({
 }) => {
   return (
     <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
-      <DialogContent className="sm:max-w-xl font-manrope max-h-[90vh] flex flex-col justify-center">
-        <DialogHeader className="mb-2 shrink-0">
+      <DialogContent className="sm:max-w-2xl font-manrope max-h-[90vh] flex flex-col justify-center p-0">
+        <DialogHeader className=" shrink-0 px-6 pt-6">
           <DialogTitle className="flex items-center gap-2 text-lg font-bold text-foreground">
             <FileSpreadsheet className="size-5 text-emerald-500" />
             Konfirmasi Import Tamu
@@ -48,8 +48,7 @@ const ModalImport = ({
           </DialogDescription>
         </DialogHeader>
 
-        
-        <div className="overflow-y-auto max-h-[40vh] border border-border rounded-lg mb-4">
+        <div className="overflow-y-auto max-h-[40vh] border border-border rounded-lg mx-6">
           <table className="w-full text-left border-collapse text-xs">
             <thead className="sticky top-0 bg-muted  border-b border-border">
               <tr>
@@ -64,6 +63,9 @@ const ModalImport = ({
                 </th>
                 <th className="px-4 py-2 font-medium text-secondary text-center">
                   Unduh Mantu
+                </th>
+                <th className="px-4 py-2 font-medium text-secondary text-center">
+                  Undangan Fisik
                 </th>
               </tr>
             </thead>
@@ -96,6 +98,15 @@ const ModalImport = ({
                       )}
                     </div>
                   </td>
+                  <td className="px-4 py-2.5">
+                    <div className="flex justify-center">
+                      {row.physical_invitation ? (
+                        <Check className="size-4 text-emerald-500" />
+                      ) : (
+                        <X className="size-4 text-rose-500" />
+                      )}
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -107,8 +118,7 @@ const ModalImport = ({
           )}
         </div>
 
-        
-        <div className="bg-amber-500/10 border border-amber-500/20 text-amber-500 text-xs rounded-lg p-3 flex gap-2.5 items-start mb-4 shrink-0">
+        <div className="bg-amber-500/10 border border-amber-500/20 text-amber-500 text-xs rounded-lg p-3 flex gap-2.5 items-start mx-6 shrink-0">
           <AlertCircle className="size-4 shrink-0 mt-0.5" />
           <p className="leading-relaxed">
             <strong>Info:</strong> Tamu baru akan <strong>ditambahkan</strong>.
@@ -117,7 +127,7 @@ const ModalImport = ({
           </p>
         </div>
 
-        <DialogFooter className="gap-2 flex flex-col-reverse sm:flex-row justify-center sm:justify-center items-center !m-0 !mx-0 !mb-0 my-auto">
+        <DialogFooter className="gap-2 flex flex-col-reverse sm:flex-row justify-end items-center !m-0 !mx-0 !mb-0 my-auto px-6">
           <Button
             variant="destructive"
             onClick={() => {
