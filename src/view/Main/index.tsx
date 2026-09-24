@@ -8,9 +8,7 @@ import {
   CurtainTransition,
   CurtainTransitionRef,
 } from "@/components/Transition/CuratinTransition"
-import JourneySequence, {
-  JourneySequenceRef,
-} from "@/components/JourneySequence"
+import BioSequence, { BioSequenceRef } from "@/components/BioSequence"
 import BookFlip, { BookFlipRef } from "@/components/BookFlip"
 import {
   WelcomeSection,
@@ -55,7 +53,7 @@ const MainView = ({
   const mainRef = useRef<HTMLElement>(null)
   const welcomeRef = useRef<WelcomeSectionRef>(null)
   const curtainRef = useRef<CurtainTransitionRef>(null)
-  const journeyRef = useRef<JourneySequenceRef>(null)
+  const journeyRef = useRef<BioSequenceRef>(null)
   const bookFlipRef = useRef<BookFlipRef>(null)
   const commentRef = useRef<CommentSectionRef>(null)
 
@@ -199,7 +197,7 @@ const MainView = ({
           id="journey-wrapper"
           className="gsap-element pointer-events-none absolute inset-0 z-20 flex h-full w-full flex-col justify-center overflow-hidden bg-background opacity-0"
         >
-          <JourneySequence ref={journeyRef} theme={theme} />
+          <BioSequence ref={journeyRef} theme={theme} />
         </div>
 
         <div

@@ -5,7 +5,7 @@ import { useGSAP } from "@gsap/react"
 import { gsap, ScrollTrigger } from "@/lib/gsap"
 import type { WelcomeSectionRef } from "@/components/WelcomeSection"
 import type { CurtainTransitionRef } from "@/components/Transition/CuratinTransition"
-import type { JourneySequenceRef } from "@/components/JourneySequence"
+import type { JourneySequenceRef } from "@/components/BioSequence"
 import type { BookFlipRef } from "@/components/BookFlip"
 import type { CommentSectionRef } from "@/components/CommentSection"
 
