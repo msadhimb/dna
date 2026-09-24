@@ -46,18 +46,6 @@ export const getTimeline = ({
       ...pageBackShadowRefs.current.filter(Boolean),
     ] as HTMLDivElement[]
 
-    gsap.set(bookRef.current, {
-      rotateX: 68,
-      rotateY: -10,
-      rotateZ: 2,
-      scale: 0.82,
-      x: "0%",
-      z: 0,
-      y: 160,
-      opacity: 0,
-      transformOrigin: "center 80%",
-      force3D: true,
-    })
     gsap.set(coverRef.current, {
       rotateY: 0,
       rotateX: 0,

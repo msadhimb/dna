@@ -16,6 +16,9 @@ import {
 } from "../../components/WelcomeSection"
 import { LoadingScreen } from "@/components/LoadingScreen"
 import RomanticQuote from "@/components/RomanticQuote"
+import LoveJourneyHorizontal, {
+  LoveJourneyHorizontalRef,
+} from "@/components/LoveJourneyHorizontal"
 import DigitalGift from "@/components/DigitalGift"
 import CommentSection, { CommentSectionRef } from "@/components/CommentSection"
 import Footer from "@/components/Footer"
@@ -54,6 +57,7 @@ const MainView = ({
   const welcomeRef = useRef<WelcomeSectionRef>(null)
   const curtainRef = useRef<CurtainTransitionRef>(null)
   const journeyRef = useRef<BioSequenceRef>(null)
+  const loveJourneyRef = useRef<LoveJourneyHorizontalRef>(null)
   const bookFlipRef = useRef<BookFlipRef>(null)
   const commentRef = useRef<CommentSectionRef>(null)
 
@@ -138,7 +142,7 @@ const MainView = ({
             src={content}
             alt={`Curtain Photo ${i + 1}`}
             fill
-            sizes="100vw"
+            sizes="500vwd"
             priority={i === 0}
             className="object-cover object-center"
           />
@@ -160,7 +164,14 @@ const MainView = ({
   // Orkestrasi pinned scroll dipindah ke hook terpisah
   usePinnedScrollSequence(
     mainRef,
-    { welcomeRef, curtainRef, journeyRef, bookFlipRef, commentRef },
+    {
+      welcomeRef,
+      curtainRef,
+      journeyRef,
+      loveJourneyRef,
+      bookFlipRef,
+      commentRef,
+    },
     { isLoaded, theme }
   )
 
@@ -198,6 +209,13 @@ const MainView = ({
           className="gsap-element pointer-events-none absolute inset-0 z-20 flex h-full w-full flex-col justify-center overflow-hidden bg-background opacity-0"
         >
           <BioSequence ref={journeyRef} theme={theme} />
+        </div>
+
+        <div
+          id="love-journey-wrapper"
+          className="gsap-element pointer-events-none absolute inset-0 z-20 flex h-full w-full flex-col justify-center overflow-hidden bg-background opacity-0"
+        >
+          <LoveJourneyHorizontal ref={loveJourneyRef} theme={theme as any} />
         </div>
 
         <div

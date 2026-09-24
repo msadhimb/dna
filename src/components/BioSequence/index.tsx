@@ -6,6 +6,7 @@ import { gsap } from "@/lib/gsap"
 import { cn } from "@/lib/utils"
 import useResponsive from "@/hooks/useResponsive"
 import { useImageUrl } from "@/store/useImageUrl"
+import { useTheme } from "next-themes"
 
 interface BioSequenceProps {
   theme: string
@@ -22,6 +23,8 @@ export const BioSequence = forwardRef<BioSequenceRef, BioSequenceProps>(
     const brideBioRef = useRef<HTMLDivElement>(null)
     const { dist, isMobile } = useResponsive()
     const { imageUrl } = useImageUrl()
+    const { resolvedTheme } = useTheme()
+    const isDark = resolvedTheme === "dark"
 
     useImperativeHandle(
       ref,
@@ -41,7 +44,7 @@ export const BioSequence = forwardRef<BioSequenceRef, BioSequenceProps>(
             height: "100vh",
             borderRadius: "0px",
             clipPath: "none",
-            x: dist("-25vw", "0"),
+            x: isDark ? 0 : dist("-25vw", "0"),
             y: 0,
             duration: 1,
             ease: "none",

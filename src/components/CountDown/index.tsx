@@ -47,7 +47,7 @@ export function Countdown({
 
   return (
     <div className="flex flex-col items-center gap-1 font-bold text-primary">
-      <p className="font-signature text-xl font-light tracking-wider">
+      <p className="font-serif text-xl font-bold tracking-wider ">
         Hitungan Mundur Pernikahan
       </p>
       <div className="flex items-center gap-1 font-bold text-primary">
