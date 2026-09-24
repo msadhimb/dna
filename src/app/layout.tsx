@@ -1,32 +1,35 @@
-import {
-  Geist,
-  Geist_Mono,
-  Cormorant_Garamond,
-  Alex_Brush,
-} from "next/font/google"
+import { Geist_Mono } from "next/font/google"
+import localFont from "next/font/local"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils"
 import ClientProviders from "@/components/ClientProviders"
 import { Metadata } from "next"
 
-const geist = Geist({ subsets: ["latin"], variable: "--font-sans" })
-
 const fontMono = Geist_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
 })
 
-const cormorant = Cormorant_Garamond({
-  subsets: ["latin"],
-  variable: "--font-serif",
-  weight: ["300", "400", "500", "600", "700"],
+const metropolis = localFont({
+  src: [
+    { path: "../../public/fonts/metropolis/metropolis-300.woff2", weight: "300", style: "normal" },
+    { path: "../../public/fonts/metropolis/metropolis-400.woff2", weight: "400", style: "normal" },
+    { path: "../../public/fonts/metropolis/metropolis-500.woff2", weight: "500", style: "normal" },
+    { path: "../../public/fonts/metropolis/metropolis-600.woff2", weight: "600", style: "normal" },
+    { path: "../../public/fonts/metropolis/metropolis-700.woff2", weight: "700", style: "normal" },
+  ],
+  variable: "--font-sans",
 })
 
-const alexBrush = Alex_Brush({
-  subsets: ["latin"],
+const belganAesthetic = localFont({
+  src: [{ path: "../../public/fonts/belgan-aesthetic/Belgan Aesthetic.ttf", weight: "400", style: "normal" }],
+  variable: "--font-serif",
+})
+
+const anturaScript = localFont({
+  src: [{ path: "../../public/fonts/antura-script/Antura Script.otf", weight: "400", style: "normal" }],
   variable: "--font-signature",
-  weight: ["400"],
 })
 
 export const metadata: Metadata = {
@@ -47,9 +50,9 @@ export default function RootLayout({
         "antialiased",
         fontMono.variable,
         "font-sans",
-        geist.variable,
-        cormorant.variable,
-        alexBrush.variable
+        metropolis.variable,
+        belganAesthetic.variable,
+        anturaScript.variable
       )}
     >
       <body>
