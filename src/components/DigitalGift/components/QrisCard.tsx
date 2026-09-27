@@ -55,7 +55,7 @@ const QrisCard = ({
         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-wedding-accent/10 border border-wedding-border-accent">
           <QrCode className="h-7 w-7 text-wedding-accent" />
         </div>
-        <p className="font-sans text-sm leading-relaxed text-wedding-text-secondary">
+        <p className="font-serif text-sm leading-relaxed text-wedding-text-secondary">
           QRIS belum tersedia. Silakan hubungi mempelai untuk informasi
           pembayaran.
         </p>
@@ -98,7 +98,7 @@ const QrisCard = ({
         <div className="h-px w-8 bg-wedding-border-accent" />
       </div>
 
-      <p className="max-w-[28ch] font-sans text-xs leading-relaxed text-muted">
+      <p className="max-w-[28ch] font-serif text-xs leading-relaxed text-muted">
         Pindai QR di atas dengan e-wallet / m-banking Anda. Satu QR untuk semua
         pembayaran.
       </p>

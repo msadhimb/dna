@@ -6,36 +6,32 @@ import { useTheme } from "next-themes"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { useGSAP } from "@gsap/react"
-import { CalendarHeart, Clock, MapPin } from "lucide-react"
-import { OrnamentalDivider } from "@/components/Icons"
 import { useGuest } from "@/store/useGuest"
 import { useImageUrl } from "@/store/useImageUrl"
 import { cn } from "@/lib/utils"
+import { Tabs, TabsContent } from "@/components/Tabs"
+import Header from "../Header"
 
 gsap.registerPlugin(ScrollTrigger)
-
-/* ------------------------------------------------------------------ */
-/*  Data — ubah di sini kalau tanggal / lokasi berubah                  */
-/* ------------------------------------------------------------------ */
 
 const INFO = {
   mantu: {
     label: "Hari Pernikahan",
     date: "12 Desember 2026",
     hours: "09.00 — 15.00 WIB",
-    place: "Hotel Laras Asri Resort & Spa",
+    place: "Gedung DPD KNPI Tangerang",
     mapSrc:
-      "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3957.114132730096!2d110.50774771193014!3d-7.341078292636948!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7a79d27a7fa11d%3A0x233a2a304f948f!2sHotel%20Laras%20Asri%20Resort%20and%20Spa!5e0!3m2!1sid!2sid!4v1788679413970!5m2!1sid!2sid",
-    mapTitle: "Peta Hotel Laras Asri Resort & Spa",
+      "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.645103116751!2d106.6326327!3d-6.178238399999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f8d465b9f9c5%3A0x880e353b4abebf2f!2sDPD%20KNPI%20Tangerang!5e0!3m2!1sen!2sid!4v1786944064704!5m2!1sen!2sid",
+    mapTitle: "Peta Gedung DPD KNPI Tangerang",
   },
   unduh: {
     label: "Hari Unduh Mantu",
     date: "26 Desember 2026",
     hours: "11.00 — 13.00 WIB",
-    place: "Gedung DPD KNPI Tangerang",
+    place: "Hotel Laras Asri Resort & Spa",
     mapSrc:
-      "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.645103116751!2d106.6326327!3d-6.178238399999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f8d465b9f9c5%3A0x880e353b4abebf2f!2sDPD%20KNPI%20Tangerang!5e0!3m2!1sen!2sid!4v1786944064704!5m2!1sen!2sid",
-    mapTitle: "Peta Gedung DPD KNPI Tangerang",
+      "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3957.114132730096!2d110.50774771193014!3d-7.341078292636948!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7a79d27a7fa11d%3A0x233a2a304f948f!2sHotel%20Laras%20Asri%20Resort%20and%20Spa!5e0!3m2!1sid!2sid!4v1788679413970!5m2!1sid!2sid",
+    mapTitle: "Peta Hotel Laras Asri Resort & Spa",
   },
 } as const
 
@@ -157,8 +153,12 @@ export const TimeAndPlace = () => {
               alt=""
               fill
               sizes="100vw"
-              className="object-cover"
+              className="object-cover object-[50%_50%] dark:object-[30%_50%]"
               quality={80}
+              // File light ~2,5MB: lewat optimizer Next saat cold antrean
+              // optimasi bisa timeout -> background hilang saat refresh.
+              // Direct URL sudah di-preload loading screen.
+              unoptimized
             />
           </div>
           {/* overlay baca: gelap merata + blend ke section atas/bawah */}
@@ -197,202 +197,168 @@ export const TimeAndPlace = () => {
         </div>
       )}
 
-      <div className="relative z-10 mx-auto flex w-full max-w-2xl flex-col items-center gap-6 px-4 py-14 sm:px-6 md:gap-10 md:px-10 md:py-24">
+      <div className="relative z-10 mx-auto flex w-full max-w-2xl flex-col items-center gap-14 px-4 py-14 sm:px-6 md:gap-10 md:px-10 md:py-24">
         {/* header */}
-        <div className="flex flex-col items-center gap-6 text-center">
-          <p
-            className={cn(
-              "tp-eyebrow font-sans text-[10px] font-semibold tracking-[0.5em] uppercase",
-              onPhoto ? "text-white/70" : "text-wedding-text-secondary"
-            )}
-          >
-            Hari Bahagia Kami
-          </p>
-          <h2
-            className={cn(
-              "tp-title font-signature leading-none font-bold",
-              onPhoto
-                ? "text-white [text-shadow:0_2px_24px_rgba(0,0,0,0.5)]"
-                : "text-wedding-text-primary"
-            )}
-            style={{ fontSize: "clamp(2.2rem, 10vw, 4.5rem)" }}
-          >
-            Waktu & Tempat
-          </h2>
-          <p
-            className={cn(
-              "tp-desc max-w-md font-serif text-sm leading-relaxed",
-              onPhoto ? "text-white/75" : "text-wedding-text-secondary"
-            )}
-          >
-            Catat tanggalnya, datang ke lokasinya — kehadiran dan doa restu Anda
-            sangat berarti bagi kami.
-          </p>
-        </div>
+
+        <Header
+          subHeader="Hari Bahagia Kami"
+          title="Waktu & Tempat"
+          subTitle="Catat tanggalnya, datang ke lokasinya — kehadiran dan doa restu Anda sangat berarti bagi kami."
+          className="text-white"
+        />
 
         {/* tabs — hanya tampil bila tamu diundang ke dua acara */}
-        {showBoth && (
-          <div
-            role="tablist"
-            aria-label="Pilih acara"
-            className={cn(
-              "tp-tabs flex max-w-full flex-wrap items-center justify-center gap-1.5 rounded-full border p-1.5",
-              onPhoto
-                ? "border-white/15 bg-black/30 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.6)] backdrop-blur-xl"
-                : "border-wedding-border-accent bg-wedding-surface shadow-wedding-card"
-            )}
+        {showBoth ? (
+          <Tabs
+            mode="glass"
+            value={activeKey}
+            onValueChange={(v) => setActiveTab(v as "mantu" | "unduh")}
+            items={[
+              { value: "mantu", label: "Pernikahan" },
+              { value: "unduh", label: "Unduh Mantu" },
+            ]}
+            listLabel="Pilih acara"
+            listClassName="tp-tabs"
+            className="mx-auto md:w-full w-[20rem]"
           >
-            {(["mantu", "unduh"] as const).map((key) => (
-              <button
-                key={key}
-                onClick={() => setActiveTab(key)}
-                role="tab"
-                aria-selected={activeTab === key}
-                className={cn(
-                  "cursor-pointer rounded-full px-4 py-2.5 text-[11px] font-bold tracking-[0.14em] uppercase transition-all duration-200 md:px-5",
-                  activeTab === key
-                    ? "bg-wedding-accent text-white shadow-md"
-                    : onPhoto
-                      ? "bg-transparent text-white/70 hover:text-white"
-                      : "bg-transparent text-wedding-text-secondary"
-                )}
-              >
-                {key === "mantu" ? "Pernikahan" : "Unduh Mantu"}
-              </button>
-            ))}
-          </div>
-        )}
+            {(["mantu", "unduh"] as const).map((key) => {
+              const item = INFO[key]
+              return (
+                <TabsContent
+                  key={key}
+                  value={key}
+                  className="w-full data-[state=inactive]:hidden"
+                >
+                  <div className="flex w-full flex-col gap-5">
+                    {/* kartu tanggal — liquid glass */}
+                    <div
+                      className={cn(
+                        "tp-card relative overflow-hidden rounded-[20px] border px-5 py-6 text-center md:px-8",
+                        onPhoto
+                          ? "border-white/15 bg-white/[0.08] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.55)] backdrop-blur-xl"
+                          : "border-wedding-border-accent bg-wedding-surface shadow-wedding-card"
+                      )}
+                    >
+                      <Header
+                        subHeader={item.label}
+                        title={item.date}
+                        subTitle={item.hours}
+                        classNameSubTitle="font-serif text-sm leading-relaxed md:text-[15px]"
+                        className={onPhoto ? "text-white" : ""}
+                        classNameTitle="font-serif text-2xl leading-[1.2] font-semibold text-balance md:text-[28px]"
+                      />
+                    </div>
 
-        <div key={activeKey} className="flex w-full flex-col gap-5">
-          {/* kartu tanggal — liquid glass */}
-          <div
-            className={cn(
-              "tp-card relative overflow-hidden rounded-[20px] border px-5 py-6 text-center md:px-8",
-              onPhoto
-                ? "border-white/15 bg-white/[0.08] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.55)] backdrop-blur-xl"
-                : "border-wedding-border-accent bg-wedding-surface shadow-wedding-card"
-            )}
-          >
+                    {/* kartu lokasi + peta — liquid glass */}
+                    <div
+                      className={cn(
+                        "tp-card relative overflow-hidden rounded-[20px] border px-5 py-6 text-center md:px-8",
+                        onPhoto
+                          ? "border-white/15 bg-white/[0.08] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.55)] backdrop-blur-xl"
+                          : "border-wedding-border-accent bg-wedding-surface shadow-wedding-card"
+                      )}
+                    >
+                      <Header
+                        subHeader="Lokasi"
+                        title={item.place}
+                        subTitle={item.date + " · " + item.hours}
+                        classNameSubTitle="font-serif text-sm leading-relaxed md:text-[15px]"
+                        className={onPhoto ? "text-white" : ""}
+                        classNameTitle="font-serif text-2xl leading-[1.2] font-semibold text-balance md:text-[28px]"
+                      />
+
+                      <div
+                        className={cn(
+                          "mt-5 h-[220px] overflow-hidden rounded-2xl border md:h-[260px]",
+                          onPhoto
+                            ? "border-white/15"
+                            : "border-wedding-border-accent"
+                        )}
+                      >
+                        <iframe
+                          src={item.mapSrc}
+                          width="100%"
+                          height="100%"
+                          style={{
+                            border: 0,
+                            display: "block",
+                            filter: mapFilter,
+                          }}
+                          allowFullScreen
+                          loading="lazy"
+                          referrerPolicy="no-referrer-when-downgrade"
+                          title={item.mapTitle}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </TabsContent>
+              )
+            })}
+          </Tabs>
+        ) : (
+          <div className="flex w-full flex-col gap-5">
+            {/* kartu tanggal — liquid glass */}
             <div
-              className="pointer-events-none absolute inset-x-8 top-0 h-px"
-              aria-hidden="true"
-              style={{
-                background: onPhoto
-                  ? "linear-gradient(90deg, transparent, rgba(255,255,255,0.55), transparent)"
-                  : "linear-gradient(90deg, transparent, var(--wedding-accent), transparent)",
-              }}
-            />
-            <p
               className={cn(
-                "font-sans text-[10px] font-semibold tracking-[0.4em] uppercase",
-                onPhoto ? "text-white/70" : "text-wedding-text-secondary"
-              )}
-            >
-              {info.label}
-            </p>
-            <p
-              className={cn(
-                "font-signature text-[clamp(1.6rem,7vw,2.6rem)] leading-tight font-bold text-balance break-words",
+                "tp-card relative overflow-hidden rounded-[20px] border px-5 py-6 text-center md:px-8",
                 onPhoto
-                  ? "text-white [text-shadow:0_2px_16px_rgba(0,0,0,0.45)]"
-                  : "text-wedding-text-primary"
+                  ? "border-white/15 bg-white/[0.08] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.55)] backdrop-blur-xl"
+                  : "border-wedding-border-accent bg-wedding-surface shadow-wedding-card"
               )}
             >
-              {info.date}
-            </p>
-            <p
-              className={cn(
-                "mt-1 flex flex-wrap items-center justify-center gap-1.5 text-center font-sans text-xs",
-                onPhoto ? "text-white/80" : "text-wedding-text-secondary"
-              )}
-            >
-              <Clock
-                className={cn(
-                  "h-3.5 w-3.5",
-                  onPhoto ? "text-white" : "text-wedding-accent"
-                )}
-              />
-              {info.hours}
-            </p>
-          </div>
-
-          {/* kartu lokasi + peta — liquid glass */}
-          <div
-            className={cn(
-              "tp-card relative overflow-hidden rounded-[20px] border px-5 py-6 text-center md:px-8",
-              onPhoto
-                ? "border-white/15 bg-white/[0.08] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.55)] backdrop-blur-xl"
-                : "border-wedding-border-accent bg-wedding-surface shadow-wedding-card"
-            )}
-          >
-            <div
-              className="pointer-events-none absolute inset-x-8 top-0 h-px"
-              aria-hidden="true"
-              style={{
-                background: onPhoto
-                  ? "linear-gradient(90deg, transparent, rgba(255,255,255,0.55), transparent)"
-                  : "linear-gradient(90deg, transparent, var(--wedding-accent), transparent)",
-              }}
-            />
-            <p
-              className={cn(
-                "font-sans text-[10px] font-semibold tracking-[0.4em] uppercase",
-                onPhoto ? "text-white/70" : "text-wedding-text-secondary"
-              )}
-            >
-              Lokasi
-            </p>
-            <p
-              className={cn(
-                "font-signature text-[clamp(1.4rem,6vw,2.2rem)] leading-tight font-bold text-balance break-words",
-                onPhoto
-                  ? "text-white [text-shadow:0_2px_16px_rgba(0,0,0,0.45)]"
-                  : "text-wedding-text-primary"
-              )}
-            >
-              {info.place}
-            </p>
-            <p
-              className={cn(
-                "mt-1 flex flex-wrap items-center justify-center gap-1.5 text-center font-sans text-xs",
-                onPhoto ? "text-white/80" : "text-wedding-text-secondary"
-              )}
-            >
-              <MapPin
-                className={cn(
-                  "h-3.5 w-3.5",
-                  onPhoto ? "text-white" : "text-wedding-accent"
-                )}
-              />
-              <span className="inline-flex flex-wrap items-center justify-center gap-1.5 text-center">
-                <CalendarHeart className="h-3.5 w-3.5" />
-                {info.date} · {info.hours}
-              </span>
-            </p>
-
-            <div
-              className={cn(
-                "mt-5 h-[220px] overflow-hidden rounded-2xl border md:h-[260px]",
-                onPhoto ? "border-white/15" : "border-wedding-border-accent"
-              )}
-            >
-              <iframe
-                src={info.mapSrc}
-                width="100%"
-                height="100%"
-                style={{
-                  border: 0,
-                  display: "block",
-                  filter: mapFilter,
-                }}
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                title={info.mapTitle}
+              <Header
+                subHeader={info.label}
+                title={info.date}
+                subTitle={info.hours}
+                classNameSubTitle="font-serif text-sm leading-relaxed md:text-[15px]"
+                className={onPhoto ? "text-white" : ""}
+                classNameTitle="font-serif text-2xl leading-[1.2] font-semibold text-balance md:text-[28px]"
               />
             </div>
+
+            {/* kartu lokasi + peta — liquid glass */}
+            <div
+              className={cn(
+                "tp-card relative overflow-hidden rounded-[20px] border px-5 py-6 text-center md:px-8",
+                onPhoto
+                  ? "border-white/15 bg-white/[0.08] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.55)] backdrop-blur-xl"
+                  : "border-wedding-border-accent bg-wedding-surface shadow-wedding-card"
+              )}
+            >
+              <Header
+                subHeader="Lokasi"
+                title={info.place}
+                subTitle={info.date + " · " + info.hours}
+                classNameSubTitle="font-serif text-sm leading-relaxed md:text-[15px]"
+                className={onPhoto ? "text-white" : ""}
+                classNameTitle="font-serif text-2xl leading-[1.2] font-semibold text-balance md:text-[28px]"
+              />
+
+              <div
+                className={cn(
+                  "mt-5 h-[220px] overflow-hidden rounded-2xl border md:h-[260px]",
+                  onPhoto ? "border-white/15" : "border-wedding-border-accent"
+                )}
+              >
+                <iframe
+                  src={info.mapSrc}
+                  width="100%"
+                  height="100%"
+                  style={{
+                    border: 0,
+                    display: "block",
+                    filter: mapFilter,
+                  }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title={info.mapTitle}
+                />
+              </div>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </section>
   )

@@ -217,7 +217,7 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
               </p>
 
               <Separator />
-              <p className="font-sans text-sm leading-relaxed italic text-gray-500 text-center">
+              <p className="font-serif text-sm leading-relaxed italic text-gray-500 text-center">
                 &ldquo;Jika aku harus menjalani sepuluh ribu kehidupan,
                 <br />
                 aku akan selalu memilihmu.&rdquo;

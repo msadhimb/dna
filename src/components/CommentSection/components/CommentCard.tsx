@@ -54,7 +54,7 @@ export function CommentCard({
         <AttendanceBadge status={attendance} />
       </div>
 
-      <p className="font-sans text-xs leading-relaxed md:text-sm text-wedding-text-secondary">
+      <p className="font-serif text-xs leading-relaxed md:text-sm text-wedding-text-secondary">
         {message}
       </p>
 

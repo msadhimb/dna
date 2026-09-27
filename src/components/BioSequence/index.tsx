@@ -6,7 +6,7 @@ import { gsap } from "@/lib/gsap"
 import { cn } from "@/lib/utils"
 import useResponsive from "@/hooks/useResponsive"
 import { useImageUrl } from "@/store/useImageUrl"
-import { useTheme } from "next-themes"
+import Header from "../Header"
 
 interface BioSequenceProps {
   theme: string
@@ -23,8 +23,10 @@ export const BioSequence = forwardRef<BioSequenceRef, BioSequenceProps>(
     const brideBioRef = useRef<HTMLDivElement>(null)
     const { dist, isMobile } = useResponsive()
     const { imageUrl } = useImageUrl()
-    const { resolvedTheme } = useTheme()
-    const isDark = resolvedTheme === "dark"
+    // Satu sumber kebenaran: prop `theme` saja.
+    // Sebelumnya isDark dari resolvedTheme vs `theme` prop bisa tidak sinkron
+    // saat ganti tema -> x/y awal lompat (path patah).
+    const isDark = theme === "dark"
 
     useImperativeHandle(
       ref,
@@ -38,7 +40,12 @@ export const BioSequence = forwardRef<BioSequenceRef, BioSequenceProps>(
             return tl
           }
 
-          tl.set([groomBioRef.current, brideBioRef.current], { opacity: 0 }, 0)
+          tl.set(
+            [groomBioRef.current, brideBioRef.current],
+            { autoAlpha: 0 },
+            0
+          )
+          // set() tidak pakai duration/ease; force3D hanya untuk image, bukan overlay teks
           gsap.set(journeyImageRef.current, {
             width: dist("200vw", "100vw"),
             height: "100vh",
@@ -46,8 +53,6 @@ export const BioSequence = forwardRef<BioSequenceRef, BioSequenceProps>(
             clipPath: "none",
             x: isDark ? 0 : dist("-25vw", "0"),
             y: 0,
-            duration: 1,
-            ease: "none",
           })
 
           tl.to(
@@ -62,6 +67,8 @@ export const BioSequence = forwardRef<BioSequenceRef, BioSequenceProps>(
           )
 
           // zoom into groom image and show groom bio
+          // Overlay teks hanya animasi autoAlpha (visibility+opacity) + force3D:false
+          // agar tidak bikin compositor layer raksasa bareng image scale=2 (penyebab lag).
           tl.to(
             journeyImgElement,
             {
@@ -74,14 +81,16 @@ export const BioSequence = forwardRef<BioSequenceRef, BioSequenceProps>(
                 theme === "dark" ? dist("-15vh", "20vh") : dist("20vh", "50vh"),
               duration: 1.5,
               ease: "none",
+              force3D: true,
             },
             "zoomGroom"
           ).to(
             groomBioRef.current,
             {
-              opacity: 1,
+              autoAlpha: 1,
               duration: 1,
               ease: "none",
+              force3D: false,
             },
             "zoomGroom+=0.5"
           )
@@ -89,9 +98,10 @@ export const BioSequence = forwardRef<BioSequenceRef, BioSequenceProps>(
           tl.to(
             groomBioRef.current,
             {
-              opacity: 0,
+              autoAlpha: 0,
               duration: 0.8,
               ease: "none",
+              force3D: false,
             },
             "zoomOut"
           ).to(
@@ -102,6 +112,7 @@ export const BioSequence = forwardRef<BioSequenceRef, BioSequenceProps>(
               y: "0vh",
               duration: 1.5,
               ease: "none",
+              force3D: true,
             },
             "zoomOut"
           )
@@ -114,14 +125,16 @@ export const BioSequence = forwardRef<BioSequenceRef, BioSequenceProps>(
               y: theme === "dark" ? dist("-15vh", "5vh") : dist("20vh", "40vh"),
               duration: 1.5,
               ease: "none",
+              force3D: true,
             },
             "zoomBride"
           ).to(
             brideBioRef.current,
             {
-              opacity: 1,
+              autoAlpha: 1,
               duration: 1,
               ease: "none",
+              force3D: false,
             },
             "zoomBride+=0.5"
           )
@@ -129,15 +142,17 @@ export const BioSequence = forwardRef<BioSequenceRef, BioSequenceProps>(
           tl.to({}, { duration: 1 })
 
           tl.to(brideBioRef.current, {
-            opacity: 0,
+            autoAlpha: 0,
             duration: 0.5,
             ease: "none",
+            force3D: false,
           }).to(journeyImgElement, {
             x: "0vw",
             y: "0vh",
             scale: 1,
             duration: 1.5,
             ease: "none",
+            force3D: true,
           })
 
           tl.to({}, { duration: 1 })
@@ -153,7 +168,11 @@ export const BioSequence = forwardRef<BioSequenceRef, BioSequenceProps>(
         <div
           ref={journeyImageRef}
           className="gsap-element relative z-0 h-[42vh] w-[85vw] overflow-hidden rounded-2xl md:h-[40vh] md:w-[40vw] md:rounded-3xl"
-          style={{ borderRadius: "24px" }}
+          style={{
+            borderRadius: "24px",
+            transform: "translateZ(0)",
+            backfaceVisibility: "hidden",
+          }}
         >
           <Image
             key={
@@ -168,10 +187,15 @@ export const BioSequence = forwardRef<BioSequenceRef, BioSequenceProps>(
             }
             fill
             alt="Journey"
-            sizes="(max-width: 768px) 500vw, 150vw"
-            quality={85}
+            // 500vw/150vw memaksa browser + optimizer meminta gambar 5x viewport.
+            // Ukuran real: 85vw mobile / 40vw desktop (zoom via transform, bukan file).
+            sizes="(max-width: 768px) 85vw, 40vw"
+            quality={75}
             priority
             fetchPriority="high"
+            // File light ~2,3MB: optimizer cold bisa timeout saat refresh.
+            // Direct URL sudah di-preload loading screen.
+            unoptimized
             className="journey-inner-img object-cover"
           />
         </div>
@@ -180,95 +204,53 @@ export const BioSequence = forwardRef<BioSequenceRef, BioSequenceProps>(
         <div
           ref={groomBioRef}
           className={cn(
-            "gsap-element absolute inset-x-0 bottom-0 z-50 flex w-screen flex-col gap-3 opacity-0",
+            // invisible + pointer-events-none: tidak di-paint / hit-test saat autoAlpha=0.
+            // Tanpa ini 2 gradient fullscreen tetap di-composite tiap frame scrub -> lag.
+            "gsap-element pointer-events-none invisible absolute inset-x-0 bottom-0 z-50 flex w-screen flex-col gap-3 opacity-0",
             "items-center justify-end text-center bg-linear-to-t from-black/90 via-black/60 to-transparent pt-24 pb-12 px-6",
             "xl:inset-y-0 xl:bottom-auto xl:right-0 xl:left-auto xl:h-full xl:w-1/2 xl:items-end xl:justify-center xl:text-right xl:bg-linear-to-l xl:from-black/85 xl:via-black/45 xl:pt-0 xl:pb-0 xl:px-12",
             // landscape tablet/phone dengan tinggi kecil tetap bottom
             "max-[1024px]:landscape:inset-x-0 max-[1024px]:landscape:bottom-0 max-[1024px]:landscape:top-auto max-[1024px]:landscape:h-auto max-[1024px]:landscape:w-screen max-[1024px]:landscape:items-center max-[1024px]:landscape:justify-end max-[1024px]:landscape:text-center max-[1024px]:landscape:pt-24 max-[1024px]:landscape:pb-12"
           )}
         >
-          <span className="font-sans text-[10px] font-semibold tracking-[0.5em] text-[#f2dfa0] uppercase sm:text-xs dark:text-muted">
-            The Groom
-          </span>
-          <h2 className="font-signature text-5xl leading-[1.1] font-bold tracking-wide text-[#f2dfa0] [text-shadow:0_4px_20px_rgba(0,0,0,0.5)] sm:text-7xl  dark:text-primary">
-            Muhamad Salman Adhim Baqy
-          </h2>
-          <span className="h-px w-16 bg-linear-to-r from-transparent via-[#d4af37] to-transparent xl:bg-linear-to-l xl:from-[#d4af37] xl:via-transparent xl:to-transparent xl:w-24 dark:via-primary xl:dark:from-primary" />
-
-          <div className="mt-2 flex flex-col items-center gap-2 xl:items-end">
-            <p className="font-serif text-[11px] font-normal tracking-[0.4em] text-[#e9cf7a] dark:text-white italic uppercase sm:text-xs">
-              Putra dari
-            </p>
-
-            <div className="flex flex-col items-center gap-0.5 xl:items-end">
-              <p className="font-serif text-base leading-snug font-medium tracking-[0.03em] text-white md:text-xl">
-                Suprapto Wibowo
-              </p>
-              <p className="font-sans text-[10px] font-light tracking-[0.3em] text-white/60 uppercase md:text-[11px]">
-                Bapak
-              </p>
-            </div>
-
-            <span className="font-signature my-0.5 text-2xl leading-none text-[#e9cf7a] dark:text-white md:text-3xl">
-              &
-            </span>
-
-            <div className="flex flex-col items-center xl:items-end gap-0.5">
-              <p className="font-serif text-base leading-snug font-medium tracking-[0.03em] text-white md:text-xl">
-                Christiana Sri Budhi H.
-              </p>
-              <p className="font-sans text-[10px] font-light tracking-[0.3em] text-white/60 uppercase md:text-[11px]">
-                Ibu
-              </p>
-            </div>
-          </div>
+          <Header
+            subHeader="The Groom"
+            title="Muhamad Salman Adhim Baqy"
+            subTitle="Putra Ketiga dari Bapak Suprapto Wibowo dan Ibu Christiana Sri Budhi H"
+            // JANGAN pakai will-change-transform di teks yang hanya fade:
+            // bikin layer GPU ekstra sebesar overlay, rebutan memori dengan image scale=2.
+            className="text-white py-10"
+            classNameTitle="text-[#f2dfa0] dark:text-primary text-5xl w-full"
+            classNameSubTitle="text-md opacity-75"
+            spaceY={3}
+            separator={
+              <span className="h-px w-16 bg-linear-to-r from-transparent via-[#d4af37] to-transparent xl:bg-linear-to-l xl:from-[#d4af37] xl:via-transparent xl:to-transparent xl:w-24 dark:via-primary xl:dark:from-primary" />
+            }
+          />
         </div>
 
         {/* Bride Bio Overlay - bottom on mobile/tablet/landscape, side only on xl */}
         <div
           ref={brideBioRef}
           className={cn(
-            "gsap-element absolute inset-x-0 bottom-0 z-50 flex w-screen flex-col gap-3 opacity-0",
+            "gsap-element pointer-events-none invisible absolute inset-x-0 bottom-0 z-50 flex w-screen flex-col gap-3 opacity-0",
             "items-center justify-end text-center bg-gradient-to-t from-black/90 via-black/60 to-transparent pt-24 pb-12 px-6",
             "xl:inset-y-0 xl:bottom-auto xl:left-0 xl:right-auto xl:h-full xl:w-1/2 xl:items-start xl:justify-center xl:text-left xl:bg-gradient-to-r xl:from-black/85 xl:via-black/45 xl:pt-0 xl:pb-0 xl:px-12",
             "max-[1024px]:landscape:inset-x-0 max-[1024px]:landscape:bottom-0 max-[1024px]:landscape:top-auto max-[1024px]:landscape:h-auto max-[1024px]:landscape:w-screen max-[1024px]:landscape:items-center max-[1024px]:landscape:justify-end max-[1024px]:landscape:text-center max-[1024px]:landscape:pt-24 max-[1024px]:landscape:pb-12"
           )}
         >
-          <span className="font-sans text-[10px] font-semibold tracking-[0.5em] text-[#f2dfa0] uppercase md:text-xs dark:text-muted">
-            The Bride
-          </span>
-          <h2 className="font-signature text-5xl leading-[1.1] font-bold tracking-wide text-[#f2dfa0] [text-shadow:0_4px_20px_rgba(0,0,0,0.5)] md:text-7xl dark:text-primary">
-            Devi Yuliana Nurhaliza
-          </h2>
-          <span className="h-px w-16 bg-gradient-to-r from-transparent via-[#d4af37] to-transparent xl:bg-gradient-to-r xl:from-[#d4af37] xl:via-transparent xl:to-transparent xl:w-24 dark:via-primary xl:dark:from-primary" />
-
-          <div className="mt-2 flex flex-col items-center gap-2 xl:items-start">
-            <p className="font-serif text-[11px] font-normal tracking-[0.4em] text-[#e9cf7a] dark:text-white italic uppercase md:text-xs">
-              Putri dari
-            </p>
-
-            <div className="flex flex-col items-center gap-0.5 xl:items-start">
-              <p className="font-serif text-base leading-snug font-medium tracking-[0.03em] text-white md:text-xl">
-                Deden Herman K.
-              </p>
-              <p className="font-sans text-[10px] font-light tracking-[0.3em] text-white/60 uppercase md:text-[11px]">
-                Bapak
-              </p>
-            </div>
-
-            <span className="font-signature my-0.5 text-2xl leading-none text-[#e9cf7a] dark:text-white md:text-3xl">
-              &
-            </span>
-
-            <div className="flex flex-col items-center xl:items-start gap-0.5">
-              <p className="font-serif text-base leading-snug font-medium tracking-[0.03em] text-white md:text-xl">
-                Selvia A. D.
-              </p>
-              <p className="font-sans text-[10px] font-light tracking-[0.3em] text-white/60 uppercase md:text-[11px]">
-                Ibu
-              </p>
-            </div>
-          </div>
+          <Header
+            subHeader="The Bride"
+            title="Devi Yuliana Nurhaliza"
+            subTitle="Putri Pertama dari Bapak Deden Herman K dan Ibu Selvia A. D"
+            className="text-white py-10"
+            classNameTitle="text-[#f2dfa0] dark:text-primary text-5xl w-full"
+            classNameSubTitle="text-md opacity-75"
+            spaceY={3}
+            separator={
+              <span className="h-px w-16 bg-linear-to-r from-transparent via-[#d4af37] to-transparent xl:bg-linear-to-l xl:from-[#d4af37] xl:via-transparent xl:to-transparent xl:w-24 dark:via-primary xl:dark:from-primary" />
+            }
+          />
         </div>
       </div>
     )

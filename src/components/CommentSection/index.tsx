@@ -11,7 +11,6 @@ import { useTheme } from "next-themes"
 import { gsap, ScrollTrigger } from "@/lib/gsap"
 import {
   FloatImages,
-  SectionHeader,
   CommentForm,
   CommentList,
   CounterBadge,
@@ -20,6 +19,7 @@ import { useImageUrl } from "@/store/useImageUrl"
 import { useComments } from "@/hooks/useComments"
 import { useToast } from "@/hooks/use-toast"
 import type { Attendance } from "@/types/comment"
+import Header from "../Header"
 
 interface Comment {
   id: string
@@ -320,13 +320,13 @@ export const CommentSection = forwardRef<
       className="relative w-full overflow-hidden bg-background gsap-element"
       style={{ perspective: "1500px" }}
     >
-      
       <div className="pointer-events-none absolute left-1/2 top-[52%] h-[92vw] max-h-[560px] w-[92vw] max-w-[560px] -translate-x-1/2 -translate-y-1/2 rounded-full md:h-[860px] md:max-h-[860px] md:w-[860px] md:max-w-[860px] lg:h-[1040px] lg:max-h-[1040px] lg:w-[1040px] lg:max-w-[1040px] overflow-hidden">
         <div
           className="absolute inset-0 bg-wedding-dot opacity-50"
           style={{
             maskImage: "radial-gradient(circle, black 60%, transparent 78%)",
-            WebkitMaskImage: "radial-gradient(circle, black 60%, transparent 78%)",
+            WebkitMaskImage:
+              "radial-gradient(circle, black 60%, transparent 78%)",
           }}
         />
         <div
@@ -358,10 +358,10 @@ export const CommentSection = forwardRef<
           willChange: "transform",
         }}
       >
-        <SectionHeader
-          eyebrow="Kartu Ucapan"
+        <Header
+          subHeader="Kartu Ucapan"
           title="Ucapan & Doa"
-          description="Sematkan doa dan harapan terbaik Anda untuk Devi & Adhim. Setiap kata yang ditulis akan menjadi kenangan berharga."
+          subTitle="Sematkan doa dan harapan terbaik Anda untuk Devi & Adhim. Setiap kata yang ditulis akan menjadi kenangan berharga."
         />
 
         <CommentForm

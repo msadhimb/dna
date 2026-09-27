@@ -6,6 +6,7 @@ import { gsap } from "@/lib/gsap"
 import { useImageUrl } from "@/store/useImageUrl"
 import { Card } from "@/components/Card"
 import { Separator } from "../ui/separator"
+import Header from "../Header"
 
 export interface LoveJourneyHorizontalRef {
   getTimeline: () => gsap.core.Timeline
@@ -46,7 +47,6 @@ const LoveJourneyHorizontal = forwardRef<LoveJourneyHorizontalRef, Props>(
 
           const cards = track.querySelectorAll<HTMLElement>(".ljh-card")
           const labels = root.querySelectorAll<HTMLElement>(".ljh-label")
-          const header = root.querySelector<HTMLElement>(".ljh-header")
           const hint = root.querySelector<HTMLElement>(".ljh-hint")
 
           // helper: posisi x agar card[idx] tepat di tengah viewport
@@ -63,18 +63,12 @@ const LoveJourneyHorizontal = forwardRef<LoveJourneyHorizontalRef, Props>(
           gsap.set(track, { x: () => -getCenterX(0) })
           gsap.set(cards, { opacity: 0.45, scale: 0.92, y: 8, rotation: 0 })
           gsap.set(labels, { opacity: 0.35 })
-          gsap.set(header, { opacity: 0, y: 12 })
           gsap.set(hint, { opacity: 0 })
 
           // set card 0 sebagai active awal (akan di-animate di timeline)
           gsap.set(cards[0], { opacity: 1, scale: 1, y: 0 })
           gsap.set(labels[0], { opacity: 1 })
 
-          tl.to(
-            header,
-            { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" },
-            0
-          )
           tl.to(hint, { opacity: 1, duration: 0.3, ease: "none" }, 0.15)
           // hold sebentar di card 0 (magnet pertama)
           tl.to({}, { duration: 0.5 })
@@ -183,21 +177,13 @@ const LoveJourneyHorizontal = forwardRef<LoveJourneyHorizontalRef, Props>(
         />
 
         {/* header — pola SectionHeader terpusat */}
-        <div className="ljh-header relative z-10 flex shrink-0 flex-col items-center gap-3 px-5 pt-5 text-center md:gap-4 md:px-10 md:pt-6">
-          <p className="font-sans text-[10px] font-semibold tracking-[0.5em] uppercase text-wedding-text-secondary">
-            Our Love Story
-          </p>
-          <h2
-            className="font-signature leading-none font-bold text-wedding-text-primary"
-            style={{ fontSize: "clamp(2.2rem, 8vw, 3.8rem)" }}
-          >
-            Our Story
-          </h2>
-          <p className="max-w-md font-serif text-[12px] leading-relaxed text-wedding-text-secondary md:text-[13px]">
-            Tiga babak kecil yang membawa kami sampai ke hari ini — dari sapa
-            pertama hingga janji selamanya.
-          </p>
-        </div>
+        <Header
+          subHeader="Our Love Story"
+          title="Our Story"
+          subTitle="Tiga babak kecil yang membawa kami sampai ke hari ini — dari sapa
+            pertama hingga janji selamanya."
+          className="ljh-header"
+        />
 
         <div className="relative z-10 mt-4 flex shrink-0 flex-wrap items-center justify-center gap-2 px-5 md:mt-5 md:px-10">
           {["2018 — bertemu", "2024 — pacaran", "kini — menikah"].map(
@@ -245,6 +231,11 @@ const LoveJourneyHorizontal = forwardRef<LoveJourneyHorizontalRef, Props>(
                         sizes="(max-width: 768px) 82vw, 260px"
                         className="object-cover"
                         priority={i === 0}
+                        // File light 1-2,5MB: lewat optimizer Next saat cold
+                        // antrean optimasi bisa timeout -> gambar broken.
+                        // Direct URL sudah di-preload loading screen, jadi
+                        // unoptimized justru lebih cepat + anti gagal.
+                        unoptimized
                       />
                     ) : (
                       <div className="flex h-full w-full items-center justify-center bg-wedding-surface font-sans text-xs tracking-widest text-wedding-text-secondary uppercase">

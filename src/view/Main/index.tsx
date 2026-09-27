@@ -97,7 +97,7 @@ const MainView = ({
           <p className="font-sans text-xs tracking-[0.2em] uppercase opacity-80">
             QS. Ar-Rum : 21
           </p>
-          <p className="max-w-sm text-center font-sans text-sm leading-relaxed font-light italic opacity-90 md:max-w-lg">
+          <p className="max-w-sm text-center font-serif text-sm leading-relaxed font-light italic opacity-90 md:max-w-lg">
             &ldquo;Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan
             pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung
             dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa
@@ -120,7 +120,7 @@ const MainView = ({
           <p className="font-sans text-xs tracking-[0.2em] uppercase opacity-80">
             QS. Al-Furqan : 74
           </p>
-          <p className="max-w-sm text-center font-sans text-sm leading-relaxed font-light italic opacity-90 md:max-w-lg">
+          <p className="max-w-sm text-center font-serif text-sm leading-relaxed font-light italic opacity-90 md:max-w-lg">
             &ldquo;Wahai Tuhan kami, anugerahkanlah kepada kami istri-istri kami
             dan keturunan kami sebagai penyejuk mata (bagi kami), dan jadikanlah
             kami imam bagi orang-orang yang bertakwa.&rdquo;

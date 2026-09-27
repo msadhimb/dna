@@ -80,7 +80,7 @@ export const Footer = () => {
 
       
       <p
-        className="ft-el max-w-xs font-sans text-sm font-light italic leading-relaxed"
+        className="ft-el max-w-xs font-serif text-sm font-light italic leading-relaxed"
         style={{ color: muted, lineHeight: 1.8 }}
       >
         Terima kasih atas doa, ucapan, dan kehadiran Anda.

@@ -91,16 +91,23 @@ export function usePinnedScrollSequence(
       const totalScrollHeight =
         (totalDur / (cDur + jDur + lDur + bDur)) * 500
 
-      // --- magnet snap untuk LoveJourney (center carousel) ---
+      // --- magnet snap: hanya LoveJourney (cards) ---
+      // Offset wrapper diperhitungkan: journeyWrapperTl = fade 0.2 + journeyTl,
+      // loveJourneyWrapperTl = slide transDur + loveJourneyTl.
+      // BioSequence dan TimeAndPlace SENGAJA tanpa magnet (scroll bebas).
+      const FADE = 0.2
+      const slideDur = isMobileSetup ? 1.2 : 0.6
+      const lTlStart = wDur + cDur + FADE + jDur + slideDur
+      const lTlEnd = lTlStart + lDur
       const buildLoveSnap = () => {
-        const startL = wDur + cDur + jDur
         // 3 magnet point: kard 0/1/2 di tengah viewport
         // local progress di dalam loveJourneyTl: ~0.15, 0.5, 0.85
         const locals = [0.16, 0.5, 0.84]
-        return locals.map((p) => (startL + lDur * p) / totalDur)
+        return locals.map((p) => (lTlStart + lDur * p) / totalDur)
       }
       const loveSnapPoints = buildLoveSnap()
       // cari snap terdekat (GSAP snapTo harus return 0-1)
+      // hanya snap jika dalam zone loveJourney
       const snapFn = (v: number) => {
         let best = v
         let bestDist = Infinity
@@ -111,10 +118,8 @@ export function usePinnedScrollSequence(
             best = s
           }
         }
-        // hanya snap jika dalam zone loveJourney
-        const startL = wDur + cDur + jDur
-        const zoneStart = (startL - lDur * 0.15) / totalDur
-        const zoneEnd = (startL + lDur + bDur * 0.1) / totalDur
+        const zoneStart = lTlStart / totalDur
+        const zoneEnd = (lTlEnd + lDur * 0.1) / totalDur
         if (v < zoneStart || v > zoneEnd) return v
         // threshold magnet 0.08 (8% global) -> snap
         if (bestDist < 0.08) return best

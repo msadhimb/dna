@@ -16,7 +16,7 @@ export const defaultPages = ({ isDark }: { isDark: boolean }) => {
         {showBothDates ? (
           <div className="flex flex-col items-center gap-3 sm:gap-5 max-[390px]:gap-2.5">
             <div className="flex flex-col items-center gap-2">
-              <span className="font-serif font-bold text-[clamp(10px,2.6vw,13px)] sm:text-sm tracking-[0.32em] sm:tracking-[0.4em] text-[#9a865a] uppercase dark:text-[#a38d53]">
+              <span className="font-sans font-bold text-[clamp(10px,2.6vw,13px)] sm:text-sm tracking-[0.32em] sm:tracking-[0.4em] text-[#9a865a] uppercase dark:text-[#a38d53]">
                 Hari Pernikahan
               </span>
               <div className="flex flex-col items-center">
@@ -34,7 +34,7 @@ export const defaultPages = ({ isDark }: { isDark: boolean }) => {
             </span>
 
             <div className="flex flex-col items-center gap-2">
-              <span className="font-serif font-bold text-[clamp(10px,2.6vw,13px)] sm:text-sm tracking-[0.32em] sm:tracking-[0.4em] text-[#9a865a] uppercase dark:text-[#a38d53]">
+              <span className="font-sans font-bold text-[clamp(10px,2.6vw,13px)] sm:text-sm tracking-[0.32em] sm:tracking-[0.4em] text-[#9a865a] uppercase dark:text-[#a38d53]">
                 Hari Unduh Mantu
               </span>
               <div className="flex flex-col items-center">
@@ -65,7 +65,7 @@ export const defaultPages = ({ isDark }: { isDark: boolean }) => {
       <div className="flex flex-col gap-3 sm:gap-5 items-center max-[390px]:gap-3 w-full">
         <CornerFlourishes color={isDark ? "#d4af37" : "#c9a227"} />
         <Ornament color={isDark ? "#d4af37" : "#c9a227"} />
-        <span className="font-serif tracking-[0.32em] sm:tracking-[0.4em] font-bold text-[#9a865a] uppercase dark:text-[#a38d53] text-[clamp(10px,2.6vw,13px)] sm:text-sm">
+        <span className="font-sans tracking-[0.32em] sm:tracking-[0.4em] font-bold text-[#9a865a] uppercase dark:text-[#a38d53] text-[clamp(10px,2.6vw,13px)] sm:text-sm">
           Lokasi
         </span>
         <span className="font-signature leading-tight text-[#1e1a14] dark:text-[#e0d8d0] text-[clamp(1.3rem,5.6vw,1.875rem)] sm:text-3xl">
@@ -100,7 +100,7 @@ export const defaultPages = ({ isDark }: { isDark: boolean }) => {
             <div className="flex flex-col gap-3 sm:gap-5 items-center max-[390px]:gap-3 w-full">
               <CornerFlourishes color={isDark ? "#d4af37" : "#c9a227"} />
               <Ornament color={isDark ? "#d4af37" : "#c9a227"} />
-              <span className="font-serif tracking-[0.32em] sm:tracking-[0.4em] font-bold text-[#9a865a] uppercase dark:text-[#a38d53] text-[clamp(10px,2.6vw,13px)] sm:text-sm">
+              <span className="font-sans tracking-[0.32em] sm:tracking-[0.4em] font-bold text-[#9a865a] uppercase dark:text-[#a38d53] text-[clamp(10px,2.6vw,13px)] sm:text-sm">
                 Lokasi
               </span>
               <span className="font-signature leading-tight text-[#1e1a14] dark:text-[#e0d8d0] text-[clamp(1.3rem,5.6vw,1.875rem)] sm:text-3xl">
@@ -136,7 +136,7 @@ export const defaultPages = ({ isDark }: { isDark: boolean }) => {
             <div className="flex flex-col gap-3 sm:gap-5 items-center max-[390px]:gap-3 w-full">
               <CornerFlourishes color={isDark ? "#d4af37" : "#c9a227"} />
               <Ornament color={isDark ? "#d4af37" : "#c9a227"} />
-              <span className="font-serif tracking-[0.32em] sm:tracking-[0.4em] font-bold text-[#9a865a] uppercase dark:text-[#a38d53] text-[clamp(10px,2.6vw,13px)] sm:text-sm">
+              <span className="font-sans tracking-[0.32em] sm:tracking-[0.4em] font-bold text-[#9a865a] uppercase dark:text-[#a38d53] text-[clamp(10px,2.6vw,13px)] sm:text-sm">
                 Harapan
               </span>
               <span className="font-serif leading-tight text-[#1e1a14] dark:text-[#e0d8d0] text-lg">

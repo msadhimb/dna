@@ -16,6 +16,7 @@ import QrisCard from "./components/QrisCard"
 import { Card } from "@/components/Card"
 import { useGuest } from "@/store/useGuest"
 import { cn } from "@/lib/utils"
+import Header from "../Header"
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -166,24 +167,11 @@ export const DigitalGift = () => {
       </div>
 
       <div className="dg-content relative z-10 mx-auto flex w-full max-w-5xl flex-col items-center gap-8 px-6 py-10 md:gap-10 md:px-10">
-        <div className="dg-header flex flex-col items-center gap-6 text-center">
-          <p className="dg-eyebrow font-sans text-[10px] font-semibold tracking-[0.5em] uppercase text-wedding-text-secondary">
-            Amplop Digital
-          </p>
-          <h2
-            className="dg-title-word font-signature font-bold leading-none text-wedding-text-primary"
-            style={{
-              fontSize: "clamp(3.5rem, 10vw, 6rem)",
-            }}
-          >
-            Wedding Gift
-          </h2>
-          <p className="dg-desc max-w-md font-sans text-sm leading-relaxed text-wedding-text-secondary">
-            Doa restu Anda adalah hadiah terindah. Namun jika berkenan berbagi
-            tanda kasih, amplop digital ini kami sediakan dengan penuh terima
-            kasih.
-          </p>
-        </div>
+        <Header
+          subHeader="Amplop Digital"
+          title="Wedding Gift"
+          subTitle="Doa restu Anda adalah hadiah terindah. Namun jika berkenan berbagi tanda kasih, amplop digital ini kami sediakan dengan penuh terima kasih."
+        />
 
         <Card className="dg-message group w-full max-w-lg px-8 py-8 mt-5 text-center md:px-12 md:py-10">
           <div
@@ -217,7 +205,7 @@ export const DigitalGift = () => {
           </div>
 
           <p
-            className="mx-auto max-w-sm font-sans text-sm font-light leading-relaxed text-wedding-text-secondary"
+            className="mx-auto max-w-sm font-serif text-sm font-light leading-relaxed text-wedding-text-secondary"
             style={{ lineHeight: 1.9 }}
           >
             Doa restu Anda merupakan karunia yang sangat berarti bagi kami.
@@ -302,7 +290,7 @@ export const DigitalGift = () => {
           <OrnamentalDivider size="small" />
 
           <p
-            className="max-w-md font-sans text-sm font-light leading-relaxed italic text-wedding-text-secondary"
+            className="max-w-md font-serif text-sm font-light leading-relaxed italic text-wedding-text-secondary"
             style={{ lineHeight: 2 }}
           >
             Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak,

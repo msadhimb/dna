@@ -1,5 +1,4 @@
 export { FloatImages } from "./FloatImages"
-export { SectionHeader } from "./SectionHeader"
 export { AttendanceToggle } from "./AttendanceToggle"
 export { CommentCard } from "./CommentCard"
 export { CommentList } from "./CommentList"
