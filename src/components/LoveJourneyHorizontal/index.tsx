@@ -4,6 +4,8 @@ import { forwardRef, useRef, useImperativeHandle } from "react"
 import Image from "next/image"
 import { gsap } from "@/lib/gsap"
 import { useImageUrl } from "@/store/useImageUrl"
+import { Card } from "@/components/Card"
+import { Separator } from "../ui/separator"
 
 export interface LoveJourneyHorizontalRef {
   getTimeline: () => gsap.core.Timeline
@@ -141,21 +143,18 @@ const LoveJourneyHorizontal = forwardRef<LoveJourneyHorizontalRef, Props>(
         title: "Awal Bertemu",
         note: "dua asing yang belum tahu, semesta sedang menyiapkan sesuatu",
         text: "2018 — sebuah sapa sederhana yang tak pernah kami rencanakan. Tak ada janji, hanya percakapan hangat yang diam-diam menetap di hati. Dari sanalah kami belajar bahwa bersamamu, segalanya terasa pulang.",
-        rot: "-1.2deg",
       },
       {
         year: "2024",
         title: "Pacaran",
         note: "enam tahun berputar, hati akhirnya menemukan arah",
         text: "2024 — setelah sekian lama berjalan berdampingan sebagai sahabat, kami memilih untuk saling menjaga sepenuh hati. Bukan karena terburu-buru, melainkan karena yakin: suka dan duka ingin kami lalui dengan genggaman yang sama.",
-        rot: "0.9deg",
       },
       {
-        year: "—",
+        year: "Kini",
         title: "Menuju Pernikahan",
         note: "dari dua cerita, kini menjadi satu rumah",
         text: "Hari ini, seluruh penantian, doa, dan kesabaran bertemu di satu jawaban yang indah. Kami tak berjanji hidup selalu mudah, namun kami berjanji menghadapinya bersama, selamanya. Mohon doa restu — 2018 · 2024 · selamanya.",
-        rot: "-0.6deg",
         isBridging: true,
       },
     ]
@@ -163,97 +162,131 @@ const LoveJourneyHorizontal = forwardRef<LoveJourneyHorizontalRef, Props>(
     return (
       <div
         ref={rootRef}
-        className="relative flex w-full flex-col gap-5 overflow-hidden"
+        className="relative flex h-full w-full flex-col justify-center overflow-hidden bg-background"
       >
-        {/* header */}
-        <div className="ljh-header relative z-10 px-5 pt-6 md:px-10 md:pt-8">
-          <h2 className="mt-1 font-serif text-[28px] leading-none tracking-[-0.02em] text-[#1e1a14] md:text-[34px] dark:text-[#e8ddd0]">
+        {/* backdrop — sama seperti RomanticQuote / EventDetails */}
+        <div
+          className="pointer-events-none absolute inset-0 bg-wedding-dot opacity-60"
+          style={{
+            maskImage:
+              "radial-gradient(ellipse 80% 70% at 50% 40%, black 40%, transparent 78%)",
+            WebkitMaskImage:
+              "radial-gradient(ellipse 80% 70% at 50% 40%, black 40%, transparent 78%)",
+          }}
+        />
+        <div
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(ellipse 60% 45% at 50% 38%, color-mix(in srgb, var(--wedding-accent) 10%, transparent) 0%, transparent 70%)",
+          }}
+        />
+
+        {/* header — pola SectionHeader terpusat */}
+        <div className="ljh-header relative z-10 flex shrink-0 flex-col items-center gap-3 px-5 pt-5 text-center md:gap-4 md:px-10 md:pt-6">
+          <p className="font-sans text-[10px] font-semibold tracking-[0.5em] uppercase text-wedding-text-secondary">
+            Our Love Story
+          </p>
+          <h2
+            className="font-signature leading-none font-bold text-wedding-text-primary"
+            style={{ fontSize: "clamp(2.2rem, 8vw, 3.8rem)" }}
+          >
             Our Story
           </h2>
+          <p className="max-w-md font-serif text-[12px] leading-relaxed text-wedding-text-secondary md:text-[13px]">
+            Tiga babak kecil yang membawa kami sampai ke hari ini — dari sapa
+            pertama hingga janji selamanya.
+          </p>
         </div>
 
-        <div className="relative z-10 mt-4 flex gap-6 px-5 font-sans text-[11px] tracking-[0.18em] text-[#b8a07a] uppercase md:px-10 dark:text-[#6e5a4a]">
-          <span className="ljh-label">2018 — bertemu</span>
-          <span className="ljh-label">2024 — pacaran</span>
-          <span className="ljh-label">kini — menikah</span>
+        <div className="relative z-10 mt-4 flex shrink-0 flex-wrap items-center justify-center gap-2 px-5 md:mt-5 md:px-10">
+          {["2018 — bertemu", "2024 — pacaran", "kini — menikah"].map(
+            (label, i) => (
+              <span
+                key={label}
+                className="ljh-label flex items-center gap-2 rounded-full border border-wedding-border-accent bg-wedding-surface/80 px-2.5 py-1.5 font-sans text-[9px] font-semibold tracking-[0.18em] text-wedding-text-secondary uppercase backdrop-blur-sm md:px-3 md:text-[10px]"
+              >
+                <span className="flex h-4 w-4 items-center justify-center rounded-full bg-wedding-accent/15 font-serif text-[9px] font-bold text-wedding-accent">
+                  {i + 1}
+                </span>
+                {label}
+              </span>
+            )
+          )}
         </div>
 
         {/* track - carousel center mode */}
-        <div className="relative z-10 flex flex-1 items-center overflow-hidden">
+        <div className="relative z-10 py-5">
           <div
             ref={trackRef}
-            className="flex items-center gap-5 pl-5 pr-5 will-change-transform md:gap-7 md:pl-10"
+            className="flex items-stretch gap-5 pl-5 pr-5 will-change-transform md:gap-7 md:pl-10"
             style={{ flexShrink: 0 }}
           >
             {items.map((it, i) => {
               const photo = photos[i]
               return (
-                <article
+                <Card
                   key={it.year + i}
-                  className="ljh-card flex w-[82vw] max-w-[360px] shrink-0 flex-col bg-white md:w-[380px] dark:bg-[#141010]"
+                  className="ljh-card w-[82vw] max-w-[360px] shrink-0 overflow-hidden p-0 md:w-[560px] md:max-w-[560px] md:flex-row"
+                  radius="20px"
                   style={{
-                    transform: `rotate(${it.rot})`,
-                    border: "1px solid rgba(0,0,0,0.08)",
-                    boxShadow: "0 2px 14px rgba(0,0,0,0.06)",
-                    // anchor untuk scale center snap
                     transformOrigin: "center center",
                     scrollSnapAlign: "center",
                     scrollSnapStop: "always",
                   }}
                 >
-                  {/* foto + TULISAN DI ATAS GAMBAR */}
-                  <div className="relative h-[62vh] max-h-[460px] w-full overflow-hidden bg-[#f0e8d8] md:h-[420px] dark:bg-[#1e1512]">
+                  {/* foto */}
+                  <div className="relative h-[24vh] max-h-[220px] min-h-[150px] w-full overflow-hidden md:h-auto md:max-h-none md:min-h-[320px] md:w-[46%] md:shrink-0">
                     {photo ? (
                       <Image
                         src={photo}
                         alt={it.title}
                         fill
-                        sizes="500vw"
+                        sizes="(max-width: 768px) 82vw, 260px"
                         className="object-cover"
                         priority={i === 0}
                       />
                     ) : (
-                      <div className="flex h-full w-full items-center justify-center font-sans text-xs tracking-widest text-[#9a865a] uppercase">
+                      <div className="flex h-full w-full items-center justify-center bg-wedding-surface font-sans text-xs tracking-widest text-wedding-text-secondary uppercase">
                         foto {it.year}
                       </div>
                     )}
 
-                    {/* cap tahun */}
-                    <span className="absolute top-3 left-3 z-20 bg-[#1e1a14] px-2 py-1 font-sans text-[10px] font-bold tracking-widest text-white dark:bg-white dark:text-black">
+                    {/* year pill */}
+                    <span className="absolute top-3 left-3 z-20 rounded-full border border-white/20 bg-black/55 px-3 py-1 font-sans text-[10px] font-bold tracking-[0.2em] text-white uppercase backdrop-blur-md">
                       {it.year}
                     </span>
+                  </div>
 
-                    {/* gradient overlay biar teks kebaca */}
-                    <div className="absolute inset-0 bg-linear-to-t from-muted/70 via-muted/30 to-transparent dark:from-black/85 dark:via-black/30" />
-
-                    {/* TEKS DI ATAS GAMBAR */}
-                    <div className="absolute inset-x-0 bottom-0 z-10 flex flex-col gap-1.5 p-4">
-                      <h3 className="font-serif text-[19px] leading-tight font-semibold text-white drop-shadow-[0_1px_8px_rgba(0,0,0,0.6)]">
+                  {/* body — teks di surface, bukan di atas gambar */}
+                  <div className="md:px-7 md:py-6 px-5 py-4 space-y-3 text-justify ">
+                    <div className="flex flex-col items-center text-center md:items-start md:justify-center md:text-left">
+                      <h3 className="font-serif text-[22px] leading-tight font-bold text-wedding-text-primary md:text-[26px]">
                         {it.title}
                       </h3>
-                      <p className="font-sans text-[11px] italic tracking-wide text-white/75">
+                      <p className="font-serif text-[11px] tracking-wide text-wedding-text-secondary font-bold italic md:text-[12px]">
                         {it.note}
                       </p>
-                      <div className="my-1 h-px w-8 bg-white/30" />
-                      <p className="font-serif text-[13px] leading-[1.6] text-white/90">
-                        {it.text}
-                      </p>
                     </div>
+                    <Separator />
+                    <p className="font-serif text-[12px] leading-[1.65] text-wedding-text-secondary md:text-[13px] md:leading-[1.7]">
+                      {it.text}
+                    </p>
                   </div>
-                </article>
+                </Card>
               )
             })}
           </div>
         </div>
 
-        <div className="ljh-hint relative z-10 flex items-center justify-between px-5 pb-5 md:px-10 md:pb-6">
-          <p className="font-sans text-[11px] tracking-wide text-[#9a8a6e] dark:text-[#6e5f51]">
+        <div className="ljh-hint relative z-10 flex shrink-0 flex-col items-center gap-1.5 px-5 pt-4 pb-4 md:px-10 md:pt-6 md:pb-6">
+          <p className="font-sans text-[11px] tracking-[0.2em] text-wedding-text-secondary uppercase">
             <span className="hidden md:inline">
-              scroll buat geser cerita →{" "}
+              scroll untuk menggeser cerita
             </span>
-            <span className="md:hidden">geser pelan →</span>
+            <span className="md:hidden">geser pelan</span>
           </p>
-          <p className="font-serif text-xs italic text-[#b8a07a] dark:text-[#7a6a5a]">
+          <p className="font-signature text-lg text-wedding-accent">
             2018 <span className="mx-1 opacity-40">—</span> 2024{" "}
             <span className="mx-1 opacity-40">—</span> selamanya
           </p>

@@ -9,13 +9,13 @@ import {
   CurtainTransitionRef,
 } from "@/components/Transition/CuratinTransition"
 import BioSequence, { BioSequenceRef } from "@/components/BioSequence"
-import BookFlip, { BookFlipRef } from "@/components/BookFlip"
 import {
   WelcomeSection,
   WelcomeSectionRef,
 } from "../../components/WelcomeSection"
 import { LoadingScreen } from "@/components/LoadingScreen"
 import RomanticQuote from "@/components/RomanticQuote"
+import TimeAndPlace from "@/components/TimeAndPlace"
 import LoveJourneyHorizontal, {
   LoveJourneyHorizontalRef,
 } from "@/components/LoveJourneyHorizontal"
@@ -58,7 +58,6 @@ const MainView = ({
   const curtainRef = useRef<CurtainTransitionRef>(null)
   const journeyRef = useRef<BioSequenceRef>(null)
   const loveJourneyRef = useRef<LoveJourneyHorizontalRef>(null)
-  const bookFlipRef = useRef<BookFlipRef>(null)
   const commentRef = useRef<CommentSectionRef>(null)
 
   const PREVIEW_FRAMES = [
@@ -142,7 +141,7 @@ const MainView = ({
             src={content}
             alt={`Curtain Photo ${i + 1}`}
             fill
-            sizes="500vwd"
+            sizes="100vw"
             priority={i === 0}
             className="object-cover object-center"
           />
@@ -169,7 +168,6 @@ const MainView = ({
       curtainRef,
       journeyRef,
       loveJourneyRef,
-      bookFlipRef,
       commentRef,
     },
     { isLoaded, theme }
@@ -217,15 +215,9 @@ const MainView = ({
         >
           <LoveJourneyHorizontal ref={loveJourneyRef} theme={theme as any} />
         </div>
-
-        <div
-          id="book-flip-wrapper"
-          className="gsap-element pointer-events-auto absolute inset-0 z-20 flex h-full w-full flex-col justify-center overflow-hidden bg-background opacity-0"
-        >
-          <BookFlip ref={bookFlipRef} theme={theme} />
-        </div>
       </section>
       <div className="flex flex-col gap-0 bg-background">
+        <TimeAndPlace />
         <RomanticQuote />
         <CommentSection
           ref={commentRef}

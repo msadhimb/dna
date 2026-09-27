@@ -15,7 +15,7 @@ type Refs = {
   curtainRef: React.RefObject<CurtainTransitionRef | null>
   journeyRef: React.RefObject<JourneySequenceRef | null>
   loveJourneyRef: React.RefObject<LoveJourneyHorizontalRef | null>
-  bookFlipRef: React.RefObject<BookFlipRef | null>
+  bookFlipRef?: React.RefObject<BookFlipRef | null>
   commentRef: React.RefObject<CommentSectionRef | null>
 }
 
@@ -55,14 +55,16 @@ export function usePinnedScrollSequence(
         !masterTrigger ||
         !journeyWrapper ||
         !loveJourneyWrapper ||
-        !bookFlipWrapper ||
         !refs.welcomeRef.current ||
         !refs.curtainRef.current ||
         !refs.journeyRef.current ||
-        !refs.loveJourneyRef.current ||
-        !refs.bookFlipRef.current
+        !refs.loveJourneyRef.current
       )
         return
+
+      // BookFlip opsional — dilewati bila tidak dipasang di MainView
+      const hasBookFlip =
+        Boolean(bookFlipWrapper) && Boolean(refs.bookFlipRef?.current)
 
       const isMobileSetup =
         window.innerWidth < 768 ||
@@ -71,20 +73,20 @@ export function usePinnedScrollSequence(
       // initial state tanpa willChange permanen (hemat compositor layer)
       gsap.set(journeyWrapper, { opacity: 0 })
       gsap.set(loveJourneyWrapper, { opacity: 0, y: "100%" })
-      gsap.set(bookFlipWrapper, { opacity: 0, y: "100%" })
+      if (bookFlipWrapper) gsap.set(bookFlipWrapper, { opacity: 0, y: "100%" })
 
       const welcomeTl = refs.welcomeRef.current.getTimeline()
       const curtainTl = refs.curtainRef.current.getTimeline()
       const journeyTl = refs.journeyRef.current.getTimeline()
       const loveJourneyTl = refs.loveJourneyRef.current.getTimeline()
-      const bookFlipTl = refs.bookFlipRef.current.getTimeline()
+      const bookFlipTl = refs.bookFlipRef?.current?.getTimeline()
       const commentTl = refs.commentRef.current?.getTimeline()
 
       const wDur = welcomeTl.totalDuration() || 1
       const cDur = curtainTl.totalDuration() || 1
       const jDur = journeyTl.totalDuration() || 1
       const lDur = loveJourneyTl.totalDuration() || 1
-      const bDur = bookFlipTl.totalDuration() || 1
+      const bDur = bookFlipTl?.totalDuration() || 0
       const totalDur = wDur + cDur + jDur + lDur + bDur
       const totalScrollHeight =
         (totalDur / (cDur + jDur + lDur + bDur)) * 500
@@ -145,18 +147,20 @@ export function usePinnedScrollSequence(
 
       const transitionDuration = isMobileSetup ? 1.2 : 0.6
       const bookFlipWrapperTl = gsap.timeline()
-      bookFlipWrapperTl.to(
-        [loveJourneyWrapper, bookFlipWrapper],
-        {
-          y: (i: number) => (i === 0 ? "-100%" : "0%"),
-          opacity: 1,
-          duration: transitionDuration,
-          ease: "none",
-          force3D: true,
-        },
-        "<"
-      )
-      bookFlipWrapperTl.add(bookFlipTl)
+      if (hasBookFlip && bookFlipWrapper && bookFlipTl) {
+        bookFlipWrapperTl.to(
+          [loveJourneyWrapper, bookFlipWrapper],
+          {
+            y: (i: number) => (i === 0 ? "-100%" : "0%"),
+            opacity: 1,
+            duration: transitionDuration,
+            ease: "none",
+            force3D: true,
+          },
+          "<"
+        )
+        bookFlipWrapperTl.add(bookFlipTl)
+      }
       bookFlipWrapRef.current = bookFlipWrapperTl
 
       const commentWrapperTl = commentTl
@@ -210,11 +214,9 @@ export function usePinnedScrollSequence(
       !cWrapper ||
       !jWrapper ||
       !lWrapper ||
-      !bWrapper ||
       !refs.curtainRef.current ||
       !refs.journeyRef.current ||
-      !refs.loveJourneyRef.current ||
-      !refs.bookFlipRef.current
+      !refs.loveJourneyRef.current
     )
       return
 
@@ -222,19 +224,19 @@ export function usePinnedScrollSequence(
     const savedC = cWrapper.progress()
     const savedJ = jWrapper.progress()
     const savedL = lWrapper.progress()
-    const savedB = bWrapper.progress()
+    const savedB = bWrapper?.progress() ?? 0
     const savedCo = coWrapper?.progress() ?? 0
 
     cWrapper.progress(0, true)
     jWrapper.progress(0, true)
     lWrapper.progress(0, true)
-    bWrapper.progress(0, true)
+    bWrapper?.progress(0, true)
     coWrapper?.progress(0, true)
 
     cWrapper.clear()
     jWrapper.clear()
     lWrapper.clear()
-    bWrapper.clear()
+    bWrapper?.clear()
     coWrapper?.clear()
 
     const journeyWrap = document.getElementById("journey-wrapper")
@@ -252,7 +254,7 @@ export function usePinnedScrollSequence(
     const newCurtainTl = refs.curtainRef.current.getTimeline()
     const newJourneyTl = refs.journeyRef.current.getTimeline()
     const newLoveJourneyTl = refs.loveJourneyRef.current.getTimeline()
-    const newBookFlipTl = refs.bookFlipRef.current.getTimeline()
+    const newBookFlipTl = refs.bookFlipRef?.current?.getTimeline()
     const newCommentTl = refs.commentRef.current?.getTimeline()
 
     cWrapper.add(newCurtainTl)
@@ -282,23 +284,25 @@ export function usePinnedScrollSequence(
       coWrapper.progress(savedCo, true)
     }
 
-    bWrapper.to(
-      [loveJourneyWrap, bookFlipWrap],
-      {
-        y: (i: number) => (i === 0 ? "-100%" : "0%"),
-        opacity: 1,
-        duration: isMobileTheme ? 1.2 : 0.6,
-        ease: "none",
-        force3D: true,
-      },
-      "<"
-    )
-    bWrapper.add(newBookFlipTl)
+    if (bWrapper && newBookFlipTl) {
+      bWrapper.to(
+        [loveJourneyWrap, bookFlipWrap],
+        {
+          y: (i: number) => (i === 0 ? "-100%" : "0%"),
+          opacity: 1,
+          duration: isMobileTheme ? 1.2 : 0.6,
+          ease: "none",
+          force3D: true,
+        },
+        "<"
+      )
+      bWrapper.add(newBookFlipTl)
+    }
 
     cWrapper.progress(savedC, true)
     jWrapper.progress(savedJ, true)
     lWrapper.progress(savedL, true)
-    bWrapper.progress(savedB, true)
+    bWrapper?.progress(savedB, true)
 
     // update snap magnet untuk theme baru (durasi bisa berubah)
     const masterST = masterTlRef.current?.scrollTrigger
@@ -307,14 +311,13 @@ export function usePinnedScrollSequence(
         (newCurtainTl.totalDuration() || 1) +
         (newJourneyTl.totalDuration() || 1) +
         (newLoveJourneyTl.totalDuration() || 1) +
-        (newBookFlipTl.totalDuration() || 1) +
+        (newBookFlipTl?.totalDuration() || 0) +
         (masterTlRef.current ? (masterTlRef.current as any)._welcomeDur || 1 : 1)
       // fallback hitung ulang dari wrapper durations
       const wD = (masterTlRef.current?.totalDuration() || 1) - newTotal
       // sederhana: pakai locals yang sama
       // biarkan snap lama; refresh sudah cukup untuk centerX via function
-      // force update snap delay agar magnet tetap aktif
-      ;(masterST as any).vars.snap = (masterST as any).vars.snap
+      // agar magnet tetap aktif
     }
 
     // Refresh pin di frame berikutnya agar tidak bentrok dengan BookFlip spin (hemat jank)
