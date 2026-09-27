@@ -58,65 +58,109 @@ const LoveJourneyHorizontal = forwardRef<LoveJourneyHorizontalRef, Props>(
             return center
           }
 
-          // initial state
-          gsap.set(track, { x: () => -getCenterX(0) })
-          gsap.set(cards, { opacity: 0.45, scale: 0.92, y: 8, rotation: 0 })
-          gsap.set(hint, { opacity: 0 })
+          // Dwell (jeda magnet) pendek: kartu sempat diam di tengah agar
+          // snap ada targetnya. Tanpa dwell, kartu gerak terus -> magnet
+          // tidak terasa + terlihat gelisah/patah.
+          const DWELL0 = 0.4
+          const MOVE = 1.2
+          const DWELL1 = 0.4
+          const TAIL = 0.5
 
-          // set card 0 sebagai active awal (akan di-animate di timeline)
-          gsap.set(cards[0], { opacity: 1, scale: 1, y: 0 })
+          // Semua state awal di DALAM timeline (tl.set di 0) agar scrub
+          // bolak-balik restore tanpa lompat. Sebelumnya gsap.set di luar
+          // timeline -> saat masuk dari BioSequence, track x bisa snap.
+          tl.set(track, { x: () => -getCenterX(0) }, 0)
+          tl.set(
+            cards,
+            { opacity: 0.45, scale: 0.92, y: 8, rotation: 0, force3D: true },
+            0
+          )
+          tl.set(cards[0], { opacity: 1, scale: 1, y: 0 }, 0)
+          tl.set(hint, { opacity: 0 }, 0)
 
-          tl.to(hint, { opacity: 1, duration: 0.3, ease: "none" }, 0.15)
-          // hold sebentar di card 0 (magnet pertama)
-          tl.to({}, { duration: 0.5 })
+          tl.to(hint, { opacity: 1, duration: 0.3, ease: "none" }, 0)
+          // dwell kartu 0 (magnet pertama) — dulu 0.5, sekarang 0.4
+          tl.to({}, { duration: DWELL0 }, 0)
+          tl.addLabel("c0", DWELL0 / 2)
 
           // ---- magnet 0 -> 1 (card 1 ke tengah) ----
+          // Easing inOut dipertahankan: dengan scrub, easing ini yang
+          // memberi rasa melambat-menempel di tengah (magnet). Versi
+          // "none" kemarin bikin gerak linear kaku -> terasa patah.
+          const s1 = DWELL0
           tl.to(
             track,
-            { x: () => -getCenterX(1), duration: 1.4, ease: "power2.inOut" },
-            "s1"
+            {
+              x: () => -getCenterX(1),
+              duration: MOVE,
+              ease: "power2.inOut",
+              force3D: true,
+            },
+            s1
           )
             .to(
               cards[0],
               {
                 opacity: 0.45,
                 scale: 0.92,
+                y: 8,
                 duration: 0.5,
                 ease: "power1.inOut",
               },
-              "s1"
+              s1
             )
             .to(
               cards[1],
-              { opacity: 1, scale: 1, y: 0, duration: 0.5, ease: "power2.out" },
-              "s1+=0.2"
+              {
+                opacity: 1,
+                scale: 1,
+                y: 0,
+                duration: 0.5,
+                ease: "power2.out",
+              },
+              s1 + 0.2
             )
 
-          tl.to({}, { duration: 0.6 })
+          tl.to({}, { duration: DWELL1 }, s1 + MOVE)
+          tl.addLabel("c1", s1 + MOVE + DWELL1 / 2)
 
           // ---- magnet 1 -> 2 (card 2 ke tengah) ----
+          const s2 = s1 + MOVE + DWELL1
           tl.to(
             track,
-            { x: () => -getCenterX(2), duration: 1.4, ease: "power2.inOut" },
-            "s2"
+            {
+              x: () => -getCenterX(2),
+              duration: MOVE,
+              ease: "power2.inOut",
+              force3D: true,
+            },
+            s2
           )
             .to(
               cards[1],
               {
                 opacity: 0.45,
                 scale: 0.92,
+                y: 8,
                 duration: 0.5,
                 ease: "power1.inOut",
               },
-              "s2"
+              s2
             )
             .to(
               cards[2],
-              { opacity: 1, scale: 1, y: 0, duration: 0.5, ease: "power2.out" },
-              "s2+=0.2"
+              {
+                opacity: 1,
+                scale: 1,
+                y: 0,
+                duration: 0.5,
+                ease: "power2.out",
+              },
+              s2 + 0.2
             )
 
-          tl.to({}, { duration: 0.8 })
+          tl.to({}, { duration: TAIL }, s2 + MOVE)
+          tl.addLabel("c2", s2 + MOVE + TAIL / 2)
 
           return tl
         },
@@ -182,7 +226,7 @@ const LoveJourneyHorizontal = forwardRef<LoveJourneyHorizontalRef, Props>(
         <div className="relative z-10 py-5">
           <div
             ref={trackRef}
-            className="flex items-stretch gap-5 pl-5 pr-5 will-change-transform md:gap-7 md:pl-10"
+            className="flex items-stretch gap-5 pl-5 pr-5 md:gap-7 md:pl-10"
             style={{ flexShrink: 0 }}
           >
             {items.map((it, i) => {
@@ -208,6 +252,7 @@ const LoveJourneyHorizontal = forwardRef<LoveJourneyHorizontalRef, Props>(
                         sizes="(max-width: 768px) 82vw, 260px"
                         className="object-cover"
                         priority={i === 0}
+                        decoding="async"
                         // File light 1-2,5MB: lewat optimizer Next saat cold
                         // antrean optimasi bisa timeout -> gambar broken.
                         // Direct URL sudah di-preload loading screen, jadi

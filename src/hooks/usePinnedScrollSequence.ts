@@ -88,8 +88,7 @@ export function usePinnedScrollSequence(
       const lDur = loveJourneyTl.totalDuration() || 1
       const bDur = bookFlipTl?.totalDuration() || 0
       const totalDur = wDur + cDur + jDur + lDur + bDur
-      const totalScrollHeight =
-        (totalDur / (cDur + jDur + lDur + bDur)) * 500
+      const totalScrollHeight = (totalDur / (cDur + jDur + lDur + bDur)) * 500
 
       // --- magnet snap: hanya LoveJourney (cards) ---
       // Offset wrapper diperhitungkan: journeyWrapperTl = fade 0.2 + journeyTl,
@@ -97,15 +96,14 @@ export function usePinnedScrollSequence(
       // BioSequence dan TimeAndPlace SENGAJA tanpa magnet (scroll bebas).
       const FADE = 0.2
       const slideDur = isMobileSetup ? 1.2 : 0.6
-      const lTlStart = wDur + cDur + FADE + jDur + slideDur
-      const lTlEnd = lTlStart + lDur
-      const buildLoveSnap = () => {
-        // 3 magnet point: kard 0/1/2 di tengah viewport
-        // local progress di dalam loveJourneyTl: ~0.15, 0.5, 0.85
-        const locals = [0.16, 0.5, 0.84]
-        return locals.map((p) => (lTlStart + lDur * p) / totalDur)
-      }
-      const loveSnapPoints = buildLoveSnap()
+      // Titik snap dihitung SETELAH masterTl jadi (lihat bawah): posisi dan
+      // penyebut diambil dari master ASLI (startTime + totalDuration).
+      // Rumus lama (lTlStart/totalDur) meleset karena totalDur tidak mencakup
+      // fade/slide wrapper + commentTl, dan locals hardcode tidak cocok dengan
+      // durasi loveJourneyTl sekarang -> magnet mendarat di antara kartu.
+      let loveSnapPoints: number[] = []
+      let snapZoneStart = 0
+      let snapZoneEnd = 0
       // cari snap terdekat (GSAP snapTo harus return 0-1)
       // hanya snap jika dalam zone loveJourney
       const snapFn = (v: number) => {
@@ -118,9 +116,7 @@ export function usePinnedScrollSequence(
             best = s
           }
         }
-        const zoneStart = lTlStart / totalDur
-        const zoneEnd = (lTlEnd + lDur * 0.1) / totalDur
-        if (v < zoneStart || v > zoneEnd) return v
+        if (v < snapZoneStart || v > snapZoneEnd) return v
         // threshold magnet 0.08 (8% global) -> snap
         if (bestDist < 0.08) return best
         return v
@@ -199,6 +195,25 @@ export function usePinnedScrollSequence(
       masterTl.add(loveJourneyWrapperTl)
       masterTl.add(bookFlipWrapperTl)
       if (commentTl) masterTl.add(commentWrapperTl)
+
+      // Normalisasi snap terhadap master ASLI: posisi konten love diukur dari
+      // startTime wrapper, penyebut = totalDuration master (termasuk
+      // fade/slide wrapper + commentTl). Titik magnet = label c0/c1/c2
+      // (tengah dwell tiap kartu) di loveJourneyTl.
+      {
+        const actualTotal = masterTl.totalDuration() || 1
+        const wrapStart = loveJourneyWrapperTl.startTime() || 0
+        const contentStart = wrapStart + slideDur
+        const labels = (loveJourneyTl as unknown as { labels?: Record<string, number> }).labels ?? {}
+        const times = [
+          typeof labels.c0 === "number" ? labels.c0 : lDur * 0.05,
+          typeof labels.c1 === "number" ? labels.c1 : lDur * 0.49,
+          typeof labels.c2 === "number" ? labels.c2 : lDur * 0.93,
+        ]
+        loveSnapPoints = times.map((t) => (contentStart + t) / actualTotal)
+        snapZoneStart = contentStart / actualTotal
+        snapZoneEnd = (contentStart + lDur + lDur * 0.1) / actualTotal
+      }
 
       masterTlRef.current = masterTl
     },
@@ -317,7 +332,9 @@ export function usePinnedScrollSequence(
         (newJourneyTl.totalDuration() || 1) +
         (newLoveJourneyTl.totalDuration() || 1) +
         (newBookFlipTl?.totalDuration() || 0) +
-        (masterTlRef.current ? (masterTlRef.current as any)._welcomeDur || 1 : 1)
+        (masterTlRef.current
+          ? (masterTlRef.current as any)._welcomeDur || 1
+          : 1)
       // fallback hitung ulang dari wrapper durations
       const wD = (masterTlRef.current?.totalDuration() || 1) - newTotal
       // sederhana: pakai locals yang sama

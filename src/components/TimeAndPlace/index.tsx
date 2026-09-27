@@ -197,7 +197,7 @@ export const TimeAndPlace = () => {
         </div>
       )}
 
-      <div className="relative z-10 mx-auto flex w-full max-w-2xl flex-col items-center gap-14 px-4 py-14 sm:px-6 md:gap-10 md:px-10 md:py-24">
+      <div className="relative z-10 mx-auto flex w-full max-w-2xl flex-col items-center gap-5 px-4 py-14 sm:px-6 md:gap-10 md:px-10 md:py-24">
         {/* header */}
 
         <Header

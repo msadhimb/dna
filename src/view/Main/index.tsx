@@ -84,47 +84,52 @@ const MainView = ({
     {
       light: (
         <div className="relative flex h-full w-full flex-col items-center justify-center gap-4 bg-primary px-6 py-10 text-muted md:px-10">
-          <p className="max-w-sm text-center font-signature text-2xl leading-relaxed font-bold tracking-wide md:max-w-lg md:text-3xl">
-            وَمِنْ آيَاتِهِ أَنْ خَلَقَ لَكُم مِّنْ أَنفُسِكُمْ أَزْوَاجًا
-            لِّتَسْكُنُوا إِلَيْهَا وَجَعَلَ بَيْنَكُم مَّوَدَّةً وَرَحْمَةً ۚ
-            إِنَّ فِي ذَٰلِكَ لَآيَاتٍ لِّقَوْمٍ يَتَفَكَّرُونَ
-          </p>
-          <div className="flex items-center gap-3 opacity-70">
-            <span className="h-px w-8 bg-current" />
-            <span className="text-xs">✦</span>
-            <span className="h-px w-8 bg-current" />
+          <div className="w-[90vw] flex flex-col items-center justify-center gap-4">
+            <p className="max-w-sm text-center font-signature text-2xl leading-relaxed font-bold tracking-wide md:max-w-lg md:text-3xl">
+              وَمِنْ آيَاتِهِ أَنْ خَلَقَ لَكُم مِّنْ أَنفُسِكُمْ أَزْوَاجًا
+              لِّتَسْكُنُوا إِلَيْهَا وَجَعَلَ بَيْنَكُم مَّوَدَّةً وَرَحْمَةً ۚ
+              إِنَّ فِي ذَٰلِكَ لَآيَاتٍ لِّقَوْمٍ يَتَفَكَّرُونَ
+            </p>
+            <div className="flex justify-center items-center gap-3 opacity-70">
+              <span className="h-px w-8 bg-current" />
+              <span className="text-xs">✦</span>
+              <span className="h-px w-8 bg-current" />
+            </div>
+            <p className="font-sans text-xs tracking-[0.2em] uppercase opacity-80 text-center">
+              QS. Ar-Rum : 21
+            </p>
+            <p className="max-w-sm text-center font-serif text-sm leading-relaxed font-light italic opacity-90 md:max-w-lg">
+              &ldquo;Dan di antara tanda-tanda kekuasaan-Nya ialah Dia
+              menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar
+              kamu cenderung dan merasa tenteram kepadanya, dan Dia menjadikan
+              di antaramu rasa kasih dan sayang. Sesungguhnya pada yang demikian
+              itu benar-benar terdapat tanda-tanda bagi kaum yang
+              berpikir.&rdquo;
+            </p>
           </div>
-          <p className="font-sans text-xs tracking-[0.2em] uppercase opacity-80">
-            QS. Ar-Rum : 21
-          </p>
-          <p className="max-w-sm text-center font-serif text-sm leading-relaxed font-light italic opacity-90 md:max-w-lg">
-            &ldquo;Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan
-            pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung
-            dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa
-            kasih dan sayang. Sesungguhnya pada yang demikian itu benar-benar
-            terdapat tanda-tanda bagi kaum yang berpikir.&rdquo;
-          </p>
         </div>
       ),
       dark: (
         <div className="relative flex h-full w-full flex-col items-center justify-center gap-4 bg-primary px-6 py-10 text-black md:px-10">
-          <p className="max-w-sm text-center font-signature text-2xl leading-relaxed font-bold tracking-wide md:max-w-lg md:text-3xl">
-            رَبَّنَا هَبْ لَنَا مِنْ أَزْوَاجِنَا وَذُرِّيَّاتِنَا قُرَّةَ
-            أَعْيُنٍ وَاجْعَلْنَا لِلْمُتَّقِينَ إِمَامًا
-          </p>
-          <div className="flex items-center gap-3 opacity-70">
-            <span className="h-px w-8 bg-current" />
-            <span className="text-xs">✦</span>
-            <span className="h-px w-8 bg-current" />
+          <div className="w-[90vw] flex flex-col items-center justify-center gap-4">
+            <p className="max-w-sm text-center font-signature text-2xl leading-relaxed font-bold tracking-wide md:max-w-lg md:text-3xl">
+              رَبَّنَا هَبْ لَنَا مِنْ أَزْوَاجِنَا وَذُرِّيَّاتِنَا قُرَّةَ
+              أَعْيُنٍ وَاجْعَلْنَا لِلْمُتَّقِينَ إِمَامًا
+            </p>
+            <div className="flex items-center gap-3 opacity-70">
+              <span className="h-px w-8 bg-current" />
+              <span className="text-xs">✦</span>
+              <span className="h-px w-8 bg-current" />
+            </div>
+            <p className="font-sans text-xs tracking-[0.2em] uppercase opacity-80">
+              QS. Al-Furqan : 74
+            </p>
+            <p className="max-w-sm text-center font-serif text-sm leading-relaxed font-light italic opacity-90 md:max-w-lg">
+              &ldquo;Wahai Tuhan kami, anugerahkanlah kepada kami istri-istri
+              kami dan keturunan kami sebagai penyejuk mata (bagi kami), dan
+              jadikanlah kami imam bagi orang-orang yang bertakwa.&rdquo;
+            </p>
           </div>
-          <p className="font-sans text-xs tracking-[0.2em] uppercase opacity-80">
-            QS. Al-Furqan : 74
-          </p>
-          <p className="max-w-sm text-center font-serif text-sm leading-relaxed font-light italic opacity-90 md:max-w-lg">
-            &ldquo;Wahai Tuhan kami, anugerahkanlah kepada kami istri-istri kami
-            dan keturunan kami sebagai penyejuk mata (bagi kami), dan jadikanlah
-            kami imam bagi orang-orang yang bertakwa.&rdquo;
-          </p>
         </div>
       ),
     },
