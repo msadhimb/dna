@@ -172,20 +172,20 @@ const LoveJourneyHorizontal = forwardRef<LoveJourneyHorizontalRef, Props>(
       {
         year: "2018",
         title: "Awal Bertemu",
-        note: "dua asing yang belum tahu, semesta sedang menyiapkan sesuatu",
-        text: "2018 — sebuah sapa sederhana yang tak pernah kami rencanakan. Tak ada janji, hanya percakapan hangat yang diam-diam menetap di hati. Dari sanalah kami belajar bahwa bersamamu, segalanya terasa pulang.",
+        note: "sebuah pandangan sederhana yang diam-diam menjadi awal dari cerita panjang",
+        text: "2018 — sebuah pertemuan pertama, tanpa sapaan dan tanpa keberanian untuk saling mengenal. Hanya sebuah pandangan singkat yang tersimpan sebagai bagian kecil dari perjalanan yang belum diketahui arahnya.",
       },
       {
         year: "2024",
-        title: "Pacaran",
-        note: "enam tahun berputar, hati akhirnya menemukan arah",
-        text: "2024 — setelah sekian lama berjalan berdampingan sebagai sahabat, kami memilih untuk saling menjaga sepenuh hati. Bukan karena terburu-buru, melainkan karena yakin: suka dan duka ingin kami lalui dengan genggaman yang sama.",
+        title: "Mulai Mendekati",
+        note: "enam tahun berlalu, hingga sebuah keberanian membuka jalan menuju kisah yang berbeda",
+        text: "2024 — perkenalan akhirnya dimulai dengan niat untuk saling mengenal lebih dekat. Dari percakapan sederhana, tumbuh rasa, kedekatan, dan sebuah hubungan yang perlahan menemukan arah.",
       },
       {
-        year: "Kini",
+        year: "2026",
         title: "Menuju Pernikahan",
-        note: "dari dua cerita, kini menjadi satu rumah",
-        text: "Hari ini, seluruh penantian, doa, dan kesabaran bertemu di satu jawaban yang indah. Kami tak berjanji hidup selalu mudah, namun kami berjanji menghadapinya bersama, selamanya. Mohon doa restu — 2018 · 2024 · selamanya.",
+        note: "pertemuan yang bermula dari kejauhan, kini sampai pada sebuah janji untuk selamanya",
+        text: "2026 — perjalanan dari sebuah pandangan, berlanjut menjadi sebuah kedekatan, hingga akhirnya membawa dua insan pada keputusan untuk membangun kehidupan bersama. Sebuah cerita yang menemukan rumahnya dalam ikatan pernikahan.",
         isBridging: true,
       },
     ]
