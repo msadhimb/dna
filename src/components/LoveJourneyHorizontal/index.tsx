@@ -46,7 +46,6 @@ const LoveJourneyHorizontal = forwardRef<LoveJourneyHorizontalRef, Props>(
           if (!root || !track) return tl
 
           const cards = track.querySelectorAll<HTMLElement>(".ljh-card")
-          const labels = root.querySelectorAll<HTMLElement>(".ljh-label")
           const hint = root.querySelector<HTMLElement>(".ljh-hint")
 
           // helper: posisi x agar card[idx] tepat di tengah viewport
@@ -62,12 +61,10 @@ const LoveJourneyHorizontal = forwardRef<LoveJourneyHorizontalRef, Props>(
           // initial state
           gsap.set(track, { x: () => -getCenterX(0) })
           gsap.set(cards, { opacity: 0.45, scale: 0.92, y: 8, rotation: 0 })
-          gsap.set(labels, { opacity: 0.35 })
           gsap.set(hint, { opacity: 0 })
 
           // set card 0 sebagai active awal (akan di-animate di timeline)
           gsap.set(cards[0], { opacity: 1, scale: 1, y: 0 })
-          gsap.set(labels[0], { opacity: 1 })
 
           tl.to(hint, { opacity: 1, duration: 0.3, ease: "none" }, 0.15)
           // hold sebentar di card 0 (magnet pertama)
@@ -94,8 +91,6 @@ const LoveJourneyHorizontal = forwardRef<LoveJourneyHorizontalRef, Props>(
               { opacity: 1, scale: 1, y: 0, duration: 0.5, ease: "power2.out" },
               "s1+=0.2"
             )
-            .to(labels[0], { opacity: 0.35, duration: 0.35 }, "s1")
-            .to(labels[1], { opacity: 1, duration: 0.35 }, "s1+=0.25")
 
           tl.to({}, { duration: 0.6 })
 
@@ -120,8 +115,6 @@ const LoveJourneyHorizontal = forwardRef<LoveJourneyHorizontalRef, Props>(
               { opacity: 1, scale: 1, y: 0, duration: 0.5, ease: "power2.out" },
               "s2+=0.2"
             )
-            .to(labels[1], { opacity: 0.35, duration: 0.35 }, "s2")
-            .to(labels[2], { opacity: 1, duration: 0.35 }, "s2+=0.25")
 
           tl.to({}, { duration: 0.8 })
 
@@ -184,22 +177,6 @@ const LoveJourneyHorizontal = forwardRef<LoveJourneyHorizontalRef, Props>(
             pertama hingga janji selamanya."
           className="ljh-header"
         />
-
-        <div className="relative z-10 mt-4 flex shrink-0 flex-wrap items-center justify-center gap-2 px-5 md:mt-5 md:px-10">
-          {["2018 — bertemu", "2024 — pacaran", "kini — menikah"].map(
-            (label, i) => (
-              <span
-                key={label}
-                className="ljh-label flex items-center gap-2 rounded-full border border-wedding-border-accent bg-wedding-surface/80 px-2.5 py-1.5 font-sans text-[9px] font-semibold tracking-[0.18em] text-wedding-text-secondary uppercase backdrop-blur-sm md:px-3 md:text-[10px]"
-              >
-                <span className="flex h-4 w-4 items-center justify-center rounded-full bg-wedding-accent/15 font-serif text-[9px] font-bold text-wedding-accent">
-                  {i + 1}
-                </span>
-                {label}
-              </span>
-            )
-          )}
-        </div>
 
         {/* track - carousel center mode */}
         <div className="relative z-10 py-5">
@@ -275,7 +252,7 @@ const LoveJourneyHorizontal = forwardRef<LoveJourneyHorizontalRef, Props>(
             <span className="hidden md:inline">
               scroll untuk menggeser cerita
             </span>
-            <span className="md:hidden">geser pelan</span>
+            <span className="md:hidden">geser kebawah pelan</span>
           </p>
           <p className="font-signature text-lg text-wedding-accent">
             2018 <span className="mx-1 opacity-40">—</span> 2024{" "}

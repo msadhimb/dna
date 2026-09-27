@@ -2,8 +2,7 @@ import { useEffect } from "react"
 import { useForm, FormProvider, Controller } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
-import { WeddingInput } from "@/components/WeddingInput"
-import { WeddingTextarea } from "@/components/WeddingTextarea"
+import { Check, Loader2, Send } from "lucide-react"
 import { AttendanceToggle } from "./AttendanceToggle"
 import { Button } from "@/components/Button"
 import { FormInput } from "@/components/Form/FormInput"
@@ -17,17 +16,17 @@ interface FormValues {
 }
 
 interface CommentFormProps {
-  
+
   accent?: string
-  
+
   border?: string
-  
+
   textSecondary?: string
-  
+
   textPrimary?: string
-  
+
   isDark?: boolean
-  
+
   surface?: string
   onSubmit: (data: FormValues) => Promise<void>
   isSubmitting: boolean
@@ -70,14 +69,17 @@ export function CommentForm({
         className="cs-form-wrap overflow-hidden p-0"
         radius="20px"
       >
-        <div className="flex items-center gap-3 px-8 py-5 border-b border-wedding-border rounded-t-[20px]">
-          <span className="h-2 w-2 rounded-full bg-wedding-accent" />
+        <div className="flex items-center gap-3 px-6 py-4 border-b border-wedding-border rounded-t-[20px] md:px-8">
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-wedding-accent opacity-60" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-wedding-accent" />
+          </span>
           <span className="font-sans text-[10px] md:text-[11px] font-bold tracking-[0.30em] uppercase text-wedding-text-secondary">
             Tulis Ucapan
           </span>
         </div>
 
-        <div className="flex flex-col gap-24 px-8 py-10">
+        <div className="flex flex-col gap-6 px-6 py-6 md:px-8 md:py-8">
           <div className="flex flex-col gap-5">
             <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
               <Controller
@@ -126,8 +128,16 @@ export function CommentForm({
             <Button
               type="button"
               onClick={handleSubmit}
-              className="cs-submit-btn flex cursor-pointer items-center justify-center rounded-xl px-8 py-6 font-sans text-[10px] md:text-[11px] font-bold tracking-[0.3em] uppercase transition-all duration-300 bg-green-800 text-white hover:bg-green-700 dark:bg-red-800 dark:hover:bg-red-700 z-15"
+              disabled={isSubmitting}
+              className="cs-submit-btn flex cursor-pointer items-center justify-center gap-2.5 rounded-full bg-wedding-accent px-8 py-3.5 font-sans text-[10px] md:text-[11px] font-bold tracking-[0.25em] uppercase text-white shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:brightness-110 active:translate-y-0 disabled:cursor-wait disabled:opacity-70 disabled:hover:translate-y-0"
             >
+              {isSubmitting ? (
+                <Loader2 className="animate-spin" />
+              ) : submitted ? (
+                <Check />
+              ) : (
+                <Send />
+              )}
               {isSubmitting
                 ? "Mengirim..."
                 : submitted

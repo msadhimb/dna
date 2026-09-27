@@ -64,55 +64,61 @@ const QrisCard = ({
   }
 
   return (
-    <Card className="dg-card group w-full max-w-lg items-center gap-4 px-6 py-7 text-center md:px-8">
-      
-      <div className="flex items-center gap-2">
-        <QrCode className="h-4 w-4 text-wedding-accent" />
-        <span className="font-sans text-[10px] font-bold tracking-[0.2em] uppercase text-wedding-accent">
-          QRIS
+    <Card
+      withCorners={false}
+      withTopLine={false}
+      radius="24px"
+      className="dg-card group w-full max-w-sm items-stretch gap-0 overflow-hidden p-0 text-left transition-all duration-300 hover:-translate-y-1"
+    >
+      <div className="flex items-center justify-between px-6 pt-5">
+        <div className="flex items-center gap-2">
+          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-wedding-accent/10">
+            <QrCode className="h-4 w-4 text-wedding-accent" />
+          </span>
+          <span className="font-sans text-[11px] font-bold tracking-[0.18em] uppercase text-wedding-text-primary">
+            QRIS
+          </span>
+        </div>
+        <span className="rounded-full bg-wedding-accent/10 px-2.5 py-1 font-sans text-[10px] font-bold tracking-[0.12em] uppercase text-wedding-accent">
+          Semua e-wallet
         </span>
       </div>
 
-      
-      <div className="relative overflow-hidden rounded-xl bg-white border border-wedding-border-accent">
-        
-        <img
-          src={qrisUrl}
-          alt="QRIS WEDDING ADHIM & DEVI"
-          width={280}
-          height={280}
-          className="h-auto w-64 object-contain md:w-88"
-          loading="lazy"
-        />
+      <div className="px-6 pt-5">
+        <div className="relative overflow-hidden rounded-2xl bg-white p-4 ring-1 ring-black/5 dark:ring-white/10">
+          <img
+            src={qrisUrl}
+            alt="QRIS WEDDING ADHIM & DEVI"
+            width={280}
+            height={280}
+            className="h-auto w-full object-contain"
+            loading="lazy"
+          />
+        </div>
       </div>
 
-      
-      <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-muted">
-        a.n. {qrisName}
-      </p>
-
-      
-      <div className="flex items-center gap-2">
-        <div className="h-px w-8 bg-wedding-border-accent" />
-        <div className="h-1.5 w-1.5 rotate-45 bg-wedding-accent opacity-60" />
-        <div className="h-px w-8 bg-wedding-border-accent" />
+      <div className="flex flex-col items-center px-6 pt-4 text-center">
+        <p className="font-sans text-[11px] font-medium tracking-[0.14em] uppercase text-wedding-text-secondary">
+          a.n. {qrisName}
+        </p>
+        <p className="mt-2 max-w-[32ch] font-serif text-xs leading-relaxed text-wedding-text-secondary">
+          Pindai QR di atas dengan e-wallet / m-banking Anda. Satu QR untuk
+          semua pembayaran.
+        </p>
       </div>
 
-      <p className="max-w-[28ch] font-serif text-xs leading-relaxed text-muted">
-        Pindai QR di atas dengan e-wallet / m-banking Anda. Satu QR untuk semua
-        pembayaran.
-      </p>
-
-      
-      <Button
-        onClick={handleDownload}
-        disabled={downloading}
-        size="sm"
-        className="mt-1 flex items-center gap-2 px-5 py-2 text-[10px] font-bold tracking-[0.2em] uppercase text-muted dark:text-white"
-      >
-        <Download className="h-3.5 w-3.5" />
-        {downloading ? "Mengunduh..." : "Download QRIS"}
-      </Button>
+      <div className="px-6 pt-4 pb-6">
+        <Button
+          onClick={handleDownload}
+          disabled={downloading}
+          size="sm"
+          variant="outline"
+          className="h-11 w-full rounded-full border-wedding-border-accent px-5 py-2 text-[11px] font-bold tracking-[0.18em] uppercase text-wedding-text-primary transition-all duration-200 hover:bg-wedding-accent/5 focus-visible:ring-2 focus-visible:ring-wedding-accent focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.98] disabled:opacity-60"
+        >
+          <Download className="h-4 w-4" />
+          {downloading ? "Mengunduh..." : "Download QRIS"}
+        </Button>
+      </div>
     </Card>
   )
 }

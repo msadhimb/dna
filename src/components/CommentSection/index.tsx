@@ -13,7 +13,6 @@ import {
   FloatImages,
   CommentForm,
   CommentList,
-  CounterBadge,
 } from "./components"
 import { useImageUrl } from "@/store/useImageUrl"
 import { useComments } from "@/hooks/useComments"
@@ -370,8 +369,6 @@ export const CommentSection = forwardRef<
           submitted={submitted}
           guestName={guestName}
         />
-
-        <CounterBadge count={comments.length} />
 
         <CommentList
           comments={comments}

@@ -1,27 +1,39 @@
 import { AttendanceBadge } from "@/components/AttendanceBadge"
 import { Card } from "@/components/Card"
+import { Quote } from "lucide-react"
 
 interface CommentCardProps {
   name: string
   message: string
   attendance: "hadir" | "tidak_hadir" | "ragu"
   date: string
-  
+
   textPrimary?: string
-  
+
   textSecondary?: string
-  
+
   textMuted?: string
-  
+
   surface?: string
-  
+
   border?: string
-  
+
   borderAccent?: string
-  
+
   isDark?: boolean
-  
+
   accent?: string
+}
+
+function initials(name: string) {
+  return (
+    name
+      .split(" ")
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((w) => w[0]?.toUpperCase() ?? "")
+      .join("") || "?"
+  )
 }
 
 export function CommentCard({
@@ -30,40 +42,39 @@ export function CommentCard({
   attendance,
   date,
 }: CommentCardProps) {
-  const attendanceColor =
-    attendance === "hadir"
-      ? "#16A34A"
-      : attendance === "tidak_hadir"
-        ? "#EF4444"
-        : "#D4AF37"
-
   return (
     <Card
       withTopLine={false}
-      withCorners
-      className="cs-card-item gap-5 p-8 transition-all duration-500"
-      style={{
-        borderTopWidth: "2px",
-        borderTopColor: attendanceColor,
-      }}
+      withCorners={false}
+      className="cs-card-item gap-4 p-5 transition-all duration-300 hover:-translate-y-1 hover:border-wedding-border-accent md:p-6"
     >
-      <div className="flex flex-col items-start gap-2">
-        <h3 className="font-signature text-2xl leading-tight tracking-[0.1em] font-bold text-wedding-text-primary">
-          {name}
-        </h3>
-        <AttendanceBadge status={attendance} />
+      <div className="flex items-center gap-3">
+        <span
+          aria-hidden="true"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-wedding-accent/10 font-sans text-xs font-bold tracking-wider text-wedding-accent"
+        >
+          {initials(name)}
+        </span>
+        <div className="flex min-w-0 flex-1 flex-col gap-1">
+          <h3 className="truncate font-signature text-xl leading-tight font-bold text-wedding-text-primary">
+            {name}
+          </h3>
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <AttendanceBadge status={attendance} />
+            <span className="font-sans text-[10px] tracking-wide text-wedding-text-muted">
+              {date}
+            </span>
+          </div>
+        </div>
+        <Quote
+          aria-hidden="true"
+          className="h-4 w-4 shrink-0 rotate-180 text-wedding-accent/30"
+        />
       </div>
 
-      <p className="font-serif text-xs leading-relaxed md:text-sm text-wedding-text-secondary">
+      <p className="font-serif text-xs leading-relaxed text-wedding-text-secondary md:text-sm">
         {message}
       </p>
-
-      <div className="mt-auto flex items-center gap-3">
-        <span className="h-px flex-1 bg-wedding-border" />
-        <span className="font-sans text-[9px] font-semibold tracking-[0.3em] uppercase text-wedding-text-muted">
-          {date}
-        </span>
-      </div>
     </Card>
   )
 }

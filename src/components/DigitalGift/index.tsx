@@ -1,134 +1,54 @@
 "use client"
 
 import { useRef, useState, useEffect } from "react"
-import { useTheme } from "next-themes"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { useGSAP } from "@gsap/react"
-import { CreditCard, QrCode } from "lucide-react"
-import {
-  WaxSeal,
-  OrnamentalDivider,
-  EnvelopeIllustration,
-} from "@/components/Icons"
+import { CreditCard, QrCode, Heart } from "lucide-react"
+import { OrnamentalDivider } from "@/components/Icons"
 import BankAccountCard from "./components/BankAccountCard"
 import QrisCard from "./components/QrisCard"
-import { Card } from "@/components/Card"
 import { useGuest } from "@/store/useGuest"
-import { cn } from "@/lib/utils"
+import { Tabs, TabsContent } from "@/components/Tabs"
 import Header from "../Header"
 
 gsap.registerPlugin(ScrollTrigger)
 
 export const DigitalGift = () => {
-  const { resolvedTheme } = useTheme()
   const { guest } = useGuest()
 
-  const isDark = resolvedTheme === "dark"
   const sectionRef = useRef<HTMLElement>(null)
   const [activeTab, setActiveTab] = useState<"bank" | "qris">("bank")
 
   const qrisUrl: string = "/assets/qris/QRIS-Gopay.jpeg"
 
+  const isDeviFamily =
+    guest?.guest_from === "devis_mother" ||
+    guest?.guest_from === "devis_father" ||
+    guest?.guest_from === "devis_family_neighbor"
+
   useGSAP(
     () => {
+      // One authored moment: section rises once, cards stagger.
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
-          start: "top 80%",
+          start: "top 82%",
           toggleActions: "play none none reverse",
         },
+        defaults: { ease: "expo.out" },
       })
 
       tl.fromTo(
-        ".dg-bridge",
-        { opacity: 0, scaleX: 0 },
-        {
-          opacity: 1,
-          scaleX: 1,
-          duration: 0.6,
-          ease: "power3.inOut",
-          transformOrigin: "center",
-        }
+        ".dg-rise",
+        { opacity: 0, y: 28 },
+        { opacity: 1, y: 0, duration: 0.9, stagger: 0.1 }
+      ).fromTo(
+        ".dg-card",
+        { opacity: 0, y: 24, scale: 0.98 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.7, stagger: 0.12 },
+        "-=0.5"
       )
-        .fromTo(
-          ".dg-eyebrow",
-          { opacity: 0, y: 16 },
-          { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" },
-          "-=0.2"
-        )
-        .fromTo(
-          ".dg-title-word",
-          { opacity: 0, y: 32 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.8,
-            stagger: 0.08,
-            ease: "power3.out",
-          },
-          "-=0.3"
-        )
-        .fromTo(
-          ".dg-desc",
-          { opacity: 0, y: 16 },
-          { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" },
-          "-=0.3"
-        )
-        .fromTo(
-          ".dg-envelope",
-          { opacity: 0, y: 24, scale: 0.95 },
-          { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: "power3.out" },
-          "-=0.3"
-        )
-        .fromTo(
-          ".dg-ornament-1",
-          { opacity: 0, scaleX: 0 },
-          {
-            opacity: 1,
-            scaleX: 1,
-            duration: 0.6,
-            ease: "power3.inOut",
-            transformOrigin: "center",
-          },
-          "-=0.4"
-        )
-        .fromTo(
-          ".dg-message",
-          { opacity: 0, y: 20 },
-          { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" },
-          "-=0.3"
-        )
-        .fromTo(
-          ".dg-tabs",
-          { opacity: 0, y: 16, scale: 0.96 },
-          { opacity: 1, y: 0, scale: 1, duration: 0.6, ease: "power3.out" },
-          "-=0.2"
-        )
-        .fromTo(
-          ".dg-cards-wrapper",
-          { opacity: 0, y: 28 },
-          { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" },
-          "-=0.3"
-        )
-        .fromTo(
-          ".dg-card",
-          { opacity: 0, y: 24 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.65,
-            stagger: 0.18,
-            ease: "power3.out",
-          },
-          "-=0.4"
-        )
-        .fromTo(
-          ".dg-closing",
-          { opacity: 0, y: 16 },
-          { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" },
-          "-=0.3"
-        )
     },
     { scope: sectionRef }
   )
@@ -148,7 +68,8 @@ export const DigitalGift = () => {
       ref={sectionRef}
       className="dg-section relative w-full overflow-hidden bg-background"
     >
-      <div className="pointer-events-none absolute left-1/2 top-[48%] h-[92vw] max-h-[560px] w-[92vw] max-w-[560px] -translate-x-1/2 -translate-y-1/2 rounded-full md:h-[840px] md:max-h-[840px] md:w-[840px] md:max-w-[840px] lg:h-[1020px] lg:max-h-[1020px] lg:w-[1020px] lg:max-w-[1020px] overflow-hidden">
+      {/* Ambient background */}
+      <div className="pointer-events-none absolute left-1/2 top-[48%] h-[92vw] max-h-[560px] w-[92vw] max-w-[560px] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full md:h-[840px] md:max-h-[840px] md:w-[840px] md:max-w-[840px] lg:h-[1020px] lg:max-h-[1020px] lg:w-[1020px] lg:max-w-[1020px]">
         <div
           className="absolute inset-0 bg-wedding-dot opacity-50"
           style={{
@@ -166,146 +87,90 @@ export const DigitalGift = () => {
         />
       </div>
 
-      <div className="dg-content relative z-10 mx-auto flex w-full max-w-5xl flex-col items-center gap-8 px-6 py-10 md:gap-10 md:px-10">
+      <div className="dg-content relative z-10 mx-auto flex w-full max-w-3xl flex-col items-center gap-7 px-6 py-14 md:gap-8 md:px-10 md:py-20">
         <Header
           subHeader="Amplop Digital"
           title="Wedding Gift"
           subTitle="Doa restu Anda adalah hadiah terindah. Namun jika berkenan berbagi tanda kasih, amplop digital ini kami sediakan dengan penuh terima kasih."
+          className="dg-rise"
         />
 
-        <Card className="dg-message group w-full max-w-lg px-8 py-8 mt-5 text-center md:px-12 md:py-10">
-          <div
-            className="absolute -top-9 left-1/2 -translate-x-1/2"
-            style={{ zIndex: 10 }}
-          >
-            <WaxSeal isDark={isDark} accent="var(--wedding-accent)" />
-          </div>
-
-          <p
-            className="font-signature font-bold text-wedding-text-primary"
-            style={{
-              fontSize: "clamp(2rem, 5vw, 3rem)",
-              lineHeight: 1.2,
-              paddingTop: "16px",
-            }}
-          >
-            Devi &amp; Adhim
-          </p>
-
-          <div className="mx-auto my-4 flex items-center gap-3">
-            <div className="h-px flex-1 max-w-12 bg-wedding-border-accent" />
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-              <path
-                d="M6 1 L7.5 4.5 L11 6 L7.5 7.5 L6 11 L4.5 7.5 L1 6 L4.5 4.5 Z"
-                fill="var(--wedding-accent)"
-                opacity="0.6"
-              />
-            </svg>
-            <div className="h-px flex-1 max-w-12 bg-wedding-border-accent" />
-          </div>
-
-          <p
-            className="mx-auto max-w-sm font-serif text-sm font-light leading-relaxed text-wedding-text-secondary"
-            style={{ lineHeight: 1.9 }}
-          >
-            Doa restu Anda merupakan karunia yang sangat berarti bagi kami.
-            Namun jika memberi adalah ungkapan kasih Anda, kami dengan rendah
-            hati menerimanya.
-          </p>
-        </Card>
-
-        <div
-          className="dg-tabs flex items-center gap-1.5 rounded-full p-1.5 bg-wedding-surface border border-wedding-border-accent shadow-wedding-card"
-          role="tablist"
-          aria-label="Metode hadiah"
+        {/* Metode hadiah — wedding Tabs (solid, di atas surface) */}
+        <Tabs
+          mode="solid"
+          value={activeTab}
+          onValueChange={(v) => setActiveTab(v as "bank" | "qris")}
+          items={[
+            {
+              value: "bank",
+              label: (
+                <span className="flex items-center gap-2">
+                  <CreditCard className="h-4 w-4" />
+                  Bank
+                </span>
+              ),
+            },
+            {
+              value: "qris",
+              label: (
+                <span className="flex items-center gap-2">
+                  <QrCode className="h-4 w-4" />
+                  QRIS
+                </span>
+              ),
+            },
+          ]}
+          listLabel="Metode hadiah"
+          listClassName="dg-rise"
         >
-          <button
-            onClick={() => setActiveTab("bank")}
-            className={cn(
-              "flex cursor-pointer items-center gap-2 rounded-full px-5 py-2.5 text-[11px] font-bold tracking-[0.14em] uppercase transition-all duration-200",
-              activeTab === "bank"
-                ? "bg-wedding-accent text-white shadow-md"
-                : "bg-transparent text-wedding-text-secondary"
-            )}
-            aria-selected={activeTab === "bank"}
-            role="tab"
+          <TabsContent
+            value="bank"
+            className="w-full data-[state=inactive]:hidden"
           >
-            <CreditCard className="h-3.5 w-3.5" />
-            Bank Transfer
-          </button>
-          <button
-            onClick={() => setActiveTab("qris")}
-            className={cn(
-              "flex cursor-pointer items-center gap-2 rounded-full px-5 py-2.5 text-[11px] font-bold tracking-[0.14em] uppercase transition-all duration-200",
-              activeTab === "qris"
-                ? "bg-wedding-accent text-white shadow-md"
-                : "bg-transparent text-wedding-text-secondary"
-            )}
-            aria-selected={activeTab === "qris"}
-            role="tab"
+            <div className="dg-cards-wrapper grid w-full gap-4 sm:gap-5 md:grid-cols-2">
+              {isDeviFamily ? (
+                <div className="md:col-span-2 md:mx-auto md:w-80">
+                  <BankAccountCard
+                    svg="https://znefanspvasmutcrbjmu.supabase.co/storage/v1/object/public/image-icon/bca.svg"
+                    accountNumber="7130633280"
+                    accountName="Selvia Agustin"
+                    bankLabel="BCA"
+                  />
+                </div>
+              ) : (
+                <>
+                  <BankAccountCard
+                    svg="https://znefanspvasmutcrbjmu.supabase.co/storage/v1/object/public/image-icon/bni.svg"
+                    accountNumber="1819801119"
+                    accountName="Salman Adhim"
+                    bankLabel="BNI"
+                  />
+                  <BankAccountCard
+                    svg="https://znefanspvasmutcrbjmu.supabase.co/storage/v1/object/public/image-icon/bca.svg"
+                    accountNumber="7296154554"
+                    accountName="Devi Yuliana"
+                    bankLabel="BCA"
+                  />
+                </>
+              )}
+            </div>
+          </TabsContent>
+          <TabsContent
+            value="qris"
+            className="w-full data-[state=inactive]:hidden"
           >
-            <QrCode className="h-3.5 w-3.5" />
-            QRIS
-          </button>
-        </div>
+            <div className="dg-cards-wrapper flex w-full justify-center">
+              <QrisCard qrisUrl={qrisUrl} qrisName="WEDDING ADHIM & DEVI" />
+            </div>
+          </TabsContent>
+        </Tabs>
 
-        {activeTab === "bank" ? (
-          <div className="dg-cards-wrapper relative z-10 flex w-full max-w-5xl flex-col items-center gap-6 md:w-auto md:flex-row md:gap-8">
-            {guest?.guest_from === "devis_mother" ||
-            guest?.guest_from === "devis_father" ||
-            guest?.guest_from === "devis_family_neighbor" ? (
-              <BankAccountCard
-                svg={
-                  "https://znefanspvasmutcrbjmu.supabase.co/storage/v1/object/public/image-icon/bca.svg"
-                }
-                accountNumber="7130633280"
-                accountName="Selvia Agustin"
-              />
-            ) : (
-              <>
-                <BankAccountCard
-                  svg={
-                    "https://znefanspvasmutcrbjmu.supabase.co/storage/v1/object/public/image-icon/bni.svg"
-                  }
-                  accountNumber="1819801119"
-                  accountName="Salman Adhim"
-                />
-                <BankAccountCard
-                  svg={
-                    "https://znefanspvasmutcrbjmu.supabase.co/storage/v1/object/public/image-icon/bca.svg"
-                  }
-                  accountNumber="7296154554"
-                  accountName="Devi Yuliana"
-                />
-              </>
-            )}
-          </div>
-        ) : (
-          <div className="dg-cards-wrapper relative z-10 flex w-full justify-center">
-            <QrisCard qrisUrl={qrisUrl} qrisName="WEDDING ADHIM & DEVI" />
-          </div>
-        )}
-
-        <div className="dg-closing flex flex-col items-center gap-4 text-center">
+        <div className="dg-rise flex flex-col items-center gap-4 text-center">
           <OrnamentalDivider size="small" />
-
-          <p
-            className="max-w-md font-serif text-sm font-light leading-relaxed italic text-wedding-text-secondary"
-            style={{ lineHeight: 2 }}
-          >
+          <p className="max-w-md font-serif text-[13px] font-light leading-relaxed italic text-wedding-text-secondary">
             Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak,
             Ibu, dan Saudara/i berkenan hadir untuk memberikan doa restu.
           </p>
-
-          <div className="flex items-center gap-3">
-            <div className="h-px w-6 bg-wedding-border-accent" />
-            <div className="flex gap-1.5">
-              <div className="h-1 w-1 rotate-45 bg-wedding-accent opacity-50" />
-              <div className="h-1 w-1 rotate-45 bg-wedding-accent" />
-              <div className="h-1 w-1 rotate-45 bg-wedding-accent opacity-50" />
-            </div>
-            <div className="h-px w-6 bg-wedding-border-accent" />
-          </div>
         </div>
       </div>
     </section>

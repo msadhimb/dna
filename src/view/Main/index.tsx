@@ -218,13 +218,13 @@ const MainView = ({
       </section>
       <div className="flex flex-col gap-0 bg-background">
         <TimeAndPlace />
-        <RomanticQuote />
         <CommentSection
           ref={commentRef}
           guestId={guestId}
           guestName={guestName}
         />
         <DigitalGift />
+        <RomanticQuote />
         <Footer />
       </div>
     </main>
