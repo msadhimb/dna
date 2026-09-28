@@ -117,8 +117,10 @@ export function usePinnedScrollSequence(
           }
         }
         if (v < snapZoneStart || v > snapZoneEnd) return v
-        // threshold magnet 0.08 (8% global) -> snap
-        if (bestDist < 0.08) return best
+        // threshold magnet 0.05: hanya tarik kalau benar-benar dekat.
+        // 0.08 terlalu agresif -> snap berebut dengan jari saat scroll
+        // pelan (terasa patah-patah / rubber-band).
+        if (bestDist < 0.05) return best
         return v
       }
 
@@ -176,13 +178,18 @@ export function usePinnedScrollSequence(
           end: `+=${totalScrollHeight}%`,
           pin: true,
           pinSpacing: true,
-          scrub: isMobileSetup ? 1 : 1.5,
+          // scrub kecil di mobile: animasi lebih nempel ke jari.
+          // scrub besar + snap = animasi ketinggalan lalu ditarik magnet
+          // (terasa patah / rubber-band).
+          scrub: isMobileSetup ? 0.6 : 1.5,
           anticipatePin: 1,
           invalidateOnRefresh: true,
           snap: {
             snapTo: snapFn,
-            duration: { min: 0.12, max: 0.35 },
-            delay: 0.02,
+            duration: { min: 0.12, max: 0.5 },
+            // delay besar: snap hanya jalan kalau user BENAR-BENAR berhenti.
+            // 0.02 bikin snap berebut dengan scroll pelan yang masih jalan.
+            delay: 0.25,
             ease: "power2.inOut",
             inertia: false,
           },
@@ -204,7 +211,9 @@ export function usePinnedScrollSequence(
         const actualTotal = masterTl.totalDuration() || 1
         const wrapStart = loveJourneyWrapperTl.startTime() || 0
         const contentStart = wrapStart + slideDur
-        const labels = (loveJourneyTl as unknown as { labels?: Record<string, number> }).labels ?? {}
+        const labels =
+          (loveJourneyTl as unknown as { labels?: Record<string, number> })
+            .labels ?? {}
         const times = [
           typeof labels.c0 === "number" ? labels.c0 : lDur * 0.05,
           typeof labels.c1 === "number" ? labels.c1 : lDur * 0.49,

@@ -1,6 +1,6 @@
 "use client"
 
-import { forwardRef, useRef, useImperativeHandle } from "react"
+import { forwardRef, useEffect, useRef, useImperativeHandle } from "react"
 import Image from "next/image"
 import { gsap } from "@/lib/gsap"
 import { useImageUrl } from "@/store/useImageUrl"
@@ -29,6 +29,22 @@ const LoveJourneyHorizontal = forwardRef<LoveJourneyHorizontalRef, Props>(
     const rootRef = useRef<HTMLDivElement>(null)
     const trackRef = useRef<HTMLDivElement>(null)
     const { imageUrl } = useImageUrl() as any
+
+    // Resting state DOM = state timeline di t=0 (card 0 di tengah + aktif).
+    // Sebelumnya track mentah (x=0, semua card terang) terlihat saat wrapper
+    // slide masuk, lalu `tl.set` menjentik ke card 0 saat segmen mulai.
+    useEffect(() => {
+      const track = trackRef.current
+      if (!track) return
+      const cards = track.querySelectorAll<HTMLElement>(".ljh-card")
+      if (!cards.length) return
+      const vw = window.innerWidth
+      const c0 = cards[0]
+      const centerX = c0.offsetLeft + c0.offsetWidth / 2 - vw / 2
+      gsap.set(track, { x: -centerX })
+      gsap.set(cards, { opacity: 0.45, scale: 0.92, y: 8, rotation: 0 })
+      gsap.set(cards[0], { opacity: 1, scale: 1, y: 0 })
+    }, [theme, imageUrl])
 
     const photos = [
       theme === "dark" ? imageUrl?.dark?.[2]?.link : imageUrl?.light?.[1]?.link,

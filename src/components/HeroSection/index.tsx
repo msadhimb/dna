@@ -13,9 +13,9 @@ const HeroSection = () => {
   const [mounted, setMounted] = useState(false)
 
   const isDark = resolvedTheme === "dark"
-  const heroImage: any = isDark
-    ? imageUrl.dark?.[0].link
-    : imageUrl.light?.[0].link
+  const heroImage: string | undefined = isDark
+    ? imageUrl.dark?.[0]?.link
+    : imageUrl.light?.[0]?.link
 
   useEffect(() => {
     setMounted(true)
@@ -47,7 +47,7 @@ const HeroSection = () => {
               fill
               priority
               className="object-cover object-[80%_70%] dark:object-[60%_0%]"
-              sizes="(max-width: 768px) 500vw, 150vw"
+              sizes="100vw"
               quality={85}
             />
           ) : (

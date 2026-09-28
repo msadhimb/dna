@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import { useRef, useImperativeHandle, forwardRef } from "react"
+import { useEffect, useRef, useImperativeHandle, forwardRef } from "react"
 import { gsap } from "@/lib/gsap"
 import { cn } from "@/lib/utils"
 import useResponsive from "@/hooks/useResponsive"
@@ -152,42 +152,54 @@ export const BioSequence = forwardRef<BioSequenceRef, BioSequenceProps>(
       [theme, isMobile]
     )
 
+    const journeySrc = isDark
+      ? imageUrl.dark?.[5]?.link
+      : imageUrl.light?.[3]?.link
+
+    useEffect(() => {
+      const el = journeyImageRef.current
+      if (!el) return
+      const w = window.innerWidth
+      const h = window.innerHeight
+      const mobile = w < 768 || (w <= 1024 && h > w)
+      const d = (m: string, dk: string) => (mobile ? m : dk)
+      gsap.set(el, {
+        width: d("200vw", "100vw"),
+        height: "100vh",
+        borderRadius: "0px",
+        clipPath: "none",
+        x: isDark ? 0 : d("-25vw", "0"),
+        y: 0,
+      })
+    }, [isDark, isMobile])
+
     return (
       <div className="relative flex h-screen w-full flex-col items-center justify-center overflow-hidden">
         <div
           ref={journeyImageRef}
-          className="gsap-element relative z-0 h-[42vh] w-[85vw] overflow-hidden rounded-2xl md:h-[40vh] md:w-[40vw] md:rounded-3xl"
+          className="gsap-element relative z-0 h-screen w-screen overflow-hidden"
           style={{
-            borderRadius: "24px",
+            borderRadius: "0px",
             transform: "translateZ(0)",
             backfaceVisibility: "hidden",
           }}
         >
-          <Image
-            key={
-              theme === "dark"
-                ? (imageUrl as any).dark?.[5]?.link
-                : (imageUrl as any).light?.[3]?.link
-            }
-            src={
-              theme === "dark"
-                ? (imageUrl as any).dark?.[5]?.link
-                : (imageUrl as any).light?.[3]?.link
-            }
-            fill
-            alt="Journey"
-            // 500vw/150vw memaksa browser + optimizer meminta gambar 5x viewport.
-            // Ukuran real: 85vw mobile / 40vw desktop (zoom via transform, bukan file).
-            sizes="(max-width: 768px) 85vw, 40vw"
-            quality={75}
-            priority
-            fetchPriority="high"
-            decoding="async"
-            // File light ~2,3MB: optimizer cold bisa timeout saat refresh.
-            // Direct URL sudah di-preload loading screen.
-            unoptimized
-            className="journey-inner-img object-cover"
-          />
+          {journeySrc ? (
+            <Image
+              key={journeySrc}
+              src={journeySrc}
+              fill
+              alt="Journey"
+              quality={75}
+              priority
+              fetchPriority="high"
+              decoding="async"
+              // File light ~2,3MB: optimizer cold bisa timeout saat refresh.
+              // Direct URL sudah di-preload loading screen.
+              unoptimized
+              className="journey-inner-img object-cover"
+            />
+          ) : null}
         </div>
 
         {/* Groom Bio Overlay - bottom on mobile/tablet/landscape, side only on xl */}
