@@ -1,54 +1,71 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import {
   Gift,
   MapPin,
+  Menu,
   MessageCircle,
   Pause,
   Play,
+  X,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useStoryAutoPlay } from "@/hooks/useStoryAutoPlay"
 
 const LINKS = [
-  { id: "time-and-place", label: "Waktu", full: "Ke Waktu & Tempat", Icon: MapPin },
-  { id: "comment", label: "Ucapan", full: "Ke Ucapan & Doa", Icon: MessageCircle },
-  { id: "digital-gift", label: "Gift", full: "Ke Wedding Gift", Icon: Gift },
+  {
+    id: "time-and-place",
+    label: "Waktu & Tempat",
+    hint: "Tanggal, jam & lokasi",
+    Icon: MapPin,
+  },
+  {
+    id: "comment",
+    label: "Ucapan & Doa",
+    hint: "Titip doa untuk kami",
+    Icon: MessageCircle,
+  },
+  {
+    id: "digital-gift",
+    label: "Wedding Gift",
+    hint: "Tanda kasih untuk kami",
+    Icon: Gift,
+  },
 ] as const
 
 function scrollToSection(id: string) {
   const el = document.getElementById(id)
   if (!el) return
-  // Offset lembut agar judul section tidak tertutup pill.
+  // Offset lembut agar judul section tidak tertutup menu.
   const y = el.getBoundingClientRect().top + window.scrollY - 72
   window.scrollTo({ top: y, behavior: "smooth" })
 }
 
 /**
- * Navigasi sequence: pill bawah-tengah untuk lompat ke TimeAndPlace,
- * Comment, DigitalGift + tombol putar Our Story otomatis yang berhenti
- * di TimeAndPlace saja.
+ * Navigasi sequence: tombol kanan-atas + panel lompat antar bagian
+ * (TimeAndPlace, Comment, DigitalGift) + putar Our Story otomatis.
+ * Mengikuti bahasa visual undangan: surface solid, serif, aksen wedding.
  */
 export const SequenceNav = ({ visible = true }: { visible?: boolean }) => {
   const [activeId, setActiveId] = useState<string | null>(null)
-  const navRef = useRef<HTMLDivElement>(null)
-  const wrapRef = useRef<HTMLDivElement>(null)
+  const [open, setOpen] = useState(false)
+  const navRef = useRef<HTMLElement>(null)
   const { isPlaying, toggle } = useStoryAutoPlay({ targetId: "time-and-place" })
 
   // Stabil mount: wrapper SELALU dirender (bahkan saat hidden) agar React
   // tidak melakukan insertBefore di commit yang sama dengan GSAP pin-spacer
   // yang membungkus #master-trigger saat isLoaded=true.
   // Visibilitas hanya via CSS + aria-hidden.
-  // Satu authored moment: pill naik sekali saat pertama terlihat.
+  // Satu authored moment: tombol turun lembut sekali saat pertama terlihat.
   useEffect(() => {
     if (!visible || !navRef.current) return
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
     const el = navRef.current
     const anim = el.animate(
       [
-        { opacity: "0", transform: "translateY(14px) scale(0.98)" },
-        { opacity: "1", transform: "translateY(0) scale(1)" },
+        { opacity: "0", transform: "translateY(-10px)" },
+        { opacity: "1", transform: "translateY(0)" },
       ],
       { duration: 700, easing: "cubic-bezier(0.22, 1, 0.36, 1)", fill: "backwards" }
     )
@@ -72,101 +89,209 @@ export const SequenceNav = ({ visible = true }: { visible?: boolean }) => {
     return () => observer.disconnect()
   }, [])
 
+  // Tutup saat klik di luar atau tekan Escape.
+  useEffect(() => {
+    if (!open) return
+    const onDown = (e: PointerEvent) => {
+      if (navRef.current && !navRef.current.contains(e.target as Node)) {
+        setOpen(false)
+      }
+    }
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false)
+    }
+    document.addEventListener("pointerdown", onDown)
+    document.addEventListener("keydown", onKey)
+    return () => {
+      document.removeEventListener("pointerdown", onDown)
+      document.removeEventListener("keydown", onKey)
+    }
+  }, [open ])
+
+  const go = useCallback((id: string) => {
+    setOpen(false)
+    // Tunggu panel mulai menutup agar scroll terasa mulus.
+    requestAnimationFrame(() => scrollToSection(id))
+  }, [])
+
+  const onStory = useCallback(() => {
+    toggle()
+    setOpen(false)
+  }, [toggle])
+
+  const tabbable = open && visible
+
   return (
     <div
-      ref={wrapRef}
       aria-hidden={!visible}
       className={cn(
-        "pointer-events-none fixed inset-x-0 z-40 flex justify-center transition-opacity duration-500",
-        "pr-[76px] pl-4 sm:px-4",
+        "pointer-events-none fixed inset-x-0 top-0 z-40 flex justify-end transition-opacity duration-500",
+        "pr-4 pt-4 sm:pr-6 sm:pt-5",
         visible ? "opacity-100" : "pointer-events-none opacity-0"
       )}
-      style={{ bottom: "max(1.25rem, env(safe-area-inset-bottom, 0px) + 0.75rem)" }}
+      style={{ top: "max(0rem, env(safe-area-inset-top, 0px))" }}
     >
       <nav
         ref={navRef}
         data-story-nav
         aria-label="Navigasi undangan"
-        className={cn(
-          "pointer-events-auto relative flex items-center gap-0.5 rounded-full px-1.5 py-1.5",
-          "border border-[#c9a227]/25 bg-[#fdfbf6]/85 shadow-[0_16px_44px_-12px_rgba(30,26,20,0.35),0_2px_10px_-2px_rgba(30,26,20,0.12),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-xl",
-          "dark:border-white/10 dark:bg-[#141010]/75 dark:shadow-[0_16px_44px_-12px_rgba(0,0,0,0.7),inset_0_1px_0_rgba(255,255,255,0.08)]",
-          !visible && "pointer-events-none invisible"
-        )}
+        className={cn(!visible && "pointer-events-none invisible")}
       >
-        {/* Hairline emas di bibir atas pill */}
-        <span
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-[#c9a227]/50 to-transparent dark:via-[#c9a227]/40"
-        />
-        <button
-          type="button"
-          onClick={toggle}
-          data-story-nav
-          aria-pressed={isPlaying}
-          aria-label={isPlaying ? "Hentikan Our Story" : "Putar Our Story otomatis"}
-          title={isPlaying ? "Hentikan Our Story" : "Putar Our Story otomatis"}
-          className={cn(
-            "relative flex cursor-pointer items-center gap-1.5 rounded-full px-3 py-2 font-sans text-[10px] font-medium tracking-[0.18em] uppercase transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a227]/60",
-            isPlaying
-              ? "bg-[#c9a227]/15 text-[#6d5410] dark:bg-[#c9a227]/15 dark:text-[#eddfa8]"
-              : "text-[#8a7a63] hover:bg-[#1e1a14]/[0.05] hover:text-[#1e1a14] dark:text-white/55 dark:hover:bg-white/10 dark:hover:text-white"
-          )}
-        >
-          {isPlaying ? (
-            <Pause className="h-[15px] w-[15px] shrink-0" strokeWidth={1.75} />
-          ) : (
-            <Play className="h-[15px] w-[15px] shrink-0" strokeWidth={1.75} />
-          )}
-          <span className="hidden min-[420px]:inline">Story</span>
-          {isPlaying && (
-            <span
-              aria-hidden="true"
-              className="absolute inset-0 rounded-full ring-1 ring-[#c9a227]/40 ring-inset"
-            />
-          )}
-        </button>
-
-        <span
-          aria-hidden="true"
-          className="mx-0.5 h-4 w-px bg-[#c9a227]/25 dark:bg-white/10"
-        />
-
-        {LINKS.map(({ id, label, full, Icon }) => {
-          const active = activeId === id
-          return (
-            <button
-              key={id}
-              type="button"
-              onClick={() => scrollToSection(id)}
-              data-story-nav
-              aria-label={full}
-              title={full}
-              aria-current={active ? "location" : undefined}
-              className={cn(
-                "relative flex cursor-pointer items-center gap-1.5 rounded-full px-3 pt-2 pb-2.5 font-sans text-[10px] font-medium tracking-[0.18em] uppercase transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a227]/60",
-                active
-                  ? "bg-[#1e1a14]/[0.07] text-[#1e1a14] dark:bg-white/[0.12] dark:text-white"
-                  : "text-[#8a7a63] hover:bg-[#1e1a14]/[0.05] hover:text-[#1e1a14] dark:text-white/55 dark:hover:bg-white/10 dark:hover:text-white"
-              )}
-            >
-              <Icon className="h-[15px] w-[15px] shrink-0" strokeWidth={1.75} />
-              <span className="hidden min-[420px]:inline">{label}</span>
-              {/* Indikator emas — selalu terlihat walau label disembunyikan di layar sempit */}
-              <span
-                aria-hidden="true"
+        <div className="pointer-events-auto relative">
+          {/* Tombol menu */}
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            data-story-nav
+            aria-expanded={open}
+            aria-controls="sequence-menu"
+            aria-label={open ? "Tutup navigasi" : "Buka navigasi"}
+            title={open ? "Tutup navigasi" : "Buka navigasi"}
+            tabIndex={visible ? 0 : -1}
+            className={cn(
+              "flex h-12 w-12 cursor-pointer items-center justify-center rounded-full",
+              "border border-wedding-border bg-wedding-surface text-wedding-text-primary shadow-wedding-card",
+              "supports-[backdrop-filter]:bg-wedding-surface/70 supports-[backdrop-filter]:backdrop-blur-xl supports-[backdrop-filter]:backdrop-saturate-150",
+              "supports-[backdrop-filter]:ring-1 supports-[backdrop-filter]:ring-inset supports-[backdrop-filter]:ring-white/15",
+              "transition-colors duration-200 hover:text-wedding-accent",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wedding-accent"
+            )}
+          >
+            <span className="relative block h-5 w-5" aria-hidden="true">
+              <Menu
+                strokeWidth={2}
                 className={cn(
-                  "absolute inset-x-0 bottom-[5px] mx-auto h-[3px] w-[3px] rounded-full bg-[#c9a227] transition-all duration-300",
-                  active ? "scale-100 opacity-100" : "scale-0 opacity-0"
+                  "absolute inset-0 h-5 w-5 transition-opacity duration-200",
+                  open ? "opacity-0" : "opacity-100"
                 )}
               />
-            </button>
-          )
-        })}
+              <X
+                strokeWidth={2}
+                className={cn(
+                  "absolute inset-0 h-5 w-5 transition-opacity duration-200",
+                  open ? "opacity-100" : "opacity-0"
+                )}
+              />
+            </span>
+          </button>
 
-        <span className="sr-only">
-          Our Story diputar otomatis dan berhenti di Waktu & Tempat.
-        </span>
+          {/* Panel dropdown */}
+          <div
+            id="sequence-menu"
+            role="menu"
+            aria-hidden={!open}
+            className={cn(
+              "absolute top-[calc(100%+10px)] right-0 w-72 origin-top-right overflow-hidden rounded-[24px]",
+              "border border-wedding-border bg-wedding-surface shadow-wedding-card",
+              "supports-[backdrop-filter]:bg-wedding-surface/80 supports-[backdrop-filter]:backdrop-blur-2xl supports-[backdrop-filter]:backdrop-saturate-150",
+              "supports-[backdrop-filter]:ring-1 supports-[backdrop-filter]:ring-inset supports-[backdrop-filter]:ring-white/10",
+              "transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
+              open
+                ? "pointer-events-auto visible scale-100 opacity-100 translate-y-0"
+                : "pointer-events-none invisible scale-[0.97] opacity-0 -translate-y-1"
+            )}
+          >
+            {/* Tepi cahaya kaca: satu garis pantulan di sisi atas panel */}
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-x-6 top-0 h-px bg-white/30 dark:bg-white/15"
+            />
+            <p className="px-6 pt-5 pb-2 font-serif text-[17px] font-medium italic text-wedding-text-primary">
+              Lompat ke bagian…
+            </p>
+
+            <ul className="flex flex-col gap-1 px-3 pt-1 pb-3">
+              {LINKS.map(({ id, label, hint, Icon }) => {
+                const active = activeId === id
+                return (
+                  <li key={id}>
+                    <button
+                      type="button"
+                      role="menuitem"
+                      onClick={() => go(id)}
+                      data-story-nav
+                      aria-current={active ? "location" : undefined}
+                      tabIndex={tabbable ? 0 : -1}
+                      className={cn(
+                        "group flex w-full cursor-pointer items-center gap-3.5 rounded-2xl px-4 py-3.5 text-left transition-colors duration-200",
+                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wedding-accent",
+                        active
+                          ? "bg-wedding-accent/15"
+                          : "hover:bg-wedding-text-primary/[0.05]"
+                      )}
+                    >
+                      <Icon
+                        strokeWidth={2}
+                        aria-hidden="true"
+                        className={cn(
+                          "h-5 w-5 shrink-0 transition-colors duration-200",
+                          active
+                            ? "text-wedding-accent"
+                            : "text-wedding-text-secondary group-hover:text-wedding-text-primary"
+                        )}
+                      />
+                      <span className="flex min-w-0 flex-col gap-1">
+                        <span className="font-serif text-[17px] leading-snug font-medium text-wedding-text-primary">
+                          {label}
+                        </span>
+                        <span className="font-serif text-[13px] leading-relaxed italic text-wedding-text-secondary">
+                          {hint}
+                        </span>
+                      </span>
+                    </button>
+                  </li>
+                )
+              })}
+            </ul>
+
+            <div className="mx-6 h-px bg-wedding-border" />
+
+            {/* Putar Our Story */}
+            <div className="p-3">
+              <button
+                type="button"
+                role="menuitemcheckbox"
+                onClick={onStory}
+                data-story-nav
+                aria-checked={isPlaying}
+                tabIndex={tabbable ? 0 : -1}
+                className={cn(
+                  "flex w-full cursor-pointer items-center gap-3.5 rounded-2xl px-4 py-3.5 text-left transition-colors duration-200",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wedding-accent",
+                  isPlaying
+                    ? "bg-wedding-accent/15"
+                    : "hover:bg-wedding-text-primary/[0.05]"
+                )}
+              >
+                {isPlaying ? (
+                  <Pause
+                    strokeWidth={2}
+                    aria-hidden="true"
+                    className="h-5 w-5 shrink-0 text-wedding-accent"
+                  />
+                ) : (
+                  <Play
+                    strokeWidth={2}
+                    aria-hidden="true"
+                    className="ml-px h-5 w-5 shrink-0 text-wedding-text-secondary"
+                  />
+                )}
+                <span className="flex min-w-0 flex-col gap-1">
+                  <span className="font-serif text-[17px] leading-snug font-medium text-wedding-text-primary">
+                    {isPlaying ? "Hentikan Story" : "Putar Story"}
+                  </span>
+                  <span className="font-serif text-[13px] leading-relaxed italic text-wedding-text-secondary">
+                    Berhenti di Waktu &amp; Tempat
+                  </span>
+                </span>
+              </button>
+            </div>
+
+            <span className="sr-only">
+              Our Story diputar otomatis dan berhenti di Waktu &amp; Tempat.
+            </span>
+          </div>
+        </div>
       </nav>
     </div>
   )
