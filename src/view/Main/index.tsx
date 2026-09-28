@@ -22,6 +22,7 @@ import LoveJourneyHorizontal, {
 import DigitalGift from "@/components/DigitalGift"
 import CommentSection, { CommentSectionRef } from "@/components/CommentSection"
 import Footer from "@/components/Footer"
+import SequenceNav from "@/components/SequenceNav"
 import Image from "next/image"
 import { Tools } from "@/components/Tools"
 import { useImageUrl } from "@/store/useImageUrl"
@@ -191,6 +192,7 @@ const MainView = ({
   return (
     <main ref={mainRef} className="bg-background">
       <Tools />
+      <SequenceNav visible={isLoaded} />
       {!isLoaded && <LoadingScreen onComplete={handleLoadingComplete} />}
 
       <section

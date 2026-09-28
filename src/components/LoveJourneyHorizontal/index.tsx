@@ -80,7 +80,10 @@ const LoveJourneyHorizontal = forwardRef<LoveJourneyHorizontalRef, Props>(
           const DWELL0 = 0.4
           const MOVE = 1.2
           const DWELL1 = 0.4
-          const TAIL = 0.5
+          // Ekor = jeda tahan kartu terakhir dalam pin sebelum unpin.
+          // 0.8: kartu 3 sempat dinikmati dulu (magnet menahan di tengah),
+          // scroll berikutnya baru lepas ke TimeAndPlace.
+          const TAIL = 0.8
 
           // Semua state awal di DALAM timeline (tl.set di 0) agar scrub
           // bolak-balik restore tanpa lompat. Sebelumnya gsap.set di luar

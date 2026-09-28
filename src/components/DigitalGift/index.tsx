@@ -66,7 +66,8 @@ export const DigitalGift = () => {
   return (
     <section
       ref={sectionRef}
-      className="dg-section relative w-full overflow-hidden bg-background"
+      id="digital-gift"
+      className="dg-section relative w-full scroll-mt-16 overflow-hidden bg-background"
     >
       {/* Ambient background */}
       <div className="pointer-events-none absolute left-1/2 top-[48%] h-[92vw] max-h-[560px] w-[92vw] max-w-[560px] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full md:h-[840px] md:max-h-[840px] md:w-[840px] md:max-w-[840px] lg:h-[1020px] lg:max-h-[1020px] lg:w-[1020px] lg:max-w-[1020px]">

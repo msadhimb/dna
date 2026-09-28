@@ -1,6 +1,5 @@
 import { useImageUrl } from "@/store/useImageUrl"
 import { useQuery } from "@tanstack/react-query"
-import { useTheme } from "next-themes"
 import axios from "axios"
 import { useEffect, useRef } from "react"
 import { preloadImages } from "../helper/preload"
@@ -14,7 +13,6 @@ const usePreloadImages = (
   const onProgressRef = useRef(onProgress)
   const { setImageUrl } = useImageUrl()
   const setImageUrlRef = useRef(setImageUrl)
-  const { resolvedTheme } = useTheme()
 
   useEffect(() => {
     onDoneRef.current = onDone
@@ -37,20 +35,45 @@ const usePreloadImages = (
       const dark = res.data?.data?.dark ?? []
       const light = res.data?.data?.light ?? []
 
-      
-      
-      
-      const activeThemeImages = resolvedTheme === "dark" ? dark : light
+      const linksOf = (arr: { link: string }[]) =>
+        arr.map((img) => img.link).filter(Boolean)
+      // Muat SEMUA sekaligus: dark + light + icon. Setelah loading selesai,
+      // semua gambar siap tampil — ganti theme tidak lagi gagal/blur/kosong.
       const urls = [
-        ...activeThemeImages.map((img: { link: string }) => img.link),
-        ...imageIcon.map((img: { link: string }) => img.link),
+        ...new Set([
+          ...linksOf(dark),
+          ...linksOf(light),
+          ...linksOf(imageIcon),
+        ]),
       ]
 
       if (!hasStarted.current) {
         hasStarted.current = true
-        preloadImages(urls, onProgressRef.current, () => {
-          setImageUrlRef.current({ dark, light, icon: imageIcon })
-          onDoneRef.current()
+        preloadImages(urls, onProgressRef.current, (failed) => {
+          const finish = () => {
+            setImageUrlRef.current({ dark, light, icon: imageIcon })
+            onDoneRef.current()
+          }
+          if (failed.length > 0) {
+            // Satu putaran tambahan khusus untuk URL yang sempat gagal
+            // sebelum loading dinyatakan selesai.
+            preloadImages(
+              failed,
+              () => {},
+              (stillFailed) => {
+                if (stillFailed.length > 0) {
+                  console.warn(
+                    "[preload] gambar tetap gagal setelah retry:",
+                    stillFailed
+                  )
+                }
+                finish()
+              },
+              { retries: 5 }
+            )
+          } else {
+            finish()
+          }
         })
       }
 

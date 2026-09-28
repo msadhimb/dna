@@ -122,8 +122,6 @@ export const CommentSection = forwardRef<
       const triggerEl = sectionRef.current
       if (!triggerEl) return gsap.timeline()
 
-      const tl = gsap.timeline()
-
       floatSTs.current.forEach((st) => st.kill())
       floatSTs.current = []
 
@@ -171,61 +169,9 @@ export const CommentSection = forwardRef<
         },
       })
 
-      tl.fromTo(
-        ".cs-eyebrow",
-        { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }
-      )
-        .fromTo(
-          ".cs-title-word",
-          { opacity: 0, y: 40 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.9,
-            stagger: 0.08,
-            ease: "power3.out",
-          },
-          "-=0.3"
-        )
-        .fromTo(
-          ".cs-desc",
-          { opacity: 0, y: 16 },
-          { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" },
-          "-=0.4"
-        )
-        .fromTo(
-          ".cs-form-wrap",
-          { opacity: 0, y: 32 },
-          { opacity: 1, y: 0, duration: 0.9, ease: "power3.out" },
-          "-=0.3"
-        )
-        .fromTo(
-          ".cs-submit-btn",
-          { opacity: 0, y: 16 },
-          { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" },
-          "-=0.3"
-        )
-        .fromTo(
-          ".cs-count",
-          { opacity: 0, y: 12 },
-          { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" },
-          "-=0.2"
-        )
-        .fromTo(
-          ".cs-card-item",
-          { opacity: 0, y: 40 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.8,
-            stagger: 0.12,
-            ease: "power3.out",
-          },
-          "-=0.4"
-        )
-
-      return tl
+      // Tanpa fade entrance: konten langsung tampil apa adanya.
+      // Parallax float di atas tetap dipertahankan.
+      return gsap.timeline()
     },
   }))
 
@@ -316,7 +262,8 @@ export const CommentSection = forwardRef<
   return (
     <section
       ref={sectionRef}
-      className="relative w-full overflow-hidden bg-background gsap-element"
+      id="comment"
+      className="relative w-full scroll-mt-16 overflow-hidden bg-background gsap-element"
       style={{ perspective: "1500px" }}
     >
       <div className="pointer-events-none absolute left-1/2 top-[52%] h-[92vw] max-h-[560px] w-[92vw] max-w-[560px] -translate-x-1/2 -translate-y-1/2 rounded-full md:h-[860px] md:max-h-[860px] md:w-[860px] md:max-w-[860px] lg:h-[1040px] lg:max-h-[1040px] lg:w-[1040px] lg:max-w-[1040px] overflow-hidden">

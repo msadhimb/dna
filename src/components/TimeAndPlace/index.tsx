@@ -142,7 +142,8 @@ export const TimeAndPlace = () => {
   return (
     <section
       ref={sectionRef}
-      className="relative w-full overflow-hidden bg-background"
+      id="time-and-place"
+      className="relative w-full scroll-mt-16 overflow-hidden bg-background"
     >
       {onPhoto ? (
         <>
@@ -197,7 +198,7 @@ export const TimeAndPlace = () => {
         </div>
       )}
 
-      <div className="relative z-10 mx-auto flex w-full max-w-2xl flex-col items-center gap-5 px-4 py-14 sm:px-6 md:gap-10 md:px-10 md:py-24">
+      <div className="relative z-10 mx-auto flex w-full max-w-2xl flex-col items-center gap-5 px-0 py-14 sm:px-6 md:gap-10 md:px-10 md:py-24">
         {/* header */}
 
         <Header
@@ -219,7 +220,7 @@ export const TimeAndPlace = () => {
             ]}
             listLabel="Pilih acara"
             listClassName="tp-tabs"
-            className="mx-auto md:w-full w-[20rem]"
+            className="mx-auto w-full px-5"
           >
             {(["mantu", "unduh"] as const).map((key) => {
               const item = INFO[key]
@@ -243,7 +244,7 @@ export const TimeAndPlace = () => {
                         subHeader={item.label}
                         title={item.date}
                         subTitle={item.hours}
-                        classNameSubTitle="font-serif text-sm leading-relaxed md:text-[15px]"
+                        classNameSubTitle="font-serif text-lg leading-relaxed md:text-[15px]"
                         className={onPhoto ? "text-white" : ""}
                         classNameTitle="font-serif text-2xl leading-[1.2] font-semibold text-balance md:text-[28px]"
                       />
@@ -262,7 +263,7 @@ export const TimeAndPlace = () => {
                         subHeader="Lokasi"
                         title={item.place}
                         subTitle={item.date + " · " + item.hours}
-                        classNameSubTitle="font-serif text-sm leading-relaxed md:text-[15px]"
+                        classNameSubTitle="font-serif text-lg leading-relaxed md:text-[15px]"
                         className={onPhoto ? "text-white" : ""}
                         classNameTitle="font-serif text-2xl leading-[1.2] font-semibold text-balance md:text-[28px]"
                       />

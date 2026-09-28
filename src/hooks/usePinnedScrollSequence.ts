@@ -80,7 +80,11 @@ export function usePinnedScrollSequence(
       const journeyTl = refs.journeyRef.current.getTimeline()
       const loveJourneyTl = refs.loveJourneyRef.current.getTimeline()
       const bookFlipTl = refs.bookFlipRef?.current?.getTimeline()
-      const commentTl = refs.commentRef.current?.getTimeline()
+      // CommentSection ada di luar #master-trigger: getTimeline-nya tetap
+      // dipanggil agar parallax float ScrollTrigger-nya terpasang, tapi
+      // entrance-nya main sendiri (ScrollTrigger di komponen) — TIDAK
+      // dimasukkan ke master pin agar tidak ada scroll mati sebelum unpin.
+      refs.commentRef.current?.getTimeline()
 
       const wDur = welcomeTl.totalDuration() || 1
       const cDur = curtainTl.totalDuration() || 1
@@ -166,9 +170,9 @@ export function usePinnedScrollSequence(
       }
       bookFlipWrapRef.current = bookFlipWrapperTl
 
-      const commentWrapperTl = commentTl
-        ? gsap.timeline().add(commentTl)
-        : gsap.timeline()
+      // Wrapper komentar tidak dipakai di master pin (lihat atas).
+      // Disimpan sebagai timeline kosong agar patch theme tetap aman.
+      const commentWrapperTl = gsap.timeline()
       commentWrapRef.current = commentWrapperTl
 
       const masterTl = gsap.timeline({
@@ -184,6 +188,9 @@ export function usePinnedScrollSequence(
           scrub: isMobileSetup ? 0.6 : 1.5,
           anticipatePin: 1,
           invalidateOnRefresh: true,
+          // fastScrollEnd: scroll cepat/sengaja tidak ditahan magnet —
+          // penting di ujung pin agar lepas ke TimeAndPlace mulus.
+          fastScrollEnd: true,
           snap: {
             snapTo: snapFn,
             duration: { min: 0.12, max: 0.5 },
@@ -201,7 +208,6 @@ export function usePinnedScrollSequence(
       masterTl.add(journeyWrapperTl)
       masterTl.add(loveJourneyWrapperTl)
       masterTl.add(bookFlipWrapperTl)
-      if (commentTl) masterTl.add(commentWrapperTl)
 
       // Normalisasi snap terhadap master ASLI: posisi konten love diukur dari
       // startTime wrapper, penyebut = totalDuration master (termasuk
@@ -221,7 +227,16 @@ export function usePinnedScrollSequence(
         ]
         loveSnapPoints = times.map((t) => (contentStart + t) / actualTotal)
         snapZoneStart = contentStart / actualTotal
-        snapZoneEnd = (contentStart + lDur + lDur * 0.1) / actualTotal
+        // Zona magnet: sampai tengah sisa ekor setelah c2. Paruh pertama
+        // ekor magnet menahan kartu 3 di tengah (masih pinned); paruh
+        // kedua SENGAJA bebas snap sebagai jalur keluar — scroll lagi
+        // baru unpin ke TimeAndPlace, tanpa ditarik balik (glitch).
+        const loveEnd = (contentStart + lDur) / actualTotal
+        const c2point = loveSnapPoints[2]
+        snapZoneEnd = Math.min(
+          1,
+          c2point + Math.max(0, loveEnd - c2point) * 0.5
+        )
       }
 
       masterTlRef.current = masterTl
@@ -237,7 +252,6 @@ export function usePinnedScrollSequence(
     const jWrapper = journeyWrapRef.current
     const lWrapper = loveJourneyWrapRef.current
     const bWrapper = bookFlipWrapRef.current
-    const coWrapper = commentWrapRef.current
 
     if (
       !cWrapper ||
@@ -254,19 +268,16 @@ export function usePinnedScrollSequence(
     const savedJ = jWrapper.progress()
     const savedL = lWrapper.progress()
     const savedB = bWrapper?.progress() ?? 0
-    const savedCo = coWrapper?.progress() ?? 0
 
     cWrapper.progress(0, true)
     jWrapper.progress(0, true)
     lWrapper.progress(0, true)
     bWrapper?.progress(0, true)
-    coWrapper?.progress(0, true)
 
     cWrapper.clear()
     jWrapper.clear()
     lWrapper.clear()
     bWrapper?.clear()
-    coWrapper?.clear()
 
     const journeyWrap = document.getElementById("journey-wrapper")
     const loveJourneyWrap = document.getElementById("love-journey-wrapper")
@@ -284,7 +295,8 @@ export function usePinnedScrollSequence(
     const newJourneyTl = refs.journeyRef.current.getTimeline()
     const newLoveJourneyTl = refs.loveJourneyRef.current.getTimeline()
     const newBookFlipTl = refs.bookFlipRef?.current?.getTimeline()
-    const newCommentTl = refs.commentRef.current?.getTimeline()
+    // Komentar rebuild sendiri (ScrollTrigger independen + cleanup internal).
+    refs.commentRef.current?.getTimeline()
 
     cWrapper.add(newCurtainTl)
 
@@ -307,11 +319,6 @@ export function usePinnedScrollSequence(
       "<"
     )
     lWrapper.add(newLoveJourneyTl)
-
-    if (coWrapper && newCommentTl) {
-      coWrapper.add(newCommentTl)
-      coWrapper.progress(savedCo, true)
-    }
 
     if (bWrapper && newBookFlipTl) {
       bWrapper.to(

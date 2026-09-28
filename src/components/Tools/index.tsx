@@ -26,15 +26,11 @@ export const Tools = () => {
   const [showTitle, setShowTitle] = useState(false)
   const { scrollY } = useScroll()
   const hasAutoPlayedRef = useRef(false)
-  
+
   const [needsUserAction, setNeedsUserAction] = useState(false)
 
   useEffect(() => setMounted(true), [])
 
-  
-  
-  
-  
   useEffect(() => {
     if (hasAutoPlayedRef.current || isPlaying) return
 
@@ -57,9 +53,6 @@ export const Tools = () => {
     }
   }, [isPlaying, setIsPlaying])
 
-  
-  
-  
   useEffect(() => {
     if (hasAutoPlayedRef.current) return
     if (isPlaying) {
@@ -72,7 +65,6 @@ export const Tools = () => {
     }
   }, [scrollY, isPlaying, setIsPlaying])
 
-  
   useEffect(() => {
     let cancelled = false
     fetch("/api/audio", { cache: "no-store" })
@@ -88,9 +80,6 @@ export const Tools = () => {
     }
   }, [setPlaylist])
 
-  
-  
-  
   useEffect(() => {
     const audio = audioRef.current
     if (!audio || !src) return
@@ -100,8 +89,6 @@ export const Tools = () => {
         .play()
         .then(() => setNeedsUserAction(false))
         .catch(() => {
-          
-          
           setNeedsUserAction(true)
         })
     } else {
@@ -113,7 +100,6 @@ export const Tools = () => {
     if (audioRef.current) audioRef.current.volume = volume
   }, [volume])
 
-  
   useEffect(() => {
     const audio = audioRef.current
     if (!audio) return
@@ -135,7 +121,6 @@ export const Tools = () => {
     }
   }, [setIsPlaying, playlist.length, next])
 
-  
   useEffect(() => {
     if (!title || !isPlaying) {
       setShowTitle(false)
@@ -149,8 +134,6 @@ export const Tools = () => {
   const isDark = resolvedTheme === "dark"
   const shouldLoop = playlist.length <= 1
 
-  
-  
   const handleUnlockAudio = () => {
     const audio = audioRef.current
     if (!audio) return
@@ -164,7 +147,6 @@ export const Tools = () => {
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-center gap-3">
-      
       {needsUserAction && (
         <button
           onClick={handleUnlockAudio}
@@ -175,7 +157,6 @@ export const Tools = () => {
         </button>
       )}
 
-      
       <div
         className={cn(
           "pointer-events-none absolute right-0 flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-xs font-medium text-muted dark:text-white shadow-xl transition-all duration-300",

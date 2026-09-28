@@ -3,9 +3,9 @@
 import { forwardRef, useImperativeHandle, useRef, useEffect } from "react"
 import { useTheme } from "next-themes"
 import { gsap } from "@/lib/gsap"
-import { Separator } from "../ui/separator"
 import useResponsive from "@/hooks/useResponsive"
 import { Card } from "@/components/Card"
+import { OrnamentalDivider } from "@/components/Icons/OrnamentalDivider"
 
 export interface RomanticQuoteRef {
   getTimeline: () => gsap.core.Timeline
@@ -25,10 +25,8 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
   const currentX = useRef(0)
   const currentY = useRef(0)
 
-  
   const lerp = (a: number, b: number, t: number) => a + (b - a) * t
 
-  
   useEffect(() => {
     if (isMobile || !cardRef.current || !wrapperRef.current) return
 
@@ -45,13 +43,21 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
       card.style.setProperty("--mouse-x", `${pctX * 100}%`)
       card.style.setProperty("--mouse-y", `${pctY * 100}%`)
       card.style.willChange = "transform"
-      gsap.to(card.querySelector(".rq-shine"), { opacity: 1, duration: 0.15, overwrite: true })
+      gsap.to(card.querySelector(".rq-shine"), {
+        opacity: 1,
+        duration: 0.15,
+        overwrite: true,
+      })
     }
 
     const onMouseLeave = () => {
       targetX.current = 0
       targetY.current = 0
-      gsap.to(card.querySelector(".rq-shine"), { opacity: 0, duration: 0.5, overwrite: true })
+      gsap.to(card.querySelector(".rq-shine"), {
+        opacity: 0,
+        duration: 0.5,
+        overwrite: true,
+      })
     }
 
     const animate = () => {
@@ -59,7 +65,10 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
       const dy = targetY.current - currentY.current
       // skip RAF work jika idle (hemat CPU)
       if (Math.abs(dx) < 0.01 && Math.abs(dy) < 0.01) {
-        if (Math.abs(currentX.current) < 0.01 && Math.abs(currentY.current) < 0.01) {
+        if (
+          Math.abs(currentX.current) < 0.01 &&
+          Math.abs(currentY.current) < 0.01
+        ) {
           card.style.willChange = "auto"
         }
         rafRef.current = requestAnimationFrame(animate)
@@ -89,7 +98,6 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
     }
   }, [isMobile])
 
-  
   useEffect(() => {
     if (!isMobile || !cardRef.current) return
 
@@ -127,7 +135,6 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
     }
   }, [isMobile])
 
-  
   useEffect(() => {
     currentX.current = 0
     currentY.current = 0
@@ -159,9 +166,7 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
       ref={sectionRef}
       className="rq-section relative flex w-full items-center justify-center overflow-hidden bg-background min-h-[540px] md:min-h-[680px]"
     >
-      
       <div className="pointer-events-none absolute left-1/2 top-1/2 h-[94vw] max-h-[480px] w-[94vw] max-w-[480px] -translate-x-1/2 -translate-y-1/2 rounded-full md:h-[620px] md:w-[620px] overflow-hidden">
-        
         <div
           className="absolute inset-0 bg-wedding-dot opacity-60"
           style={{
@@ -170,7 +175,7 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
               "radial-gradient(circle, black 58%, transparent 76%)",
           }}
         />
-        
+
         <div
           className="absolute inset-0"
           style={{
@@ -180,12 +185,11 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
         />
       </div>
 
-      <div className="rq-content relative z-10 mx-auto flex w-full max-w-3xl flex-col items-center gap-8 p-14 md:gap-10 ">
-        <p className="rq-eyebrow font-sans text-[10px] font-semibold tracking-[0.5em] uppercase text-wedding-text-secondary">
-          Kata Hati
-        </p>
+      <div className="rq-content relative z-10 mx-auto flex w-full max-w-2xl flex-col items-center gap-7 p-5 md:gap-8 ">
+        <div className="rq-eyebrow flex justify-center" aria-hidden="true">
+          <OrnamentalDivider size="small" className="opacity-80" />
+        </div>
 
-        
         <div
           ref={wrapperRef}
           className="relative flex w-[90vw] md:w-full items-center justify-center"
@@ -193,7 +197,8 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
         >
           <Card
             ref={cardRef}
-            className="rq-card group w-full max-w-xl items-center justify-center px-8 py-10"
+            withCorners={false}
+            className="rq-card group w-full max-w-xl items-center justify-center px-7 py-12 md:px-14 md:py-14"
             style={
               {
                 transformStyle: "preserve-3d",
@@ -202,22 +207,31 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
               } as React.CSSProperties
             }
           >
-            
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-3 rounded-[14px] border border-wedding-border-accent opacity-40"
+            />
             <div
               className="rq-shine pointer-events-none absolute inset-0 rounded-[20px] opacity-0"
               style={{
                 background: `radial-gradient(circle 200px at var(--mouse-x) var(--mouse-y), rgba(255,255,255,0.12), transparent 60%)`,
               }}
             />
-            <div className="flex flex-col gap-5">
-              <p className="font-signature  leading-relaxed font-bold text-2xl text-center">
-                &ldquo;Da moram živjeti deset tisuća života,
+            <div className="flex flex-col items-center gap-6">
+              <span
+                aria-hidden="true"
+                className="font-serif text-6xl leading-none text-wedding-accent opacity-30 select-none md:text-7xl"
+              >
+                &ldquo;
+              </span>
+              <p className="font-signature text-4xl leading-[1.25] text-center text-balance text-wedding-text-primary md:text-[2.9rem]">
+                Da moram živjeti deset tisuća života,
                 <br />
-                uvijek bih izabrala tebe.&rdquo;
+                uvijek bih izabrala tebe.
               </p>
 
-              <Separator />
-              <p className="font-serif text-sm leading-relaxed italic text-gray-500 text-center">
+              <OrnamentalDivider size="small" className="opacity-70" />
+              <p className="font-serif text-[15px] leading-relaxed italic text-center text-balance text-wedding-text-secondary md:text-base">
                 &ldquo;Jika aku harus menjalani sepuluh ribu kehidupan,
                 <br />
                 aku akan selalu memilihmu.&rdquo;
