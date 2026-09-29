@@ -33,6 +33,7 @@ export function FloatImages({
           src={imgBack}
           alt=""
           fill
+          loading="lazy"
           sizes="(max-width: 768px) 160px, 320px"
           className="object-cover"
         />
@@ -47,6 +48,7 @@ export function FloatImages({
           src={imgFront}
           alt=""
           fill
+          loading="lazy"
           sizes="(max-width: 768px) 200px, 400px"
           className="object-cover"
         />
@@ -61,6 +63,7 @@ export function FloatImages({
           src={imgRight}
           alt=""
           fill
+          loading="lazy"
           sizes="(max-width: 768px) 160px, 320px"
           style={{
             objectFit: "cover",
@@ -78,6 +81,7 @@ export function FloatImages({
           src={imgRightFront}
           alt=""
           fill
+          loading="lazy"
           sizes="(max-width: 768px) 200px, 400px"
           style={{
             objectFit: "cover",

@@ -152,7 +152,8 @@ export const TimeAndPlace = () => {
           alt=""
           fill
           sizes="100vw"
-          className="md:scale-150 object-cover object-center origin-[0%_5%] md:origin-[0%_10%] dark:origin-[120%_20%]"
+          loading="lazy"
+          className="object-cover object-[50%_50%] dark:object-[40%_10%]"
           quality={80}
           unoptimized
         />
