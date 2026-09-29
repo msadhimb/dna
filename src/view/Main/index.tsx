@@ -147,7 +147,7 @@ const MainView = ({
             src={content}
             alt={`Curtain Photo ${i + 1}`}
             fill
-            sizes="100vw"
+            sizes="200vw"
             priority={i === 0}
             className="object-cover object-center"
           />
@@ -223,7 +223,7 @@ const MainView = ({
           <LoveJourneyHorizontal ref={loveJourneyRef} theme={theme as any} />
         </div>
       </section>
-      <div className="flex flex-col gap-0 bg-background">
+      <div className="flex flex-col gap-24 bg-background">
         <TimeAndPlace />
         <CommentSection
           ref={commentRef}

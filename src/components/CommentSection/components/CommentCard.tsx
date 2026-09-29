@@ -46,6 +46,7 @@ export function CommentCard({
     <Card
       withTopLine={false}
       withCorners={false}
+      shadow={false}
       className="cs-card-item gap-4 p-5 transition-all duration-300 hover:-translate-y-1 hover:border-wedding-border-accent md:p-6"
     >
       <div className="flex items-center gap-3">

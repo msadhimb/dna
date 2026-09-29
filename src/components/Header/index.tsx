@@ -2,6 +2,7 @@ import { cn } from "@/lib/utils"
 import React, { memo } from "react"
 
 const Header = memo(function Header({
+  id,
   subHeader,
   title,
   subTitle,
@@ -11,6 +12,7 @@ const Header = memo(function Header({
   spaceY = 0,
   separator,
 }: {
+  id?: string
   subHeader: string
   title: string
   subTitle: string
@@ -22,6 +24,7 @@ const Header = memo(function Header({
 }) {
   return (
     <div
+      id={id}
       className={cn(
         "relative z-10 flex shrink-0 flex-col items-center gap-3 text-center md:gap-4 md:px-10",
         className
@@ -49,7 +52,7 @@ const Header = memo(function Header({
         {separator}
         <p
           className={cn(
-            "max-w-[90%] font-serif text-[12px] leading-relaxed md:text-[13px]",
+            "max-w-[90%] font-serif text-sm leading-relaxed md:text-[13px]",
             classNameSubTitle
           )}
         >

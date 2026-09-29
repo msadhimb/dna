@@ -9,11 +9,7 @@ import {
 } from "react"
 import { useTheme } from "next-themes"
 import { gsap, ScrollTrigger } from "@/lib/gsap"
-import {
-  FloatImages,
-  CommentForm,
-  CommentList,
-} from "./components"
+import { FloatImages, CommentForm, CommentList } from "./components"
 import { useImageUrl } from "@/store/useImageUrl"
 import { useComments } from "@/hooks/useComments"
 import { useToast } from "@/hooks/use-toast"
@@ -266,24 +262,6 @@ export const CommentSection = forwardRef<
       className="relative w-full scroll-mt-16 overflow-hidden bg-background gsap-element"
       style={{ perspective: "1500px" }}
     >
-      <div className="pointer-events-none absolute left-1/2 top-[52%] h-[92vw] max-h-[560px] w-[92vw] max-w-[560px] -translate-x-1/2 -translate-y-1/2 rounded-full md:h-[860px] md:max-h-[860px] md:w-[860px] md:max-w-[860px] lg:h-[1040px] lg:max-h-[1040px] lg:w-[1040px] lg:max-w-[1040px] overflow-hidden">
-        <div
-          className="absolute inset-0 bg-wedding-dot opacity-50"
-          style={{
-            maskImage: "radial-gradient(circle, black 60%, transparent 78%)",
-            WebkitMaskImage:
-              "radial-gradient(circle, black 60%, transparent 78%)",
-          }}
-        />
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(circle, color-mix(in srgb, var(--wedding-accent) 13%, transparent) 0%, color-mix(in srgb, var(--wedding-accent) 5%, transparent) 38%, transparent 72%)",
-          }}
-        />
-      </div>
-
       <FloatImages
         imgBack={imgBack}
         imgFront={imgFront}
@@ -297,7 +275,7 @@ export const CommentSection = forwardRef<
 
       <div
         ref={contentRef}
-        className="pointer-events-auto relative z-40 mx-auto flex w-full max-w-5xl flex-col gap-5 px-6 py-10 gsap-element md:px-10"
+        className="pointer-events-auto relative z-40 mx-auto flex w-full max-w-5xl flex-col gap-5 px-5 gsap-element py-1"
         style={{
           transformStyle: "preserve-3d",
           backfaceVisibility: "hidden",

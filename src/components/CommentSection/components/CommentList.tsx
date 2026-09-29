@@ -40,7 +40,12 @@ function LoadingSkeleton() {
   return (
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2" aria-hidden="true">
       {[0, 1].map((i) => (
-        <Card key={i} withTopLine={false} withCorners={false} className="gap-4 p-5 md:p-6">
+        <Card
+          key={i}
+          withTopLine={false}
+          withCorners={false}
+          className="gap-4 p-5 md:p-6"
+        >
           <div className="flex animate-pulse items-center gap-3">
             <span className="h-10 w-10 shrink-0 rounded-full bg-wedding-text-muted/20" />
             <div className="flex flex-1 flex-col gap-2">
@@ -85,6 +90,7 @@ export function CommentList({
       <Card
         withTopLine={false}
         withCorners={false}
+        shadow={false}
         className="flex flex-col items-center gap-4 py-12 text-center"
       >
         <span className="flex h-12 w-12 items-center justify-center rounded-full bg-wedding-accent/10">
@@ -119,7 +125,10 @@ export function CommentList({
           ))}
         </div>
       )}
-      <div ref={loadMoreRef} className="flex min-h-10 items-center justify-center">
+      <div
+        ref={loadMoreRef}
+        className="flex min-h-10 items-center justify-center"
+      >
         {isLoadingMore &&
           (comments.length === 0 ? null : (
             <p className="flex items-center gap-2 font-sans text-xs text-muted-foreground">

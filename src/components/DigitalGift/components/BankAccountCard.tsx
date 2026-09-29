@@ -82,31 +82,31 @@ const BankAccountCard = ({
         <p className="font-sans text-[10px] font-bold tracking-[0.2em] uppercase text-wedding-text-secondary">
           Nomor Rekening
         </p>
-        <p className="mt-1.5 font-sans text-[26px] leading-none font-bold tracking-tight tabular-nums text-wedding-text-primary select-all">
+        <p className="mt-1.5 font-sans text-[19px] leading-snug font-semibold tracking-normal tabular-nums break-all text-wedding-text-primary select-all md:text-[20px]">
           {accountNumber}
         </p>
-        <p className="mt-2 font-sans text-[11px] font-medium tracking-[0.14em] uppercase text-wedding-text-secondary">
+        <p className="mt-1.5 font-sans text-[11px] font-medium tracking-[0.08em] uppercase text-wedding-text-secondary">
           a.n. {accountName}
         </p>
       </div>
 
       {/* Action */}
-      <div className="px-6 pt-5 pb-6">
+      <div className="px-6 pt-4 pb-5">
         <Button
           onClick={handleCopy}
           size="sm"
           aria-live="polite"
-          className="h-11 w-full rounded-full px-5 py-2 text-[11px] font-bold tracking-[0.18em] uppercase transition-all duration-200 focus-visible:ring-2 focus-visible:ring-wedding-accent focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.98] text-white dark:text-white"
+          className="h-9 w-full rounded-full px-4 text-[10px] font-bold tracking-[0.14em] uppercase transition-all duration-200 focus-visible:ring-2 focus-visible:ring-wedding-accent focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.98] text-white dark:text-white"
           style={{ background: "var(--wedding-accent)" }}
         >
           {copied ? (
             <>
-              <CopyCheck className="h-4 w-4" />
+              <CopyCheck className="h-3.5 w-3.5" />
               Tersalin
             </>
           ) : (
             <>
-              <CopyIcon className="h-4 w-4" />
+              <CopyIcon className="h-3.5 w-3.5" />
               Salin Nomor
             </>
           )}

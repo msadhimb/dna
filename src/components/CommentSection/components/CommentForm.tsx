@@ -16,7 +16,6 @@ interface FormValues {
 }
 
 interface CommentFormProps {
-
   accent?: string
 
   border?: string
@@ -68,6 +67,7 @@ export function CommentForm({
       <Card
         className="cs-form-wrap overflow-hidden p-0"
         radius="20px"
+        shadow={false}
       >
         <div className="flex items-center gap-3 px-6 py-4 border-b border-wedding-border rounded-t-[20px] md:px-8">
           <span className="relative flex h-2 w-2">
@@ -129,7 +129,7 @@ export function CommentForm({
               type="button"
               onClick={handleSubmit}
               disabled={isSubmitting}
-              className="cs-submit-btn flex cursor-pointer items-center justify-center gap-2.5 rounded-full bg-wedding-accent px-8 py-3.5 font-sans text-[10px] md:text-[11px] font-bold tracking-[0.25em] uppercase text-white shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:brightness-110 active:translate-y-0 disabled:cursor-wait disabled:opacity-70 disabled:hover:translate-y-0"
+              className="h-9 rounded-full px-4 text-[10px] font-bold tracking-[0.14em] uppercase transition-all duration-200 focus-visible:ring-2 focus-visible:ring-wedding-accent focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.98] text-white dark:text-white"
             >
               {isSubmitting ? (
                 <Loader2 className="animate-spin" />

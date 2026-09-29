@@ -47,7 +47,7 @@ const HeroSection = () => {
               fill
               priority
               className="object-cover object-[80%_70%] dark:object-[60%_0%]"
-              sizes="100vw"
+              sizes="200vw"
               quality={85}
             />
           ) : (
@@ -71,7 +71,7 @@ const HeroSection = () => {
           <h1 className="animate-fade-up animation-delay-400 font-signature text-7xl leading-none text-primary opacity-0 drop-shadow-lg md:text-9xl">
             Devi
           </h1>
-          <span className="animate-fade-in animation-delay-600 font-serif text-xl font-light text-primary italic opacity-0 md:text-2xl">
+          <span className="animate-fade-in animation-delay-600 font-serif text-5xl font-light text-primary italic opacity-0 md:text-2xl">
             &
           </span>
           <h1 className="animate-fade-up animation-delay-600 font-signature text-7xl leading-none text-primary opacity-0 drop-shadow-lg md:text-9xl">

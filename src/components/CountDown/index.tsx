@@ -47,14 +47,11 @@ export function Countdown({
 
   return (
     <div className="flex flex-col items-center gap-1 font-bold text-primary">
-      <p className="font-serif text-xl font-bold tracking-wider ">
-        Hitungan Mundur Pernikahan
-      </p>
       <div className="flex items-center gap-1 font-bold text-primary">
         {units.map((u, i) => (
           <React.Fragment key={i}>
-            <div className="flex min-w-[3.5rem] flex-col items-center md:min-w-[4.5rem]">
-              <span className="font-serif text-3xl leading-none tracking-tight tabular-nums md:text-5xl">
+            <div className="flex min-w-14 flex-col items-center md:min-w-18">
+              <span className="text-3xl leading-none tracking-tight tabular-nums md:text-5xl">
                 {String(u.value).padStart(2, "0")}
               </span>
               <span className="mt-1.5 text-[9px] font-medium tracking-[0.3em] uppercase md:text-[10px]">

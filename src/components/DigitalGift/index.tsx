@@ -69,26 +69,7 @@ export const DigitalGift = () => {
       id="digital-gift"
       className="dg-section relative w-full scroll-mt-16 overflow-hidden bg-background"
     >
-      {/* Ambient background */}
-      <div className="pointer-events-none absolute left-1/2 top-[48%] h-[92vw] max-h-[560px] w-[92vw] max-w-[560px] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full md:h-[840px] md:max-h-[840px] md:w-[840px] md:max-w-[840px] lg:h-[1020px] lg:max-h-[1020px] lg:w-[1020px] lg:max-w-[1020px]">
-        <div
-          className="absolute inset-0 bg-wedding-dot opacity-50"
-          style={{
-            maskImage: "radial-gradient(circle, black 60%, transparent 78%)",
-            WebkitMaskImage:
-              "radial-gradient(circle, black 60%, transparent 78%)",
-          }}
-        />
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(circle, color-mix(in srgb, var(--wedding-accent) 13%, transparent) 0%, color-mix(in srgb, var(--wedding-accent) 5%, transparent) 40%, transparent 73%)",
-          }}
-        />
-      </div>
-
-      <div className="dg-content relative z-10 mx-auto flex w-full max-w-3xl flex-col items-center gap-7 px-6 py-14 md:gap-8 md:px-10 md:py-20">
+      <div className="dg-content relative z-10 mx-auto flex w-full max-w-3xl flex-col items-center gap-7 px-6 md:gap-8 md:px-10 ">
         <Header
           subHeader="Amplop Digital"
           title="Wedding Gift"
@@ -123,6 +104,7 @@ export const DigitalGift = () => {
           ]}
           listLabel="Metode hadiah"
           listClassName="dg-rise"
+          triggerClassName="h-auto flex-none rounded-full border-0 px-3 py-2 text-[10px] font-bold tracking-[0.14em] uppercase transition-all duration-200 data-[state=active]:bg-wedding-accent data-[state=active]:text-white data-[state=active]:shadow-md md:px-3"
         >
           <TabsContent
             value="bank"

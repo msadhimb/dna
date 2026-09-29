@@ -141,64 +141,26 @@ export const TimeAndPlace = () => {
 
   return (
     <section
-      ref={sectionRef}
       id="time-and-place"
+      ref={sectionRef}
       className="relative w-full scroll-mt-16 overflow-hidden bg-background"
     >
-      {onPhoto ? (
-        <>
-          {/* foto background */}
-          <div className="absolute inset-0" aria-hidden="true">
-            <Image
-              src={bgPhoto}
-              alt=""
-              fill
-              sizes="100vw"
-              className="object-cover object-[50%_50%] dark:object-[30%_50%]"
-              quality={80}
-              // File light ~2,5MB: lewat optimizer Next saat cold antrean
-              // optimasi bisa timeout -> background hilang saat refresh.
-              // Direct URL sudah di-preload loading screen.
-              unoptimized
-            />
-          </div>
-          {/* overlay baca: gelap merata + blend ke section atas/bawah */}
-          <div className="absolute inset-0 bg-black/55" aria-hidden="true" />
+      {/* foto background */}
+      <div className="absolute inset-0" aria-hidden="true">
+        <Image
+          src={bgPhoto}
+          alt=""
+          fill
+          sizes="100vw"
+          className="object-cover object-[50%_50%] dark:object-[40%_10%]"
+          quality={80}
+          unoptimized
+        />
+      </div>
+      {/* overlay baca: gelap merata + blend ke section atas/bawah */}
+      <div className="absolute inset-0 bg-black/55" aria-hidden="true" />
 
-          <div
-            className="absolute inset-0"
-            aria-hidden="true"
-            style={{
-              background:
-                "radial-gradient(ellipse 36% 26% at 50% 30%, color-mix(in srgb, var(--wedding-accent) 16%, transparent) 0%, transparent 70%)",
-            }}
-          />
-        </>
-      ) : (
-        /* fallback saat foto belum termuat — sama seperti section lain */
-        <div
-          className="pointer-events-none absolute top-0 left-1/2 h-[80vw] max-h-[520px] w-[92vw] max-w-[560px] -translate-x-1/2 overflow-hidden rounded-full"
-          aria-hidden="true"
-        >
-          <div
-            className="absolute inset-0 bg-wedding-dot opacity-50"
-            style={{
-              maskImage: "radial-gradient(circle, black 60%, transparent 78%)",
-              WebkitMaskImage:
-                "radial-gradient(circle, black 60%, transparent 78%)",
-            }}
-          />
-          <div
-            className="absolute inset-0"
-            style={{
-              background:
-                "radial-gradient(circle, color-mix(in srgb, var(--wedding-accent) 13%, transparent) 0%, transparent 70%)",
-            }}
-          />
-        </div>
-      )}
-
-      <div className="relative z-10 mx-auto flex w-full max-w-2xl flex-col items-center gap-5 px-0 py-14 sm:px-6 md:gap-10 md:px-10 md:py-24">
+      <div className="relative z-10 mx-auto flex w-full max-w-2xl flex-col items-center gap-5 px-0 py-32 sm:px-6 md:gap-10 md:px-10">
         {/* header */}
 
         <Header
@@ -221,6 +183,7 @@ export const TimeAndPlace = () => {
             listLabel="Pilih acara"
             listClassName="tp-tabs"
             className="mx-auto w-full px-5"
+            triggerClassName="h-auto flex-none rounded-full border-0 px-3 py-2 text-[10px] font-bold tracking-[0.14em] uppercase transition-all duration-200 data-[state=active]:bg-wedding-accent data-[state=active]:text-white data-[state=active]:shadow-md md:px-3"
           >
             {(["mantu", "unduh"] as const).map((key) => {
               const item = INFO[key]
@@ -262,7 +225,7 @@ export const TimeAndPlace = () => {
                       <Header
                         subHeader="Lokasi"
                         title={item.place}
-                        subTitle={item.date + " · " + item.hours}
+                        subTitle={""}
                         classNameSubTitle="font-serif text-lg leading-relaxed md:text-[15px]"
                         className={onPhoto ? "text-white" : ""}
                         classNameTitle="font-serif text-2xl leading-[1.2] font-semibold text-balance md:text-[28px]"

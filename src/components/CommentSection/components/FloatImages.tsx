@@ -26,7 +26,7 @@ export function FloatImages({
     <>
       <div
         ref={floatImgBackRef}
-        className="pointer-events-none absolute top-[80%] left-0 z-10 h-50 w-40 overflow-hidden md:top-[65%] md:left-24"
+        className="pointer-events-none absolute top-[30%] left-0 z-10 h-50 w-40 overflow-hidden md:top-[65%] md:left-24"
       >
         <Image
           key={imgBack}
@@ -40,7 +40,7 @@ export function FloatImages({
 
       <div
         ref={floatImgFrontRef}
-        className="pointer-events-none absolute top-[60%] left-10 z-20 h-65 w-50 overflow-hidden md:top-[50%] md:left-50"
+        className="pointer-events-none absolute top-[60%] left-5 z-20 h-65 w-50 overflow-hidden md:top-[50%] md:left-50"
       >
         <Image
           key={imgFront}
@@ -71,7 +71,7 @@ export function FloatImages({
 
       <div
         ref={floatImgRightFrontRef}
-        className="pointer-events-none absolute top-[70%] right-0 z-10 h-70 w-50 -translate-y-1/2 overflow-hidden md:top-[80%] md:right-0"
+        className="pointer-events-none absolute top-[60%] right-0 z-10 h-70 w-50 -translate-y-1/2 overflow-hidden md:top-[80%] md:right-0"
       >
         <Image
           key={imgRightFront}

@@ -5,13 +5,14 @@ export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   withTopLine?: boolean
   withCorners?: boolean
   radius?: string
-  
+  shadow?: boolean
+
   accent?: string
-  
+
   borderAccent?: string
-  
+
   isDark?: boolean
-  
+
   surface?: string
 }
 
@@ -23,7 +24,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
       withTopLine = true,
       withCorners = true,
       radius = "20px",
-      
+      shadow = true,
       accent: _accent,
       borderAccent: _borderAccent,
       isDark: _isDark,
@@ -37,7 +38,8 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
       <div
         ref={ref}
         className={cn(
-          "relative flex flex-col bg-wedding-surface border border-wedding-border-accent shadow-wedding-card",
+          "relative flex flex-col bg-wedding-surface border border-wedding-border-accent ",
+          shadow && "shadow-wedding-card",
           className
         )}
         style={{
