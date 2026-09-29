@@ -21,11 +21,6 @@ export const SequenceNav = ({ visible = true }: { visible?: boolean }) => {
 
   const activeId = useActiveSection(SECTION_IDS)
   const { isPlaying, toggle } = useStoryAutoPlay({ targetId: "time-and-place" })
-  // Nav tampil begitu undangan siap (isLoaded). Tidak lagi digate
-  // usePastIntro — gate itu membuat nav terasa "hilang" karena pinned
-  // intro (welcome/curtain/journey/love) panjang, padahal fungsi nav
-  // justru untuk lompat keluar dari pin ke TimeAndPlace.
-  // Curtain tetap menutup nav via z-index (nav z-30 < curtain z-50).
   const shown = visible
 
   const close = useCallback(() => setOpen(false), [])

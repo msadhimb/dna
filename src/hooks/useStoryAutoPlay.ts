@@ -1,6 +1,11 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
+import {
+  STORY_START_ID,
+  getSectionY,
+  scrollToSection,
+} from "@/components/SequenceNav/helper/scrollToSection"
 
 interface UseStoryAutoPlayOptions {
   /** Id elemen tempat autoplay berhenti. Default: time-and-place. */
@@ -22,8 +27,8 @@ const SCROLL_KEYS = new Set([
 ])
 
 /**
- * Autoplay "Our Story": menggulir halaman perlahan dari posisi saat ini
- * (atau dari awal pinned story bila sudah lewat) dan BERHENTI tepat di
+ * Autoplay "Our Story": SELALU mengulang dari awal pinned story
+ * (#master-trigger) lalu menggulir perlahan dan BERHENTI tepat di
  * TimeAndPlace — tidak lanjut ke footer. Berhenti juga saat pengguna
  * mengambil alih (wheel / sentuh / keyboard).
  */
@@ -36,6 +41,8 @@ export function useStoryAutoPlay({
   const rafRef = useRef<number | null>(null)
   const lastTsRef = useRef<number | null>(null)
   const timeoutRef = useRef<number | null>(null)
+  const rewindRafRef = useRef<number | null>(null)
+  const runIdRef = useRef(0)
   const speedRef = useRef(speed)
 
   useEffect(() => {
@@ -43,9 +50,14 @@ export function useStoryAutoPlay({
   }, [speed])
 
   const stop = useCallback(() => {
+    runIdRef.current += 1
     if (rafRef.current !== null) {
       cancelAnimationFrame(rafRef.current)
       rafRef.current = null
+    }
+    if (rewindRafRef.current !== null) {
+      cancelAnimationFrame(rewindRafRef.current)
+      rewindRafRef.current = null
     }
     if (timeoutRef.current !== null) {
       window.clearTimeout(timeoutRef.current)
@@ -57,7 +69,12 @@ export function useStoryAutoPlay({
 
   const start = useCallback(() => {
     if (typeof window === "undefined") return
-    if (rafRef.current !== null || timeoutRef.current !== null) return
+    if (
+      rafRef.current !== null ||
+      timeoutRef.current !== null ||
+      rewindRafRef.current !== null
+    )
+      return
 
     const target = document.getElementById(targetId)
     if (!target) return
@@ -68,7 +85,12 @@ export function useStoryAutoPlay({
       return
     }
 
+    const runId = runIdRef.current + 1
+    runIdRef.current = runId
+    const alive = () => runIdRef.current === runId
+
     const step = (ts: number) => {
+      if (!alive()) return
       if (lastTsRef.current === null) lastTsRef.current = ts
       const dt = Math.min((ts - lastTsRef.current) / 1000, 0.1)
       lastTsRef.current = ts
@@ -83,9 +105,8 @@ export function useStoryAutoPlay({
       // Sampai: top TimeAndPlace sudah dekat top viewport → berhenti.
       // Sengaja TIDAK lanjut ke Comment / Gift / Footer.
       if (el.getBoundingClientRect().top <= topOffset + 8) {
-        // Parkir presisi di bawah offset agar judul tidak tertutup nav.
-        const y =
-          window.scrollY + el.getBoundingClientRect().top - topOffset
+        // Parkir presisi via referensi yang sama dengan nav sequence.
+        const y = getSectionY(targetId) ?? window.scrollY
         window.scrollTo({ top: Math.max(0, y), behavior: "auto" })
         stop()
         return
@@ -102,28 +123,49 @@ export function useStoryAutoPlay({
     }
 
     const begin = () => {
+      if (!alive()) return
       timeoutRef.current = null
       lastTsRef.current = null
       setIsPlaying(true)
       rafRef.current = requestAnimationFrame(step)
     }
 
-    const rect = target.getBoundingClientRect()
-    const alreadyPast = rect.top < window.innerHeight * 0.3
-    if (alreadyPast) {
-      // Sudah lewat TimeAndPlace: putar ulang dari awal pinned story,
-      // lalu jalan perlahan sampai TimeAndPlace dan berhenti di sana.
-      const master = document.getElementById("master-trigger")
-      if (master) master.scrollIntoView({ behavior: "smooth", block: "start" })
-      else window.scrollTo({ top: 0, behavior: "smooth" })
-      timeoutRef.current = window.setTimeout(begin, 750)
-    } else {
-      begin()
+    // Selalu mulai dari AWAL pinned story (#master-trigger), bukan dari
+    // posisi saat ini (mis. love journey). Tunggu rewind smooth selesai
+    // (poll posisi) sebelum autoplay jalan — timeout fixed 750ms tidak
+    // cukup untuk jarak jauh sehingga animasi "mulai" dari tengah.
+    const startY = getSectionY(STORY_START_ID) ?? 0
+    const atStart = Math.abs(window.scrollY - startY) <= 4
+    if (!atStart) {
+      setIsPlaying(true)
+      scrollToSection(STORY_START_ID, "smooth")
+      const deadline = performance.now() + 4000
+      const poll = () => {
+        if (!alive()) return
+        const near = Math.abs(window.scrollY - startY) <= 8
+        if (near || performance.now() >= deadline) {
+          rewindRafRef.current = null
+          // Parkir presisi lalu jeda sejenak agar pin ScrollTrigger settle.
+          window.scrollTo({ top: startY, behavior: "auto" })
+          timeoutRef.current = window.setTimeout(begin, 200)
+          return
+        }
+        rewindRafRef.current = requestAnimationFrame(poll)
+      }
+      rewindRafRef.current = requestAnimationFrame(poll)
+      return
     }
+
+    begin()
   }, [targetId, topOffset, stop])
 
   const toggle = useCallback(() => {
-    if (rafRef.current !== null || timeoutRef.current !== null) stop()
+    if (
+      rafRef.current !== null ||
+      timeoutRef.current !== null ||
+      rewindRafRef.current !== null
+    )
+      stop()
     else start()
   }, [start, stop])
 

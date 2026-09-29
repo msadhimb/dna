@@ -381,3 +381,68 @@
     transform: none !important;
   }
 }
+
+/* LoveJourneyHorizontal — landscape pendek (HP landscape ~360-430px
+   tingginya). Target: muat penuh tanpa scroll. Font-size TIDAK diubah;
+   yang dipadatkan hanya spacing + 2 teks dekoratif yang isinya duplikat
+   (subtitle section & signature tahun — tahun sudah ada sebagai pill di
+   tiap kartu). Portrait/desktop tidak tersentuh. */
+@media (orientation: landscape) and (max-height: 540px) {
+  .ljh-root {
+    justify-content: safe center;
+  }
+
+  /* header: rapat + subtitle disembunyikan */
+  .ljh-header {
+    gap: 4px;
+  }
+  .ljh-header > div > p {
+    display: none;
+  }
+
+  .ljh-track-wrap {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  /* kartu horizontal: foto kolom kiri setinggi penuh kartu */
+  .ljh-root .ljh-card {
+    flex-direction: row;
+    width: 78vw;
+    max-width: 620px;
+    align-items: stretch;
+  }
+  .ljh-root .ljh-photo {
+    width: 38%;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    flex-shrink: 0;
+    align-self: stretch;
+  }
+  .ljh-root .ljh-body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0.75rem 1rem;
+  }
+  .ljh-root .ljh-body h3 {
+    font-size: 1.1rem;
+  }
+  .ljh-root .ljh-text {
+    font-size: 11px;
+    line-height: 1.6;
+  }
+
+  /* hint: label saja, signature disembunyikan */
+  .ljh-hint {
+    padding-top: 6px;
+    padding-bottom: 6px;
+    gap: 2px;
+  }
+  .ljh-hint .font-signature {
+    display: none;
+  }
+}

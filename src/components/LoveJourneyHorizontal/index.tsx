@@ -212,7 +212,7 @@ const LoveJourneyHorizontal = forwardRef<LoveJourneyHorizontalRef, Props>(
     return (
       <div
         ref={rootRef}
-        className="relative flex h-full w-full flex-col justify-center overflow-hidden bg-background"
+        className="ljh-root relative flex h-full w-full flex-col justify-center overflow-hidden bg-background"
       >
         {/* backdrop — sama seperti RomanticQuote / EventDetails */}
         <div
@@ -242,7 +242,7 @@ const LoveJourneyHorizontal = forwardRef<LoveJourneyHorizontalRef, Props>(
         />
 
         {/* track - carousel center mode */}
-        <div className="relative z-10 py-5">
+        <div className="ljh-track-wrap relative z-10 py-5">
           <div
             ref={trackRef}
             className="flex items-stretch gap-5 pl-5 pr-5 md:gap-7 md:pl-10"
@@ -262,7 +262,7 @@ const LoveJourneyHorizontal = forwardRef<LoveJourneyHorizontalRef, Props>(
                   }}
                 >
                   {/* foto */}
-                  <div className="relative h-[24vh] max-h-[220px] min-h-[150px] w-full overflow-hidden md:h-auto md:max-h-none md:min-h-[320px] md:w-[46%] md:shrink-0">
+                  <div className="ljh-photo relative h-[24vh] max-h-[220px] min-h-[150px] w-full overflow-hidden md:h-auto md:max-h-none md:min-h-[320px] md:w-[46%] md:shrink-0">
                     {photo ? (
                       <Image
                         src={photo}
@@ -291,7 +291,7 @@ const LoveJourneyHorizontal = forwardRef<LoveJourneyHorizontalRef, Props>(
                   </div>
 
                   {/* body — teks di surface, bukan di atas gambar */}
-                  <div className="md:px-7 md:py-6 px-5 py-4 space-y-3 text-justify ">
+                  <div className="ljh-body md:px-7 md:py-6 px-5 py-4 space-y-3 text-justify ">
                     <div className="flex flex-col items-center text-center md:items-start md:justify-center md:text-left">
                       <h3 className="font-serif text-[22px] leading-tight font-bold text-wedding-text-primary md:text-[26px]">
                         {it.title}
@@ -301,7 +301,7 @@ const LoveJourneyHorizontal = forwardRef<LoveJourneyHorizontalRef, Props>(
                       </p>
                     </div>
                     <Separator />
-                    <p className="font-serif text-[12px] leading-[1.65] text-wedding-text-secondary md:text-[13px] md:leading-[1.7]">
+                    <p className="ljh-text font-serif text-[12px] leading-[1.65] text-wedding-text-secondary md:text-[13px] md:leading-[1.7]">
                       {it.text}
                     </p>
                   </div>

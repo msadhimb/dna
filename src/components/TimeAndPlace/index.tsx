@@ -45,7 +45,7 @@ export const TimeAndPlace = () => {
 
   const isDark = resolvedTheme === "dark"
   const bgPhoto = isDark
-    ? (imageUrl?.dark?.[3]?.link ?? imageUrl?.dark?.[1]?.link)
+    ? (imageUrl?.dark?.[2]?.link ?? imageUrl?.dark?.[1]?.link)
     : (imageUrl?.light?.[4]?.link ?? imageUrl?.light?.[1]?.link)
   const onPhoto = Boolean(bgPhoto)
 
@@ -143,7 +143,7 @@ export const TimeAndPlace = () => {
     <section
       id="time-and-place"
       ref={sectionRef}
-      className="relative w-full scroll-mt-16 overflow-hidden bg-background"
+      className="relative w-full scroll-mt-16 overflow-hidden bg-background min-h-screen"
     >
       {/* foto background */}
       <div className="absolute inset-0" aria-hidden="true">
@@ -152,7 +152,7 @@ export const TimeAndPlace = () => {
           alt=""
           fill
           sizes="100vw"
-          className="object-cover object-[50%_50%] dark:object-[40%_10%]"
+          className="md:scale-150 object-cover object-center origin-[0%_5%] md:origin-[0%_10%] dark:origin-[120%_20%]"
           quality={80}
           unoptimized
         />
@@ -160,7 +160,7 @@ export const TimeAndPlace = () => {
       {/* overlay baca: gelap merata + blend ke section atas/bawah */}
       <div className="absolute inset-0 bg-black/55" aria-hidden="true" />
 
-      <div className="relative z-10 mx-auto flex w-full max-w-2xl flex-col items-center gap-5 px-0 py-32 sm:px-6 md:gap-10 md:px-10">
+      <div className="relative z-10 mx-auto flex w-full max-w-2xl flex-col items-center gap-5 px-0 py-24 md:py-32 sm:px-6 md:gap-10 md:px-10">
         {/* header */}
 
         <Header
@@ -261,7 +261,7 @@ export const TimeAndPlace = () => {
             })}
           </Tabs>
         ) : (
-          <div className="flex w-full flex-col gap-5">
+          <div className="flex w-full flex-col gap-5 px-5 ">
             {/* kartu tanggal — liquid glass */}
             <div
               className={cn(
