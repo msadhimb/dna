@@ -77,6 +77,7 @@ export const CommentSection = forwardRef<
   const floatImgRightFrontRef = useRef<HTMLDivElement>(null)
   const sectionRef = useRef<HTMLElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
+  const spinTlRef = useRef<gsap.core.Timeline | null>(null)
   const floatSTs = useRef<ScrollTrigger[]>([])
 
   const {
@@ -180,34 +181,43 @@ export const CommentSection = forwardRef<
     const el = contentRef.current
     if (!el) return
 
-    const targetScale = parseFloat(
-      (gsap.getProperty(el, "scale") as string) || "1"
-    )
-    const targetRotY = gsap.getProperty(el, "rotateY") as number
-    const targetX = parseFloat((gsap.getProperty(el, "x") as string) || "0")
-    const targetY = parseFloat((gsap.getProperty(el, "y") as string) || "0")
-
+    if (spinTlRef.current) {
+      spinTlRef.current.kill()
+      spinTlRef.current = null
+    }
     gsap.killTweensOf(el)
 
-    const tl = gsap.timeline()
-    tl.to(el, { scale: 0.85, duration: 0.4, ease: "power2.in" })
-      .to(
-        el,
-        { scale: 0.85, rotateY: "+=360", duration: 0.8, ease: "power2.inOut" },
-        ">"
-      )
+    const tl = gsap.timeline({
+      defaults: { overwrite: "auto" },
+      onComplete: () => {
+        gsap.set(el, { scale: 1, rotateY: 0, x: 0, y: 0 })
+        if (spinTlRef.current === tl) spinTlRef.current = null
+      },
+      onInterrupt: () => {
+        if (spinTlRef.current === tl) spinTlRef.current = null
+      },
+    })
+    spinTlRef.current = tl
+    const startRot = Number(gsap.getProperty(el, "rotateY")) || 0
+    const endRot = Math.round(startRot / 360) * 360 + 360
+    tl.to(el, { scale: 0.85, x: 0, y: 0, duration: 0.3, ease: "power2.in" })
+      .to(el, { rotateY: endRot, duration: 0.8, ease: "power2.inOut" }, ">")
       .to(
         el,
         {
-          scale: targetScale,
-          rotateY: targetRotY + 360,
-          x: targetX,
-          y: targetY,
-          duration: 0.5,
+          scale: 1,
+          x: 0,
+          y: 0,
+          duration: 0.4,
           ease: "power2.out",
         },
         ">"
       )
+
+    return () => {
+      tl.kill()
+      if (spinTlRef.current === tl) spinTlRef.current = null
+    }
   }, [isDark])
 
   const handleFormSubmit = async (data: {
