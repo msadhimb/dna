@@ -24,11 +24,6 @@ type Options = {
   theme: string
 }
 
-/**
- * Orkestrator pinned scroll:
- * - Master pin dibuat sekali (deps: isLoaded)
- * - Theme change: patch inner timelines tanpa kill ScrollTrigger pin (agar tidak hilang)
- */
 export function usePinnedScrollSequence(
   mainRef: React.RefObject<HTMLElement | null>,
   refs: Refs,
@@ -41,7 +36,6 @@ export function usePinnedScrollSequence(
   const bookFlipWrapRef = useRef<gsap.core.Timeline | null>(null)
   const commentWrapRef = useRef<gsap.core.Timeline | null>(null)
 
-  // 1) Build master pin sekali saat isLoaded
   useGSAP(
     () => {
       if (!isLoaded) return
@@ -62,7 +56,6 @@ export function usePinnedScrollSequence(
       )
         return
 
-      // BookFlip opsional — dilewati bila tidak dipasang di MainView
       const hasBookFlip =
         Boolean(bookFlipWrapper) && Boolean(refs.bookFlipRef?.current)
 
@@ -70,7 +63,6 @@ export function usePinnedScrollSequence(
         window.innerWidth < 768 ||
         (window.innerWidth <= 1024 && window.innerHeight > window.innerWidth)
 
-      // initial state tanpa willChange permanen (hemat compositor layer)
       gsap.set(journeyWrapper, { opacity: 0 })
       gsap.set(loveJourneyWrapper, { opacity: 0, y: "100%" })
       if (bookFlipWrapper) gsap.set(bookFlipWrapper, { opacity: 0, y: "100%" })
@@ -80,10 +72,7 @@ export function usePinnedScrollSequence(
       const journeyTl = refs.journeyRef.current.getTimeline()
       const loveJourneyTl = refs.loveJourneyRef.current.getTimeline()
       const bookFlipTl = refs.bookFlipRef?.current?.getTimeline()
-      // CommentSection ada di luar #master-trigger: getTimeline-nya tetap
-      // dipanggil agar parallax float ScrollTrigger-nya terpasang, tapi
-      // entrance-nya main sendiri (ScrollTrigger di komponen) — TIDAK
-      // dimasukkan ke master pin agar tidak ada scroll mati sebelum unpin.
+
       refs.commentRef.current?.getTimeline()
 
       const wDur = welcomeTl.totalDuration() || 1
@@ -94,22 +83,13 @@ export function usePinnedScrollSequence(
       const totalDur = wDur + cDur + jDur + lDur + bDur
       const totalScrollHeight = (totalDur / (cDur + jDur + lDur + bDur)) * 500
 
-      // --- magnet snap: hanya LoveJourney (cards) ---
-      // Offset wrapper diperhitungkan: journeyWrapperTl = fade 0.2 + journeyTl,
-      // loveJourneyWrapperTl = slide transDur + loveJourneyTl.
-      // BioSequence dan TimeAndPlace SENGAJA tanpa magnet (scroll bebas).
       const FADE = 0.2
       const slideDur = isMobileSetup ? 1.2 : 0.6
-      // Titik snap dihitung SETELAH masterTl jadi (lihat bawah): posisi dan
-      // penyebut diambil dari master ASLI (startTime + totalDuration).
-      // Rumus lama (lTlStart/totalDur) meleset karena totalDur tidak mencakup
-      // fade/slide wrapper + commentTl, dan locals hardcode tidak cocok dengan
-      // durasi loveJourneyTl sekarang -> magnet mendarat di antara kartu.
+
       let loveSnapPoints: number[] = []
       let snapZoneStart = 0
       let snapZoneEnd = 0
-      // cari snap terdekat (GSAP snapTo harus return 0-1)
-      // hanya snap jika dalam zone loveJourney
+
       const snapFn = (v: number) => {
         let best = v
         let bestDist = Infinity
@@ -121,9 +101,7 @@ export function usePinnedScrollSequence(
           }
         }
         if (v < snapZoneStart || v > snapZoneEnd) return v
-        // threshold magnet 0.05: hanya tarik kalau benar-benar dekat.
-        // 0.08 terlalu agresif -> snap berebut dengan jari saat scroll
-        // pelan (terasa patah-patah / rubber-band).
+
         if (bestDist < 0.05) return best
         return v
       }
@@ -170,8 +148,6 @@ export function usePinnedScrollSequence(
       }
       bookFlipWrapRef.current = bookFlipWrapperTl
 
-      // Wrapper komentar tidak dipakai di master pin (lihat atas).
-      // Disimpan sebagai timeline kosong agar patch theme tetap aman.
       const commentWrapperTl = gsap.timeline()
       commentWrapRef.current = commentWrapperTl
 
@@ -182,20 +158,16 @@ export function usePinnedScrollSequence(
           end: `+=${totalScrollHeight}%`,
           pin: true,
           pinSpacing: true,
-          // scrub kecil di mobile: animasi lebih nempel ke jari.
-          // scrub besar + snap = animasi ketinggalan lalu ditarik magnet
-          // (terasa patah / rubber-band).
+
           scrub: isMobileSetup ? 0.6 : 1.5,
           anticipatePin: 1,
           invalidateOnRefresh: true,
-          // fastScrollEnd: scroll cepat/sengaja tidak ditahan magnet —
-          // penting di ujung pin agar lepas ke TimeAndPlace mulus.
+
           fastScrollEnd: true,
           snap: {
             snapTo: snapFn,
             duration: { min: 0.12, max: 0.5 },
-            // delay besar: snap hanya jalan kalau user BENAR-BENAR berhenti.
-            // 0.02 bikin snap berebut dengan scroll pelan yang masih jalan.
+
             delay: 0.25,
             ease: "power2.inOut",
             inertia: false,
@@ -209,10 +181,6 @@ export function usePinnedScrollSequence(
       masterTl.add(loveJourneyWrapperTl)
       masterTl.add(bookFlipWrapperTl)
 
-      // Normalisasi snap terhadap master ASLI: posisi konten love diukur dari
-      // startTime wrapper, penyebut = totalDuration master (termasuk
-      // fade/slide wrapper + commentTl). Titik magnet = label c0/c1/c2
-      // (tengah dwell tiap kartu) di loveJourneyTl.
       {
         const actualTotal = masterTl.totalDuration() || 1
         const wrapStart = loveJourneyWrapperTl.startTime() || 0
@@ -227,10 +195,7 @@ export function usePinnedScrollSequence(
         ]
         loveSnapPoints = times.map((t) => (contentStart + t) / actualTotal)
         snapZoneStart = contentStart / actualTotal
-        // Zona magnet: sampai tengah sisa ekor setelah c2. Paruh pertama
-        // ekor magnet menahan kartu 3 di tengah (masih pinned); paruh
-        // kedua SENGAJA bebas snap sebagai jalur keluar — scroll lagi
-        // baru unpin ke TimeAndPlace, tanpa ditarik balik (glitch).
+
         const loveEnd = (contentStart + lDur) / actualTotal
         const c2point = loveSnapPoints[2]
         snapZoneEnd = Math.min(
@@ -244,7 +209,6 @@ export function usePinnedScrollSequence(
     { scope: mainRef, dependencies: [isLoaded] }
   )
 
-  // 2) Patch saat theme berubah — tanpa kill master pin
   useEffect(() => {
     if (!isLoaded) return
 
@@ -263,7 +227,6 @@ export function usePinnedScrollSequence(
     )
       return
 
-    // Welcome tidak depend on theme, skip rebuild
     const savedC = cWrapper.progress()
     const savedJ = jWrapper.progress()
     const savedL = lWrapper.progress()
@@ -286,7 +249,6 @@ export function usePinnedScrollSequence(
     if (loveJourneyWrap) gsap.set(loveJourneyWrap, { clearProps: "all" })
     if (bookFlipWrap) gsap.set(bookFlipWrap, { clearProps: "all" })
 
-    // Restore initial wrapper states tanpa willChange permanen
     if (journeyWrap) gsap.set(journeyWrap, { opacity: 0 })
     if (loveJourneyWrap) gsap.set(loveJourneyWrap, { opacity: 0, y: "100%" })
     if (bookFlipWrap) gsap.set(bookFlipWrap, { opacity: 0, y: "100%" })
@@ -295,7 +257,7 @@ export function usePinnedScrollSequence(
     const newJourneyTl = refs.journeyRef.current.getTimeline()
     const newLoveJourneyTl = refs.loveJourneyRef.current.getTimeline()
     const newBookFlipTl = refs.bookFlipRef?.current?.getTimeline()
-    // Komentar rebuild sendiri (ScrollTrigger independen + cleanup internal).
+
     refs.commentRef.current?.getTimeline()
 
     cWrapper.add(newCurtainTl)
@@ -340,7 +302,6 @@ export function usePinnedScrollSequence(
     lWrapper.progress(savedL, true)
     bWrapper?.progress(savedB, true)
 
-    // update snap magnet untuk theme baru (durasi bisa berubah)
     const masterST = masterTlRef.current?.scrollTrigger
     if (masterST) {
       const newTotal =
@@ -351,14 +312,11 @@ export function usePinnedScrollSequence(
         (masterTlRef.current
           ? (masterTlRef.current as any)._welcomeDur || 1
           : 1)
-      // fallback hitung ulang dari wrapper durations
+
       const wD = (masterTlRef.current?.totalDuration() || 1) - newTotal
-      // sederhana: pakai locals yang sama
-      // biarkan snap lama; refresh sudah cukup untuk centerX via function
-      // agar magnet tetap aktif
+
     }
 
-    // Refresh pin di frame berikutnya agar tidak bentrok dengan BookFlip spin (hemat jank)
     requestAnimationFrame(() => ScrollTrigger.refresh())
   }, [theme, isLoaded])
 

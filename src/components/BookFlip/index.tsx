@@ -89,7 +89,6 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
             isDark: isDark,
           })
 
-    
     const desktopSpreads = []
     for (let i = 0; i < resolvedPages.length; i += 2) {
       desktopSpreads.push([resolvedPages[i], resolvedPages[i + 1] ?? null])
@@ -328,7 +327,7 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
             transformStyle: "preserve-3d",
           }}
         >
-          
+
           <BookPages
             isDesktop={isDesktop}
             resolvedPages={resolvedPages}
@@ -338,7 +337,6 @@ export const BookFlip = forwardRef<BookFlipRef, BookFlipProps>(
             isSpinning={isSpinning}
           />
 
-          
           <Cover
             coverFront={coverFront}
             coverBack={coverBack}

@@ -10,7 +10,7 @@ import Header from "../Header"
 
 export interface LoveJourneyHorizontalRef {
   getTimeline: () => gsap.core.Timeline
-  /** global snap points 0-1 untuk master ScrollTrigger */
+
   getSnapPoints?: () => number[]
 }
 
@@ -18,21 +18,12 @@ interface Props {
   theme: string
 }
 
-/**
- * Magnet scroll per gambar + tepat di tengah (carousel)
- * - Tiap card snap di tengah viewport (peek kiri/kanan)
- * - Menggunakan vertical scroll (scrub) yang di-snap via master ScrollTrigger
- * - Track x dihitung dari offsetLeft + width/2 - vw/2 agar presisi center
- */
 const LoveJourneyHorizontal = forwardRef<LoveJourneyHorizontalRef, Props>(
   ({ theme }, ref) => {
     const rootRef = useRef<HTMLDivElement>(null)
     const trackRef = useRef<HTMLDivElement>(null)
     const { imageUrl } = useImageUrl() as any
 
-    // Resting state DOM = state timeline di t=0 (card 0 di tengah + aktif).
-    // Sebelumnya track mentah (x=0, semua card terang) terlihat saat wrapper
-    // slide masuk, lalu `tl.set` menjentik ke card 0 saat segmen mulai.
     useEffect(() => {
       const track = trackRef.current
       if (!track) return
@@ -64,30 +55,21 @@ const LoveJourneyHorizontal = forwardRef<LoveJourneyHorizontalRef, Props>(
           const cards = track.querySelectorAll<HTMLElement>(".ljh-card")
           const hint = root.querySelector<HTMLElement>(".ljh-hint")
 
-          // helper: posisi x agar card[idx] tepat di tengah viewport
           const getCenterX = (idx: number) => {
             const vw = window.innerWidth
             const c = cards[idx] as HTMLElement | undefined
             if (!c) return 0
-            // offsetLeft relatif ke track, offsetWidth = lebar card
+
             const center = c.offsetLeft + c.offsetWidth / 2 - vw / 2
             return center
           }
 
-          // Dwell (jeda magnet) pendek: kartu sempat diam di tengah agar
-          // snap ada targetnya. Tanpa dwell, kartu gerak terus -> magnet
-          // tidak terasa + terlihat gelisah/patah.
           const DWELL0 = 0.4
           const MOVE = 1.2
           const DWELL1 = 0.4
-          // Ekor = jeda tahan kartu terakhir dalam pin sebelum unpin.
-          // 0.8: kartu 3 sempat dinikmati dulu (magnet menahan di tengah),
-          // scroll berikutnya baru lepas ke TimeAndPlace.
+
           const TAIL = 0.8
 
-          // Semua state awal di DALAM timeline (tl.set di 0) agar scrub
-          // bolak-balik restore tanpa lompat. Sebelumnya gsap.set di luar
-          // timeline -> saat masuk dari BioSequence, track x bisa snap.
           tl.set(track, { x: () => -getCenterX(0) }, 0)
           tl.set(
             cards,
@@ -98,14 +80,10 @@ const LoveJourneyHorizontal = forwardRef<LoveJourneyHorizontalRef, Props>(
           tl.set(hint, { opacity: 0 }, 0)
 
           tl.to(hint, { opacity: 1, duration: 0.3, ease: "none" }, 0)
-          // dwell kartu 0 (magnet pertama) — dulu 0.5, sekarang 0.4
+
           tl.to({}, { duration: DWELL0 }, 0)
           tl.addLabel("c0", DWELL0 / 2)
 
-          // ---- magnet 0 -> 1 (card 1 ke tengah) ----
-          // Easing inOut dipertahankan: dengan scrub, easing ini yang
-          // memberi rasa melambat-menempel di tengah (magnet). Versi
-          // "none" kemarin bikin gerak linear kaku -> terasa patah.
           const s1 = DWELL0
           tl.to(
             track,
@@ -143,7 +121,6 @@ const LoveJourneyHorizontal = forwardRef<LoveJourneyHorizontalRef, Props>(
           tl.to({}, { duration: DWELL1 }, s1 + MOVE)
           tl.addLabel("c1", s1 + MOVE + DWELL1 / 2)
 
-          // ---- magnet 1 -> 2 (card 2 ke tengah) ----
           const s2 = s1 + MOVE + DWELL1
           tl.to(
             track,
@@ -214,7 +191,7 @@ const LoveJourneyHorizontal = forwardRef<LoveJourneyHorizontalRef, Props>(
         ref={rootRef}
         className="ljh-root relative flex h-full w-full flex-col justify-center overflow-hidden bg-background"
       >
-        {/* backdrop — sama seperti RomanticQuote / EventDetails */}
+
         <div
           className="pointer-events-none absolute inset-0 bg-wedding-dot opacity-60"
           style={{
@@ -232,7 +209,6 @@ const LoveJourneyHorizontal = forwardRef<LoveJourneyHorizontalRef, Props>(
           }}
         />
 
-        {/* header — pola SectionHeader terpusat */}
         <Header
           subHeader="Our Love Story"
           title="Our Story"
@@ -241,7 +217,6 @@ const LoveJourneyHorizontal = forwardRef<LoveJourneyHorizontalRef, Props>(
           className="ljh-header"
         />
 
-        {/* track - carousel center mode */}
         <div className="ljh-track-wrap relative z-10 py-5">
           <div
             ref={trackRef}
@@ -261,7 +236,7 @@ const LoveJourneyHorizontal = forwardRef<LoveJourneyHorizontalRef, Props>(
                     scrollSnapStop: "always",
                   }}
                 >
-                  {/* foto */}
+
                   <div className="ljh-photo relative h-[24vh] max-h-[220px] min-h-[150px] w-full overflow-hidden md:h-auto md:max-h-none md:min-h-[320px] md:w-[46%] md:shrink-0">
                     {photo ? (
                       <Image
@@ -280,13 +255,11 @@ const LoveJourneyHorizontal = forwardRef<LoveJourneyHorizontalRef, Props>(
                       </div>
                     )}
 
-                    {/* year pill */}
                     <span className="absolute top-3 left-3 z-20 rounded-full border border-white/20 bg-black/55 px-3 py-1 font-sans text-[10px] font-bold tracking-[0.2em] text-white uppercase backdrop-blur-md">
                       {it.year}
                     </span>
                   </div>
 
-                  {/* body — teks di surface, bukan di atas gambar */}
                   <div className="ljh-body md:px-7 md:py-6 px-5 py-4 space-y-3 text-justify ">
                     <div className="flex flex-col items-center text-center md:items-start md:justify-center md:text-left">
                       <h3 className="font-serif text-[22px] leading-tight font-bold text-wedding-text-primary md:text-[26px]">

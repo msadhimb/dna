@@ -20,10 +20,10 @@ export interface TabsProps extends Omit<
   React.ComponentProps<typeof BaseTabs>,
   "children"
 > {
-  /** glass = di atas foto (liquid glass), solid = di atas surface */
+
   mode?: TabsMode
   items: TabsItem[]
-  /** aria-label untuk list tab */
+
   listLabel?: string
   listClassName?: string
   triggerClassName?: string
@@ -43,11 +43,6 @@ const triggerModeClass: Record<TabsMode, string> = {
     "text-wedding-text-secondary hover:text-wedding-text-primary data-[state=inactive]:bg-transparent",
 }
 
-/**
- * Wedding Tabs — pill tabs dengan dua mode.
- * - `glass`: liquid glass di atas foto/background gelap.
- * - `solid`: di atas surface terang.
- */
 export function Tabs({
   mode = "solid",
   items,

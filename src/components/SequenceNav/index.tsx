@@ -15,8 +15,6 @@ export const SequenceNav = ({ visible = true }: { visible?: boolean }) => {
   const [open, setOpen] = useState(false)
   const navRef = useRef<HTMLElement>(null)
 
-  // Stabilkan identitas array agar IntersectionObserver tidak
-  // disconnect/re-observe tiap render.
   const SECTION_IDS = useMemo(() => LINKS.map((l) => l.id), [])
 
   const activeId = useActiveSection(SECTION_IDS)
@@ -29,14 +27,13 @@ export const SequenceNav = ({ visible = true }: { visible?: boolean }) => {
   useEntranceAnimation(navRef, shown)
   useDismiss(navRef, open, close)
 
-  // Tutup panel saat nav disembunyikan (mis. loading ulang).
   useEffect(() => {
     if (!shown) setOpen(false)
   }, [shown])
 
   const handleSelect = useCallback((id: string) => {
     setOpen(false)
-    // Tunggu panel mulai menutup agar scroll terasa mulus.
+
     requestAnimationFrame(() => scrollToSection(id))
   }, [])
 
@@ -51,7 +48,7 @@ export const SequenceNav = ({ visible = true }: { visible?: boolean }) => {
     <div
       aria-hidden={!shown}
       className={cn(
-        // z-30: di bawah CurtainTransition (fixed z-50) agar tirai selalu menutup nav.
+
         "pointer-events-none fixed inset-0 z-30 transition-opacity duration-500",
         shown ? "opacity-100" : "opacity-0"
       )}

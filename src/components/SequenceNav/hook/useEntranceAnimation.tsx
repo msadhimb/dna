@@ -5,8 +5,7 @@ export const useEntranceAnimation = (
   ref: RefObject<HTMLElement | null>,
   visible: boolean
 ) => {
-  // Satu authored moment: main sekali saat pertama terlihat, bukan tiap
-  // pengguna scroll keluar-masuk pinned intro.
+
   const playedRef = useRef(false)
 
   useEffect(() => {

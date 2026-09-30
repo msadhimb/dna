@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
       const parts = f.split("/")
       return {
         folder: parts[0],
-        subfolder: parts[1] ?? null, 
+        subfolder: parts[1] ?? null,
       }
     })
 
@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
       const { data, error } = await supabase.storage
         .from(f.folder)
         .list(f.subfolder ?? undefined, {
-          
+
           limit: 1000,
           sortBy: { column: "name", order: "asc" },
         })
@@ -34,12 +34,12 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ message: error.message }, { status: 500 })
       }
 
-      const key = f.subfolder ?? f.folder 
+      const key = f.subfolder ?? f.folder
 
       results[key] = data
         .filter((file) => file.name !== ".emptyFolderPlaceholder")
         .map((file) => {
-          
+
           const path = f.subfolder ? `${f.subfolder}/${file.name}` : file.name
           const { data } = supabase.storage.from(f.folder).getPublicUrl(path)
           return { name: file.name, link: data.publicUrl }

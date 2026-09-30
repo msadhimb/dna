@@ -27,16 +27,9 @@ export const WelcomeSection = forwardRef<
   useEffect(() => {
     if (!isPlaying) return
 
-    // willChange hanya dipasang tepat saat hint akan dianimasikan (bukan
-    // sejak awal mount), supaya browser tidak membuat compositor layer
-    // ekstra yang tidak perlu selama WelcomeSection idle menunggu tap/scroll.
     if (hintRef.current) {
       gsap.set(hintRef.current, { willChange: "transform, opacity" })
 
-      // onComplete dipakai untuk unmount, bukan setTimeout terpisah —
-      // ini menghindari dua "sumber kebenaran" (durasi tween vs durasi
-      // timeout) yang bisa lepas sinkron dan bikin transisi kelihatan
-      // tersendat di beberapa device.
       gsap.to(hintRef.current, {
         opacity: 0,
         y: 10,
@@ -52,15 +45,6 @@ export const WelcomeSection = forwardRef<
       const tl = gsap.timeline()
       if (!containerRef.current || !textRef.current) return tl
 
-      // autoAlpha = opacity + toggle visibility. Penting: dengan opacity
-      // biasa, elemen yang sudah "tak terlihat" (opacity:0) TETAP menerima
-      // klik selama masih di DOM dengan posisi/z-index yang sama — dan
-      // WelcomeSection ini (absolute inset-0 z-50) tidak pernah di-unmount,
-      // jadi dia terus menghalangi klik ke konten di bawahnya (mis. iframe
-      // di dalam BookFlip) sepanjang sesi pin scroll berlangsung.
-      // autoAlpha men-set visibility:hidden begitu opacity mencapai 0,
-      // sehingga elemen benar-benar berhenti menerima pointer event —
-      // dan ini reversible dengan benar walau timeline-nya di-scrub.
       gsap.set(containerRef.current, { autoAlpha: 1, y: 0, force3D: true })
       gsap.set(textRef.current, { y: 0, autoAlpha: 1, force3D: true })
 

@@ -23,18 +23,14 @@ export const BioSequence = forwardRef<BioSequenceRef, BioSequenceProps>(
     const brideBioRef = useRef<HTMLDivElement>(null)
     const { dist, isMobile } = useResponsive()
     const { imageUrl } = useImageUrl()
-    // Satu sumber kebenaran: prop `theme` saja.
-    // Sebelumnya isDark dari resolvedTheme vs `theme` prop bisa tidak sinkron
-    // saat ganti tema -> x/y awal lompat (path patah).
+
     const isDark = theme === "dark"
 
     useImperativeHandle(
       ref,
       () => ({
         getTimeline: () => {
-          // Semua ease "none": timeline ini di-scrub, jadi easing per-tween
-          // yang inOut justru bikin kecepatan scroll terasa nempel-berhenti
-          // (patah-patah). Satu-satunya gerak = transform image + fade teks.
+
           const tl = gsap.timeline({ defaults: { ease: "none" } })
           const journeyImgElement =
             journeyImageRef.current?.querySelector(".journey-inner-img")
@@ -46,8 +42,6 @@ export const BioSequence = forwardRef<BioSequenceRef, BioSequenceProps>(
           const groomScale = isMobile ? 1.6 : 2
           const brideScale = isMobile ? 1.6 : 2
 
-          // State awal masuk timeline (bukan gsap.set di luar) agar
-          // scrub bolak-balik selalu restore tanpa lompat.
           tl.set(
             [groomBioRef.current, brideBioRef.current],
             { autoAlpha: 0 },
@@ -71,7 +65,6 @@ export const BioSequence = forwardRef<BioSequenceRef, BioSequenceProps>(
             0
           )
 
-          // ---- groom: zoom + teks muncul bareng, tanpa jeda mati ----
           tl.to(
             journeyImgElement,
             {
@@ -92,8 +85,6 @@ export const BioSequence = forwardRef<BioSequenceRef, BioSequenceProps>(
             0.7
           )
 
-          // ---- zoom out groom: teks hilang + image reset PARALEL ----
-          // Sebelumnya sekuensial + dummy hold -> scroll terasa macet.
           tl.to(
             groomBioRef.current,
             { autoAlpha: 0, duration: 0.6, force3D: false },
@@ -110,7 +101,6 @@ export const BioSequence = forwardRef<BioSequenceRef, BioSequenceProps>(
             2.0
           )
 
-          // ---- bride: langsung sambung tanpa gap ----
           tl.to(
             journeyImgElement,
             {
@@ -127,9 +117,6 @@ export const BioSequence = forwardRef<BioSequenceRef, BioSequenceProps>(
             3.7
           )
 
-          // ---- outro: teks + image reset bareng, TANPA dummy 1 detik ----
-          // Ekor dummy sebelumnya bikin scroll mati total sebelum slide
-          // ke LoveJourney -> terasa patah di peralihan.
           tl.to(
             brideBioRef.current,
             { autoAlpha: 0, duration: 0.6, force3D: false },
@@ -194,24 +181,21 @@ export const BioSequence = forwardRef<BioSequenceRef, BioSequenceProps>(
               priority
               fetchPriority="high"
               decoding="async"
-              // File light ~2,3MB: optimizer cold bisa timeout saat refresh.
-              // Direct URL sudah di-preload loading screen.
+
               unoptimized
               className="journey-inner-img object-cover"
             />
           ) : null}
         </div>
 
-        {/* Groom Bio Overlay - bottom on mobile/tablet/landscape, side only on xl */}
         <div
           ref={groomBioRef}
           className={cn(
-            // invisible + pointer-events-none: tidak di-paint / hit-test saat autoAlpha=0.
-            // Tanpa ini 2 gradient fullscreen tetap di-composite tiap frame scrub -> lag.
+
             "gsap-element pointer-events-none invisible absolute inset-x-0 bottom-0 z-50 flex w-screen flex-col gap-3 opacity-0",
             "items-center justify-end text-center bg-linear-to-t from-black/90 via-black/60 to-transparent pt-24 pb-12 px-6",
             "xl:inset-y-0 xl:bottom-auto xl:right-0 xl:left-auto xl:h-full xl:w-1/2 xl:items-end xl:justify-center xl:text-right xl:bg-linear-to-l xl:from-black/85 xl:via-black/45 xl:pt-0 xl:pb-0 xl:px-12",
-            // landscape tablet/phone dengan tinggi kecil tetap bottom
+
             "max-[1024px]:landscape:inset-x-0 max-[1024px]:landscape:bottom-0 max-[1024px]:landscape:top-auto max-[1024px]:landscape:h-auto max-[1024px]:landscape:w-screen max-[1024px]:landscape:items-center max-[1024px]:landscape:justify-end max-[1024px]:landscape:text-center max-[1024px]:landscape:pt-24 max-[1024px]:landscape:pb-12"
           )}
         >
@@ -219,8 +203,7 @@ export const BioSequence = forwardRef<BioSequenceRef, BioSequenceProps>(
             subHeader="The Groom"
             title="Muhamad Salman Adhim Baqy"
             subTitle="Putra Ketiga dari Bapak Suprapto Wibowo dan Ibu Christiana Sri Budhi H"
-            // JANGAN pakai will-change-transform di teks yang hanya fade:
-            // bikin layer GPU ekstra sebesar overlay, rebutan memori dengan image scale=2.
+
             className="text-white py-10"
             classNameTitle="text-[#f2dfa0] dark:text-primary text-5xl w-full"
             classNameSubTitle="text-md md:text-xl opacity-75"
@@ -231,7 +214,6 @@ export const BioSequence = forwardRef<BioSequenceRef, BioSequenceProps>(
           />
         </div>
 
-        {/* Bride Bio Overlay - bottom on mobile/tablet/landscape, side only on xl */}
         <div
           ref={brideBioRef}
           className={cn(

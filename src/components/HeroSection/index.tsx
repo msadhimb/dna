@@ -52,13 +52,12 @@ const HeroSection = () => {
             <div className="size-full bg-background" aria-hidden="true" />
           )}
         </div>
-        {/* Overlays */}
+
         <div className="absolute inset-0 bg-black/60" />
       </div>
 
-      {/* Content */}
       <div className="relative z-10 flex h-full flex-col items-center justify-between px-6 py-16">
-        {/* Top — label */}
+
         <div className="animate-fade-up animation-delay-200 opacity-0">
           <p className="text-[10px] font-medium tracking-[0.4em] text-primary-foreground uppercase md:text-xs dark:text-primary">
             The Wedding Of

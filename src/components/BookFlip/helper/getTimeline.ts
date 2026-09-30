@@ -93,7 +93,7 @@ export const getTimeline = ({
       .to({}, { duration: 0.4 })
 
     if (isDesktop) {
-      // DESKTOP: Cover flip + N page flips, Centered spread
+
       tl.to(bookRef.current, {
         rotateY: -12,
         rotateX: 12,
@@ -126,7 +126,6 @@ export const getTimeline = ({
           "-=0.4"
         )
 
-      // Loop through each page for desktop flips
       validPageRefs.slice(0, -1).forEach((pageEl, i) => {
         const frontShadow = pageFrontShadowRefs.current[i]
         const backShadow = pageBackShadowRefs.current[i]
@@ -162,7 +161,7 @@ export const getTimeline = ({
           )
       })
     } else {
-      // MOBILE: Cover flip + N page flips, Dynamic Journey Sequence
+
       tl.to(bookRef.current, {
         rotateY: -15,
         rotateX: 15,
@@ -190,13 +189,12 @@ export const getTimeline = ({
           "-=0.2"
         )
 
-      // Loop through each page for mobile flips
       validPageRefs.slice(0, -1).forEach((pageEl, i) => {
         const frontShadow = pageFrontShadowRefs.current[i]
         const backShadow = pageBackShadowRefs.current[i]
         const baseZIndex = 15 + i * 5
 
-        tl.to({}, { duration: 0.6 }) // Pause to read current page
+        tl.to({}, { duration: 0.6 })
           .to(bookRef.current, {
             rotateY: -15,
             rotateX: 15,

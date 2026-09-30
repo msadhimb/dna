@@ -1,16 +1,15 @@
 import * as React from "react"
 
 interface OrnamentalDividerProps {
-  
+
   color?: string
-  
+
   accent?: string
-  
+
   size?: "default" | "small" | number | string
   className?: string
   style?: React.CSSProperties
 }
-
 
 export function OrnamentalDivider({
   color = "var(--wedding-border-accent)",
@@ -21,7 +20,6 @@ export function OrnamentalDivider({
 }: OrnamentalDividerProps) {
   const finalColor = accent ?? color
 
-  
   const isPreset = size === "default" || size === "small"
   const containerWidth = isPreset ? (size === "small" ? "80px" : "120px") : undefined
   const svgSize = isPreset ? undefined : size

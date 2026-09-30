@@ -4,7 +4,6 @@ interface CoverBackProps {
   background: string
 }
 
-
 const CoverBack = forwardRef<HTMLDivElement, CoverBackProps>(
   ({ background }, ref) => {
     return (

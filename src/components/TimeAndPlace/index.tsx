@@ -35,8 +35,6 @@ const INFO = {
   },
 } as const
 
-/* ------------------------------------------------------------------ */
-
 export const TimeAndPlace = () => {
   const sectionRef = useRef<HTMLElement>(null)
   const { guest } = useGuest()
@@ -61,8 +59,7 @@ export const TimeAndPlace = () => {
 
   useGSAP(
     () => {
-      // Entrance: jalan sekali saat section masuk viewport.
-      // Tidak depend on activeKey supaya ganti tab tidak me-replay semuanya.
+
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
@@ -116,7 +113,6 @@ export const TimeAndPlace = () => {
     { scope: sectionRef, dependencies: [onPhoto] }
   )
 
-  // Ganti tab: hanya kartu di bawah tab yang dianimasikan ulang.
   const isFirstTabRender = useRef(true)
   useEffect(() => {
     if (isFirstTabRender.current) {
@@ -145,7 +141,7 @@ export const TimeAndPlace = () => {
       ref={sectionRef}
       className="relative w-full scroll-mt-16 overflow-hidden bg-background min-h-screen"
     >
-      {/* foto background */}
+
       <div className="absolute inset-0 bg-[#030303]" aria-hidden="true">
         <Image
           src={bgPhoto}
@@ -157,11 +153,10 @@ export const TimeAndPlace = () => {
           unoptimized
         />
       </div>
-      {/* overlay baca: gelap merata + blend ke section atas/bawah */}
+
       <div className="absolute inset-0 bg-black/55" aria-hidden="true" />
 
       <div className="relative z-10 mx-auto flex w-full max-w-2xl flex-col items-center gap-5 px-0 py-24 md:py-32 sm:px-6 md:gap-10 md:px-10">
-        {/* header */}
 
         <Header
           subHeader="Hari Bahagia Kami"
@@ -170,7 +165,6 @@ export const TimeAndPlace = () => {
           className="text-white"
         />
 
-        {/* tabs — hanya tampil bila tamu diundang ke dua acara */}
         {showBoth ? (
           <Tabs
             mode="glass"
@@ -194,7 +188,7 @@ export const TimeAndPlace = () => {
                   className="w-full data-[state=inactive]:hidden"
                 >
                   <div className="flex w-full flex-col gap-5">
-                    {/* kartu tanggal — liquid glass */}
+
                     <div
                       className={cn(
                         "tp-card relative overflow-hidden rounded-[20px] border px-5 py-6 text-center md:px-8",
@@ -213,7 +207,6 @@ export const TimeAndPlace = () => {
                       />
                     </div>
 
-                    {/* kartu lokasi + peta — liquid glass */}
                     <div
                       className={cn(
                         "tp-card relative overflow-hidden rounded-[20px] border px-5 py-6 text-center md:px-8",
@@ -262,7 +255,7 @@ export const TimeAndPlace = () => {
           </Tabs>
         ) : (
           <div className="flex w-full flex-col gap-5 px-5 ">
-            {/* kartu tanggal — liquid glass */}
+
             <div
               className={cn(
                 "tp-card relative overflow-hidden rounded-[20px] border px-5 py-6 text-center md:px-8",
@@ -281,7 +274,6 @@ export const TimeAndPlace = () => {
               />
             </div>
 
-            {/* kartu lokasi + peta — liquid glass */}
             <div
               className={cn(
                 "tp-card relative overflow-hidden rounded-[20px] border px-5 py-6 text-center md:px-8",

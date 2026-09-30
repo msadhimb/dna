@@ -63,10 +63,8 @@ const GuestsListView = () => {
   const [editingGuest, setEditingGuest] = useState<any | null>(null)
   const [isExporting, setIsExporting] = useState(false)
 
-  // Share WA modal
   const [shareGlobalOpen, setShareGlobalOpen] = useState(false)
 
-  // Filters - backend only
   const [guestFromFilter, setGuestFromFilter] = useState<string>("all")
   const [mantuOnly, setMantuOnly] = useState(false)
   const [unduhOnly, setUnduhOnly] = useState(false)

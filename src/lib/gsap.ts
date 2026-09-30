@@ -15,10 +15,8 @@ export function registerGSAP() {
   isRegistered = true
 }
 
-// Auto-register saat modul di-import di client
 if (typeof window !== "undefined") {
   registerGSAP()
 }
 
-// Re-export for convenience
 export { gsap, ScrollTrigger }

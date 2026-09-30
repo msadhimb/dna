@@ -29,14 +29,13 @@ const Header = memo(function Header({
         "relative z-10 flex shrink-0 flex-col items-center gap-3 text-center md:gap-4 md:px-10",
         className
       )}
-      // Isolasi paint agar animasi opacity parent tidak memicu repaint global.
-      // Penting saat Header dipakai di dalam pinned scrub (BioSequence).
+
       style={{ contain: "layout style" }}
     >
       <p className="font-sans text-[10px] font-semibold tracking-[0.5em] uppercase">
         {subHeader}
       </p>
-      {/* spaceY via inline style: `space-y-${spaceY}` dinamis tidak di-generate Tailwind */}
+
       <div
         className="flex flex-col items-center"
         style={{ rowGap: `${spaceY * 0.25}rem` }}

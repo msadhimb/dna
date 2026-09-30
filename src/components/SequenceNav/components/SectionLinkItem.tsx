@@ -43,7 +43,7 @@ const SectionLinkItem = ({
             : "hover:bg-wedding-text-primary/[0.045]"
         )}
       >
-        {/* penanda aktif */}
+
         <span
           aria-hidden="true"
           className={cn(
@@ -52,7 +52,6 @@ const SectionLinkItem = ({
           )}
         />
 
-        {/* ikon */}
         <span
           aria-hidden="true"
           className={cn(
@@ -65,7 +64,6 @@ const SectionLinkItem = ({
           <Icon strokeWidth={1.75} className="h-[18px] w-[18px]" />
         </span>
 
-        {/* teks */}
         <span className="flex min-w-0 flex-1 flex-col">
           <span className="flex items-baseline gap-2">
             <span className="truncate font-serif text-[16px] leading-snug font-medium text-wedding-text-primary">
@@ -77,7 +75,6 @@ const SectionLinkItem = ({
           </span>
         </span>
 
-        {/* chevron */}
         <span
           aria-hidden="true"
           className={cn(

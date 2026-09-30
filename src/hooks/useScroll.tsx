@@ -6,14 +6,14 @@ export interface ScrollState {
   scrollY: number
   scrollX: number
   direction: "up" | "down" | null
-  progress: number 
+  progress: number
   isScrolling: boolean
 }
 
 interface UseScrollOptions {
-  
+
   throttle?: boolean
-  
+
   idleDelay?: number
 }
 
@@ -76,7 +76,6 @@ export function useScroll(options: UseScrollOptions = {}): ScrollState {
       }
     }
 
-    
     lastScrollY.current = window.scrollY
 
     window.addEventListener("scroll", handleScroll, { passive: true })

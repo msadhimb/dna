@@ -72,8 +72,6 @@ const FormSelect = ({
   const [valueInput, setValueInput] = React.useState("")
   const [selectedOption, setSelectedOption] = React.useState<any>(null)
 
-  
-  
   const [searchInput, setSearchInput] = React.useState("")
   const [debouncedSearch, setDebouncedSearch] = React.useState("")
 
@@ -98,7 +96,6 @@ const FormSelect = ({
     label: toStr(labelKey ? item[labelKey] : item.name),
   })
 
-  
   const debouncedSetSearch = React.useMemo(
     () =>
       debounce((val: string) => {
@@ -118,7 +115,6 @@ const FormSelect = ({
     debouncedSetSearch(val)
   }
 
-  
   const {
     data: asyncData,
     isLoading: loading,
@@ -199,7 +195,6 @@ const FormSelect = ({
     refetchOnReconnect: false,
   })
 
-  
   React.useEffect(() => {
     if (!bottomRef.current) return
     const observer = new IntersectionObserver(
@@ -217,15 +212,14 @@ const FormSelect = ({
   const handleOpenChange = (newOpen: boolean) => {
     if (!disabled) {
       if (newOpen && isAsync) {
-        
-        
+
         queryClient.invalidateQueries({
           queryKey: [...baseQueryKey, "list"],
           exact: false,
         })
       }
       if (!newOpen) {
-        
+
         debouncedSetSearch.cancel()
         setSearchInput("")
         setDebouncedSearch("")
@@ -244,24 +238,20 @@ const FormSelect = ({
 
   const getDisplayValue = () => {
     if (value) {
-      
+
       const fromLoaded = currentOptions.find(
         (opt: any) => toStr(opt.value) === toStr(value)
       )
       if (fromLoaded) return fromLoaded.label
 
-      
       if (selectedOption && toStr(selectedOption.value) === toStr(value)) {
         return selectedOption.label
       }
 
-      
       if (resolvedData) return resolvedData.label
 
-      
       if (!isAsync && selectedDisplayValue) return selectedDisplayValue
 
-      
       if (isResolving) return "Loading..."
 
       return value
@@ -277,7 +267,6 @@ const FormSelect = ({
     return placeholder || "Select"
   }
 
-  
   React.useEffect(() => {
     if (!value) {
       setValueInput("")
@@ -362,7 +351,7 @@ const FormSelect = ({
                           keywords={[optionLabel]}
                           data-checked={
                             toStr(value) === optionValue ? "true" : undefined
-                          } 
+                          }
                           onSelect={(currentValue) => {
                             onChange?.(currentValue, option)
                             setSelectedOption(option)

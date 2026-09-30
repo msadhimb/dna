@@ -53,9 +53,9 @@ export type ActionItem<TData> = {
   label: string
   icon?: React.ReactNode
   onClick: (row: TData) => void
-  
+
   separator?: boolean
-  
+
   destructive?: boolean
 }
 
@@ -65,7 +65,7 @@ interface DataTableProps<TData> {
   fetcher: (params: any) => Promise<any>
   filterColumn?: string
   filterPlaceholder?: string
-  
+
   actions?: ActionItem<TData>[]
   filters?: Record<string, any>
   toolbarExtra?: React.ReactNode
@@ -82,7 +82,7 @@ export function DataTable<TData>({
   filters,
   toolbarExtra,
 }: DataTableProps<TData>) {
-  
+
   const [page, setPage] = React.useState(1)
   const [pageSize, setPageSize] = React.useState(20)
   const [search, setSearch] = React.useState("")
@@ -94,7 +94,6 @@ export function DataTable<TData>({
     React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
 
-  
   React.useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(search)
@@ -103,12 +102,10 @@ export function DataTable<TData>({
     return () => clearTimeout(timer)
   }, [search])
 
-  // reset to page 1 when external filters change
   React.useEffect(() => {
     setPage(1)
   }, [JSON.stringify(filters ?? {})])
 
-  
   const sortDir = sorting[0]?.desc === false ? "asc" : "desc"
 
   const params = {
@@ -120,7 +117,6 @@ export function DataTable<TData>({
     ...(filters ?? {}),
   }
 
-  
   const { data, isLoading, isError } = useQuery({
     queryKey: [queryKey, params],
     queryFn: () => fetcher(params),
@@ -137,7 +133,6 @@ export function DataTable<TData>({
   const canPrev = page > 1
   const canNext = page < totalPages
 
-  
   const [showShadow, setShowShadow] = React.useState(true)
   const scrollAreaRef = React.useRef<HTMLDivElement>(null)
 
@@ -174,7 +169,6 @@ export function DataTable<TData>({
     }
   }, [rows])
 
-  
   const columnsWithActions = React.useMemo<ColumnDef<TData, unknown>[]>(() => {
     if (!actions?.length) return columns
 
@@ -224,7 +218,6 @@ export function DataTable<TData>({
     return [...columns, actionColumn]
   }, [columns, actions])
 
-  
   const table = useReactTable({
     data: rows,
     columns: columnsWithActions,
@@ -354,7 +347,6 @@ export function DataTable<TData>({
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
 
-      
       <div className="flex items-center justify-between px-2">
         <p className="text-sm text-muted-foreground">
           {totalItems} row(s) total.

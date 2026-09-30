@@ -16,7 +16,6 @@ const useResponsive = () => {
     }
   }, [])
 
-  // iPad portrait ≤1024 + portrait = mobile, landscape = desktop
   const isMobile = screenWidth > 0 && (screenWidth < 768 || (screenWidth <= 1024 && isPortrait))
   const isIpadPortrait = screenWidth >= 768 && screenWidth <= 1024 && isPortrait
 

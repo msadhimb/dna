@@ -4,13 +4,13 @@ import { cn } from "@/lib/utils"
 import { Label } from "@/components/ui/label"
 
 export interface FormTextAreaProps extends React.ComponentProps<"textarea"> {
-  
+
   accent?: string
-  
+
   borderColor?: string
   label?: string
   error?: string
-  
+
   labelColor?: string
 }
 

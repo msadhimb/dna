@@ -9,13 +9,13 @@ import { Card } from "@/components/Card"
 interface QrisCardProps {
   qrisUrl: string
   qrisName?: string
-  
+
   accent?: string
-  
+
   borderAccent?: string
-  
+
   isDark?: boolean
-  
+
   surface?: string
 }
 
@@ -34,7 +34,7 @@ const QrisCard = ({
       const url = URL.createObjectURL(blob)
       const a = document.createElement("a")
       a.href = url
-      
+
       const ext = qrisUrl.split(".").pop()?.split("?")[0] ?? "png"
       a.download = `QRIS-${qrisName.replace(/\s+/g, "-")}.${ext}`
       document.body.appendChild(a)
@@ -42,7 +42,7 @@ const QrisCard = ({
       a.remove()
       URL.revokeObjectURL(url)
     } catch {
-      
+
       window.open(qrisUrl, "_blank")
     } finally {
       setDownloading(false)

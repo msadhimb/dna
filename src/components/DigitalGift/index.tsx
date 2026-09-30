@@ -29,7 +29,7 @@ export const DigitalGift = () => {
 
   useGSAP(
     () => {
-      // One authored moment: section rises once, cards stagger.
+
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
@@ -53,7 +53,6 @@ export const DigitalGift = () => {
     { scope: sectionRef }
   )
 
-  // Animasi halus saat ganti tab
   useEffect(() => {
     if (!sectionRef.current) return
     gsap.fromTo(
@@ -77,7 +76,6 @@ export const DigitalGift = () => {
           className="dg-rise"
         />
 
-        {/* Metode hadiah — wedding Tabs (solid, di atas surface) */}
         <Tabs
           mode="solid"
           value={activeTab}

@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic"
 const AUDIO_EXTS = /\.(mp3|wav|ogg|m4a|flac|aac|webm|opus)$/i
 
 function toTitle(filename: string) {
-  
+
   const withoutExt = filename.replace(/\.[^/.]+$/, "")
   try {
     return decodeURIComponent(withoutExt)
@@ -29,14 +29,14 @@ export async function GET() {
     const tracks = entries
       .filter((e) => e.isFile())
       .map((e) => e.name)
-      
+
       .filter((name) => !name.startsWith(".") && name !== ".gitkeep")
       .filter((name) => AUDIO_EXTS.test(name))
       .sort((a, b) => a.localeCompare(b))
       .map((name) => ({
         name,
         title: toTitle(name),
-        
+
         src: `/audio/${encodeURIComponent(name)}`,
       }))
 

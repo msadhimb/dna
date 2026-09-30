@@ -31,7 +31,7 @@ const onRejected = async (error: any) => {
           data: { session },
         } = await supabase.auth.getSession()
         if (session) {
-          
+
           originalRequest.headers.Authorization = `Bearer ${session.access_token}`
           return axiosInterceptorInstance(originalRequest)
         } else {
@@ -57,7 +57,6 @@ const onRejected = async (error: any) => {
 }
 
 axiosInterceptorInstance.interceptors.response.use(onFulfilled, onRejected)
-
 
 axiosInterceptorInstance.interceptors.request.use(async (config) => {
   const {
@@ -88,13 +87,12 @@ const clientApi = async (payload: AxiosRequestConfig) => {
     return Promise.reject(JSON.stringify(response.data))
   } catch (error: any) {
     const err = new Error(
-      error?.response?.data?.error ?? 
+      error?.response?.data?.error ??
         error?.response?.data?.message ??
         error?.message ??
         "An error occurred"
     )
 
-    
     ;(err as any).status = error?.response?.status ?? 500
     ;(err as any).code = error?.response?.status ?? 500
     ;(err as any).data = error?.response?.data?.data ?? {}

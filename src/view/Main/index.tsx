@@ -168,7 +168,6 @@ const MainView = ({
     setMounted(true)
   }, [])
 
-  // Orkestrasi pinned scroll dipindah ke hook terpisah
   usePinnedScrollSequence(
     mainRef,
     {

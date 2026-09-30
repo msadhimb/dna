@@ -166,8 +166,6 @@ export const CommentSection = forwardRef<
         },
       })
 
-      // Tanpa fade entrance: konten langsung tampil apa adanya.
-      // Parallax float di atas tetap dipertahankan.
       return gsap.timeline()
     },
   }))

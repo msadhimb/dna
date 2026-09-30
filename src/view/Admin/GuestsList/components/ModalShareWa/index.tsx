@@ -74,7 +74,6 @@ const ModalShareWa = ({ open, onOpenChange }: Props) => {
     })
   }, [])
 
-  // Reset semua form ketika modal di-close
   useEffect(() => {
     if (!open) {
       setSelectedGuest(null)
@@ -148,7 +147,7 @@ const ModalShareWa = ({ open, onOpenChange }: Props) => {
 
   const handleClose = (nextOpen: boolean) => {
     if (!nextOpen) {
-      // keep guest? reset?
+
     }
     onOpenChange(nextOpen)
   }
@@ -170,7 +169,7 @@ const ModalShareWa = ({ open, onOpenChange }: Props) => {
         </DialogHeader>
 
         <div className="overflow-y-auto max-h-[60vh] px-6 py-5 space-y-5">
-          {/* Pilih Tamu - pakai FormSelect */}
+
           <FormSelect
             label="Pilih Tamu"
             placeholder="Cari & pilih tamu..."
@@ -183,7 +182,6 @@ const ModalShareWa = ({ open, onOpenChange }: Props) => {
             error={!selectedGuestId && message ? undefined : undefined}
           />
 
-          {/* Nomor WA - FormInput */}
           <div className="space-y-1">
             <FormInput
               label="Nomor WhatsApp Tujuan"
@@ -198,7 +196,6 @@ const ModalShareWa = ({ open, onOpenChange }: Props) => {
             </p>
           </div>
 
-          {/* Pesan - FormTextArea */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <span className="font-sans text-[10px] md:text-[11px] font-bold tracking-[0.30em] uppercase text-wedding-text-secondary">

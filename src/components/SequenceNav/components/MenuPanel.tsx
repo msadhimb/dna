@@ -35,7 +35,7 @@ const MenuPanel = ({
         : "pointer-events-none invisible -translate-y-2 scale-[0.96] opacity-0"
     )}
   >
-    {/* garis cahaya emas atas */}
+
     <span
       aria-hidden="true"
       className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-wedding-accent/70 to-transparent"

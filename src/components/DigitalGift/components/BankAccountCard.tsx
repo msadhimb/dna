@@ -43,7 +43,7 @@ const BankAccountCard = ({
       radius="24px"
       className="dg-card group w-full md:w-80 items-stretch gap-0 overflow-hidden p-0 text-left transition-all duration-300 hover:-translate-y-1"
     >
-      {/* Top strip */}
+
       <div className="flex items-center justify-between px-6 pt-5">
         <div className="flex items-center gap-3">
           <div className="flex h-11 w-16 items-center justify-center overflow-hidden rounded-xl bg-white p-1.5 ring-1 ring-black/5 dark:ring-white/10">
@@ -77,7 +77,6 @@ const BankAccountCard = ({
         </span>
       </div>
 
-      {/* Number */}
       <div className="px-6 pt-5">
         <p className="font-sans text-[10px] font-bold tracking-[0.2em] uppercase text-wedding-text-secondary">
           Nomor Rekening
@@ -90,7 +89,6 @@ const BankAccountCard = ({
         </p>
       </div>
 
-      {/* Action */}
       <div className="px-6 pt-4 pb-5">
         <Button
           onClick={handleCopy}

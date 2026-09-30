@@ -27,7 +27,6 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
     typeof window !== "undefined" &&
     window.matchMedia("(prefers-reduced-motion: reduce)").matches
 
-  /* ---------- Entrance elegan: ScrollTrigger mandiri ---------- */
   useEffect(() => {
     const section = sectionRef.current
     const card = cardRef.current
@@ -41,7 +40,7 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
     }
 
     const ctx = gsap.context(() => {
-      // --- state awal (halus, tanpa pop) ---
+
       gsap.set(".rq-halo", {
         opacity: 0,
         scale: 0.82,
@@ -87,7 +86,7 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
         .to(".rq-dots", { opacity: 0.6, scale: 1, duration: 1.8 }, 0.1)
         .to(".rq-eyebrow", { opacity: 1, y: 0, duration: 0.9 }, 0.15)
         .to(".rq-eyebrow .rq-rule", { scaleX: 1, duration: 1.1 }, 0.2)
-        // kartu: naik pelan + tajam dari blur — inti kesan elegan
+
         .to(
           ".rq-card",
           {
@@ -107,7 +106,7 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
           { opacity: 0.3, y: 0, scale: 1, rotation: 0, duration: 1.2 },
           0.75
         )
-        // teks utama: reveal per baris dari balik mask
+
         .to(
           ".rq-line-inner",
           { yPercent: 0, duration: 1.15, stagger: 0.16 },
@@ -123,7 +122,7 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
           { opacity: 1, y: 0, filter: "blur(0px)", duration: 1.1 },
           1.35
         )
-        // kilau sapuan sekali, sangat subtil
+
         .to(".rq-shine-sweep", { opacity: 1, duration: 0.25 }, 1.4)
         .fromTo(
           ".rq-shine-sweep",
@@ -138,7 +137,6 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
           1.5
         )
 
-      // --- ambien: napas lembut setelah entrance ---
       const ambient = gsap.timeline({ delay: 2.2, repeat: -1, yoyo: true })
       ambient
         .to(floatRef.current, { y: -9, duration: 3.4, ease: "sine.inOut" }, 0)
@@ -154,7 +152,6 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
           0
         )
 
-      // pause ambien saat di luar viewport (hemat CPU)
       ScrollTrigger.create({
         trigger: section,
         start: "top bottom",
@@ -165,7 +162,6 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
         onEnter: () => ambient.play(),
       })
 
-      // --- parallax subtil saat scroll ---
       gsap.to(".rq-halo", {
         y: 70,
         ease: "none",
@@ -191,7 +187,6 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
     return () => ctx.revert()
   }, [])
 
-  /* ---------- Tilt desktop: lembut via quickTo (tidak menimpa entrance) ---------- */
   useEffect(() => {
     const card = cardRef.current
     const zone = floatRef.current
@@ -223,7 +218,7 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
       const rect = card.getBoundingClientRect()
       const px = (e.clientX - rect.left) / rect.width
       const py = (e.clientY - rect.top) / rect.height
-      // maks ±6° — jauh lebih sopan dari 20° sebelumnya
+
       targetRot.current.y = (px - 0.5) * 12
       targetRot.current.x = -(py - 0.5) * 10
       card.style.setProperty("--mouse-x", `${px * 100}%`)
@@ -257,7 +252,6 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
     }
   }, [isMobile])
 
-  /* ---------- Mobile: ayunan napas, bukan goyangan kaku ---------- */
   useEffect(() => {
     const el = floatRef.current
     if (!el || !isMobile) return
@@ -349,7 +343,7 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
       ref={sectionRef}
       className="rq-section relative flex w-full items-center justify-center overflow-hidden bg-background min-h-[540px] md:min-h-[680px]"
     >
-      {/* halo + pola titik: parallax + napas */}
+
       <div
         ref={haloRef}
         className="rq-halo pointer-events-none absolute left-1/2 top-1/2 h-[94vw] max-h-[480px] w-[94vw] max-w-[480px] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full md:h-[620px] md:w-[620px]"
@@ -371,7 +365,6 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
         />
       </div>
 
-      {/* sparkle melayang */}
       <span
         data-rq
         className="rq-sparkle pointer-events-none absolute left-[18%] top-[24%] h-1.5 w-1.5 rounded-full bg-wedding-accent/60 blur-[0.5px]"
@@ -432,7 +425,7 @@ export const RomanticQuote = forwardRef<RomanticQuoteRef>((_, ref) => {
                 background: `radial-gradient(circle 220px at var(--mouse-x) var(--mouse-y), rgba(255,255,255,0.13), transparent 62%)`,
               }}
             />
-            {/* sapuan kilau sekali saat entrance */}
+
             <div
               data-rq
               aria-hidden="true"

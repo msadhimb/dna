@@ -43,8 +43,6 @@ export const CurtainTransition = forwardRef<
         tl.set(`.photo-inner-${i}`, { y: "30%" })
       })
 
-      // Curtain muncul: titik kecil → garis vertikal → melebar penuh
-      // Gunakan keyframes agar transisi antar fase mulus tanpa discontinuity
       tl.to(
         ".curtain-bg",
         {
@@ -57,7 +55,6 @@ export const CurtainTransition = forwardRef<
         ">0.5"
       )
 
-      // Frame photos slideIn satu per satu
       frames.forEach((_, i) => {
         const pos = i === 0 ? "-=0.3" : `-=${FRAME_DUR - STAGGER}`
         tl.to(
@@ -71,7 +68,6 @@ export const CurtainTransition = forwardRef<
         )
       })
 
-      // Fade hero halus sebelum split
       tl.to(
         heroSection,
         {
@@ -82,7 +78,6 @@ export const CurtainTransition = forwardRef<
         "heroFade"
       ).to(journeyWrapper, { opacity: 1, pointerEvents: "auto" }, "heroFade")
 
-      // Split curtain — visual sama, tanpa force3D/willChange permanen
       if (leftHalfRef.current && rightHalfRef.current) {
         tl.to(
           leftHalfRef.current,
