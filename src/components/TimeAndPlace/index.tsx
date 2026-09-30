@@ -146,13 +146,13 @@ export const TimeAndPlace = () => {
       className="relative w-full scroll-mt-16 overflow-hidden bg-background min-h-screen"
     >
       {/* foto background */}
-      <div className="absolute inset-0" aria-hidden="true">
+      <div className="absolute inset-0 bg-[#030303]" aria-hidden="true">
         <Image
           src={bgPhoto}
           alt=""
           fill
           sizes="100vw"
-          className="md:scale-150 object-cover object-center origin-[0%_5%] md:origin-[0%_10%] dark:origin-[120%_20%]"
+          className="md:scale-150 object-cover object-center origin-[0%_5%] md:origin-[0%_10%] dark:origin-[100%_20%]"
           quality={80}
           unoptimized
         />

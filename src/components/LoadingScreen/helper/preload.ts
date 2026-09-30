@@ -1,19 +1,18 @@
 interface PreloadOptions {
-  /** Percobaan ulang per gambar setelah gagal/timeout. Default 3. */
   retries?: number
-  /** Batas tunggu per percobaan (ms). Default 30000. */
   timeoutMs?: number
-  /** Jeda dasar antar percobaan (ms, kelipatan per attempt). Default 600. */
   retryDelayMs?: number
+  concurrency?: number
 }
 
-/**
- * Preload gambar sampai benar-benar siap tampil:
- * - load + `decode()` eksplisit per gambar (bitmap siap -> anti blur/flash)
- * - tiap gambar di-retry bila gagal/timeout, bukan dihitung sukses palsu
- * - `onDone` dipanggil setelah SEMUA settled; daftar URL yang tetap gagal
- *   dikembalikan agar pemanggil bisa menanganinya (mis. putaran tambahan)
- */
+const isMobileDevice = () => {
+  if (typeof navigator === "undefined") return false
+  const ua = navigator.userAgent || ""
+  if (/iPhone|iPad|iPod|Android/i.test(ua)) return true
+  if (typeof window !== "undefined" && window.innerWidth < 768) return true
+  return false
+}
+
 export const preloadImages = (
   urls: string[],
   onProgress: (progress: number) => void,
@@ -27,44 +26,57 @@ export const preloadImages = (
     return
   }
 
-  const { retries = 3, timeoutMs = 30000, retryDelayMs = 600 } = options
+  const mobile = isMobileDevice()
+  const {
+    retries = mobile ? 1 : 2,
+    timeoutMs = mobile ? 15000 : 30000,
+    retryDelayMs = 600,
+    concurrency = mobile ? 2 : 3,
+  } = options
+
   let settledCount = 0
+  let nextIndex = 0
+  let finished = false
   const failed: string[] = []
 
   const report = () => {
     onProgress(Math.floor((settledCount / uniqueUrls.length) * 100))
-    if (settledCount === uniqueUrls.length) onDone(failed)
+    if (settledCount === uniqueUrls.length && !finished) {
+      finished = true
+      onDone(failed)
+    }
   }
 
   const loadOnce = (url: string) =>
     new Promise<void>((resolve, reject) => {
-      const img = new Image()
+      let img: HTMLImageElement | null = new Image()
       img.decoding = "async"
       const timer = window.setTimeout(() => {
-        img.src = ""
-        reject(new Error(`preload timeout: ${url}`))
+        cleanup()
+        reject(new Error(url))
       }, timeoutMs)
-      img.onload = () => {
+      const cleanup = () => {
         window.clearTimeout(timer)
-        // Tunggu hasil decode agar gambar siap penuh saat ditampilkan
-        img
-          .decode()
-          .then(() => resolve())
-          .catch(() => resolve())
+        if (img) {
+          img.onload = null
+          img.onerror = null
+          img.removeAttribute("src")
+          img.src = ""
+          img = null
+        }
+      }
+      img.onload = () => {
+        cleanup()
+        resolve()
       }
       img.onerror = () => {
-        window.clearTimeout(timer)
-        reject(new Error(`preload error: ${url}`))
+        cleanup()
+        reject(new Error(url))
       }
       img.src = url
     })
 
   const loadWithRetry = async (url: string) => {
-    // SENGAJA tanpa <link rel="preload"> ke document.head: <head> dikelola
-    // React (App Router) dan node asing di sana bisa merusak rekonsiliasi
-    // head -> "Failed to execute 'insertBefore' on 'Node'".
-    // Fetch via `new Image()` di bawah sudah mengisi HTTP cache dengan
-    // URL yang sama sehingga next/image (unoptimized) langsung cache-hit.
     for (let attempt = 0; attempt <= retries; attempt++) {
       try {
         await loadOnce(url)
@@ -80,14 +92,24 @@ export const preloadImages = (
     failed.push(url)
   }
 
-  uniqueUrls.forEach((url) => {
-    loadWithRetry(url)
-      .catch(() => {
+  const worker = async () => {
+    while (true) {
+      const current = nextIndex
+      nextIndex += 1
+      if (current >= uniqueUrls.length) return
+      const url = uniqueUrls[current]
+      try {
+        await loadWithRetry(url)
+      } catch {
         if (!failed.includes(url)) failed.push(url)
-      })
-      .finally(() => {
-        settledCount++
-        report()
-      })
-  })
+      }
+      settledCount += 1
+      report()
+    }
+  }
+
+  const workerCount = Math.min(concurrency, uniqueUrls.length)
+  for (let i = 0; i < workerCount; i++) {
+    worker()
+  }
 }

@@ -269,14 +269,10 @@ const LoveJourneyHorizontal = forwardRef<LoveJourneyHorizontalRef, Props>(
                         alt={it.title}
                         fill
                         sizes="(max-width: 768px) 82vw, 260px"
+                        quality={60}
                         className="object-cover"
                         priority={i === 0}
                         decoding="async"
-                        // File light 1-2,5MB: lewat optimizer Next saat cold
-                        // antrean optimasi bisa timeout -> gambar broken.
-                        // Direct URL sudah di-preload loading screen, jadi
-                        // unoptimized justru lebih cepat + anti gagal.
-                        unoptimized
                       />
                     ) : (
                       <div className="flex h-full w-full items-center justify-center bg-wedding-surface font-sans text-xs tracking-widest text-wedding-text-secondary uppercase">

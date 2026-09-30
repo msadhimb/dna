@@ -35,10 +35,7 @@ const HeroSection = () => {
       className="relative h-screen w-full overflow-hidden"
     >
       <div className="absolute inset-0 z-0">
-        <div
-          className="absolute inset-0 md:-translate-x-10 md:scale-125 dark:md:-translate-x-40"
-          style={{ willChange: "transform" }}
-        >
+        <div className="absolute inset-0 md:-translate-x-10 md:scale-125 dark:md:-translate-x-40">
           {heroImage ? (
             <Image
               key={heroImage}
@@ -47,8 +44,9 @@ const HeroSection = () => {
               fill
               priority
               className="object-cover object-[80%_70%] dark:object-[60%_0%]"
-              sizes="200vw"
-              quality={85}
+              sizes="100vw"
+              quality={70}
+              decoding="async"
             />
           ) : (
             <div className="size-full bg-background" aria-hidden="true" />

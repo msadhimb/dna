@@ -147,7 +147,9 @@ const MainView = ({
             src={content}
             alt={`Curtain Photo ${i + 1}`}
             fill
-            sizes="200vw"
+            sizes="100vw"
+            quality={60}
+            decoding="async"
             priority={i === 0}
             className="object-cover object-center"
           />

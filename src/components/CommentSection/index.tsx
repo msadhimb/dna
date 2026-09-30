@@ -101,17 +101,17 @@ export const CommentSection = forwardRef<
   const isSubmitting = createComment.isPending
 
   const imgBack = isDark
-    ? (imageUrl as any)?.dark?.[1].link
-    : (imageUrl as any)?.light?.[1].link
+    ? (imageUrl as any)?.dark?.[1]?.link ?? ""
+    : (imageUrl as any)?.light?.[1]?.link ?? ""
   const imgFront = isDark
-    ? (imageUrl as any)?.dark?.[0].link
-    : (imageUrl as any)?.light?.[0].link
+    ? (imageUrl as any)?.dark?.[0]?.link ?? ""
+    : (imageUrl as any)?.light?.[0]?.link ?? ""
   const imgRight = isDark
-    ? (imageUrl as any)?.dark?.[2].link
-    : (imageUrl as any)?.light?.[2].link
+    ? (imageUrl as any)?.dark?.[2]?.link ?? ""
+    : (imageUrl as any)?.light?.[2]?.link ?? ""
   const imgRightFront = isDark
-    ? (imageUrl as any)?.dark?.[3].link
-    : (imageUrl as any)?.light?.[3].link
+    ? (imageUrl as any)?.dark?.[3]?.link ?? ""
+    : (imageUrl as any)?.light?.[3]?.link ?? ""
 
   useImperativeHandle(ref, () => ({
     getTimeline: () => {

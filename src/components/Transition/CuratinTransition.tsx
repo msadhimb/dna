@@ -107,8 +107,6 @@ export const CurtainTransition = forwardRef<
           transform: "scale(0.001)",
           transformOrigin: "center center",
           zIndex: 0,
-          backfaceVisibility: "hidden",
-          willChange: "transform",
         }}
       />
 
@@ -120,8 +118,6 @@ export const CurtainTransition = forwardRef<
             transform: "scale(0.001)",
             transformOrigin: "center center",
             zIndex: i + 1,
-            backfaceVisibility: "hidden",
-            willChange: "transform",
           }}
         >
           <div
@@ -133,8 +129,6 @@ export const CurtainTransition = forwardRef<
               width: "130%",
               height: "130%",
               transform: "translate3d(0,30%,0)",
-              backfaceVisibility: "hidden",
-              willChange: "transform",
             }}
           >
             {frame}
@@ -149,11 +143,10 @@ export const CurtainTransition = forwardRef<
       <div
         ref={leftHalfRef}
         className="relative h-full w-1/2 overflow-hidden"
-        style={{ backfaceVisibility: "hidden", willChange: "transform" }}
       >
         <div
           className="absolute top-0 left-0 h-full w-screen"
-          style={{ backfaceVisibility: "hidden", isolation: "isolate" }}
+          style={{ isolation: "isolate" }}
         >
           {contentJSX}
         </div>
@@ -162,11 +155,10 @@ export const CurtainTransition = forwardRef<
       <div
         ref={rightHalfRef}
         className="relative h-full w-1/2 overflow-hidden"
-        style={{ backfaceVisibility: "hidden", willChange: "transform" }}
       >
         <div
           className="absolute top-0 right-0 h-full w-screen"
-          style={{ backfaceVisibility: "hidden", isolation: "isolate" }}
+          style={{ isolation: "isolate" }}
         >
           {contentJSX}
         </div>

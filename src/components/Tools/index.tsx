@@ -175,7 +175,7 @@ export const Tools = () => {
         ref={audioRef}
         src={src || undefined}
         loop={shouldLoop}
-        preload="auto"
+        preload="metadata"
         playsInline
       />
 
