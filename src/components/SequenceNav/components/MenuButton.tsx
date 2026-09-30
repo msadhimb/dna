@@ -21,7 +21,7 @@ const MenuButton = ({ open, visible, onClick }: MenuButtonProps) => {
       title={label}
       tabIndex={visible ? 0 : -1}
       className={cn(
-        "group flex h-10 cursor-pointer items-center gap-2 rounded-full",
+        "group flex h-10 w-10 cursor-pointer items-center justify-center gap-2 rounded-full",
         "border bg-white/50 dark:bg-black/50  p-2.5 text-muted dark:text-primary shadow-wedding-card",
         "supports-backdrop-filter:backdrop-blur-xl supports-backdrop-filter:backdrop-saturate-150",
         "transition-all duration-300 hover:-translate-y-px hover:border-wedding-accent/50 hover:shadow-lg active:translate-y-0 active:scale-[0.98]",

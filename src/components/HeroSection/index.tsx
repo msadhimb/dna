@@ -57,7 +57,6 @@ const HeroSection = () => {
       </div>
 
       <div className="relative z-10 flex h-full flex-col items-center justify-between px-6 py-16">
-
         <div className="animate-fade-up animation-delay-200 opacity-0">
           <p className="text-[10px] font-medium tracking-[0.4em] text-primary-foreground uppercase md:text-xs dark:text-primary">
             The Wedding Of
@@ -68,7 +67,7 @@ const HeroSection = () => {
           <h1 className="animate-fade-up animation-delay-400 font-signature text-7xl leading-none text-primary opacity-0 drop-shadow-lg md:text-9xl">
             Devi
           </h1>
-          <span className="animate-fade-in animation-delay-600 font-serif text-5xl font-light text-primary italic opacity-0 md:text-2xl">
+          <span className="animate-fade-in animation-delay-600 font-serif text-5xl font-light text-primary italic opacity-0">
             &
           </span>
           <h1 className="animate-fade-up animation-delay-600 font-signature text-7xl leading-none text-primary opacity-0 drop-shadow-lg md:text-9xl">
