@@ -102,17 +102,17 @@ export const CommentSection = forwardRef<
   const isSubmitting = createComment.isPending
 
   const imgBack = isDark
-    ? (imageUrl as any)?.dark?.[1]?.link ?? ""
-    : (imageUrl as any)?.light?.[1]?.link ?? ""
+    ? ((imageUrl as any)?.dark?.[1]?.link ?? "")
+    : ((imageUrl as any)?.light?.[1]?.link ?? "")
   const imgFront = isDark
-    ? (imageUrl as any)?.dark?.[0]?.link ?? ""
-    : (imageUrl as any)?.light?.[0]?.link ?? ""
+    ? ((imageUrl as any)?.dark?.[0]?.link ?? "")
+    : ((imageUrl as any)?.light?.[0]?.link ?? "")
   const imgRight = isDark
-    ? (imageUrl as any)?.dark?.[2]?.link ?? ""
-    : (imageUrl as any)?.light?.[2]?.link ?? ""
+    ? ((imageUrl as any)?.dark?.[2]?.link ?? "")
+    : ((imageUrl as any)?.light?.[2]?.link ?? "")
   const imgRightFront = isDark
-    ? (imageUrl as any)?.dark?.[3]?.link ?? ""
-    : (imageUrl as any)?.light?.[3]?.link ?? ""
+    ? ((imageUrl as any)?.dark?.[3]?.link ?? "")
+    : ((imageUrl as any)?.light?.[3]?.link ?? "")
 
   useImperativeHandle(ref, () => ({
     getTimeline: () => {
@@ -121,50 +121,66 @@ export const CommentSection = forwardRef<
 
       floatSTs.current.forEach((st) => st.kill())
       floatSTs.current = []
+      gsap.killTweensOf([
+        floatImgBackRef.current,
+        floatImgFrontRef.current,
+        floatImgRightRef.current,
+        floatImgRightFrontRef.current,
+      ])
 
-      gsap.to(floatImgBackRef.current, {
-        y: -40,
-        ease: "none",
-        scrollTrigger: {
-          trigger: triggerEl,
+      const floats: {
+        target: React.RefObject<HTMLDivElement | null>
+        y: number
+        scrub: number
+        start: string
+        end: string
+      }[] = [
+        {
+          target: floatImgBackRef,
+          y: -40,
+          scrub: 2,
           start: "top 85%",
           end: "bottom 15%",
-          scrub: 2,
         },
-      })
-
-      gsap.to(floatImgFrontRef.current, {
-        y: -160,
-        ease: "none",
-        scrollTrigger: {
-          trigger: triggerEl,
-          start: "top 80%",
-          end: "bottom 20%",
+        {
+          target: floatImgFrontRef,
+          y: -160,
           scrub: 1,
-        },
-      })
-
-      gsap.to(floatImgRightRef.current, {
-        y: -120,
-        ease: "none",
-        scrollTrigger: {
-          trigger: triggerEl,
           start: "top 80%",
           end: "bottom 20%",
-          scrub: 1.8,
         },
-      })
-
-      gsap.to(floatImgRightFrontRef.current, {
-        y: -120,
-        ease: "none",
-        scrollTrigger: {
-          trigger: triggerEl,
+        {
+          target: floatImgRightRef,
+          y: -120,
+          scrub: 1.8,
           start: "top 80%",
           end: "bottom 20%",
-          scrub: 1.8,
         },
+        {
+          target: floatImgRightFrontRef,
+          y: -100,
+          scrub: 2.5,
+          start: "top 80%",
+          end: "bottom 20%",
+        },
+      ]
+
+      floats.forEach(({ target, y, scrub, start, end }) => {
+        if (!target.current) return
+        const tween = gsap.to(target.current, {
+          y,
+          ease: "none",
+          scrollTrigger: {
+            trigger: triggerEl,
+            start,
+            end,
+            scrub,
+          },
+        })
+        if (tween.scrollTrigger) floatSTs.current.push(tween.scrollTrigger)
       })
+
+      requestAnimationFrame(() => ScrollTrigger.refresh())
 
       return gsap.timeline()
     },
