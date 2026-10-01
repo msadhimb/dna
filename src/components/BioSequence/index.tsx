@@ -30,7 +30,6 @@ export const BioSequence = forwardRef<BioSequenceRef, BioSequenceProps>(
       ref,
       () => ({
         getTimeline: () => {
-
           const tl = gsap.timeline({ defaults: { ease: "none" } })
           const journeyImgElement =
             journeyImageRef.current?.querySelector(".journey-inner-img")
@@ -136,7 +135,7 @@ export const BioSequence = forwardRef<BioSequenceRef, BioSequenceProps>(
           return tl
         },
       }),
-      [theme, isMobile]
+      [theme, isMobile, isDark]
     )
 
     const journeySrc = isDark
@@ -161,7 +160,10 @@ export const BioSequence = forwardRef<BioSequenceRef, BioSequenceProps>(
     }, [isDark, isMobile])
 
     return (
-      <div className="relative flex h-screen w-full flex-col items-center justify-center overflow-hidden">
+      <div
+        className="relative flex h-screen w-full flex-col items-center justify-center overflow-hidden"
+        key={theme}
+      >
         <div
           ref={journeyImageRef}
           className="gsap-element relative z-0 h-screen w-screen overflow-hidden"
@@ -173,7 +175,7 @@ export const BioSequence = forwardRef<BioSequenceRef, BioSequenceProps>(
         >
           {journeySrc ? (
             <Image
-              key={journeySrc}
+              key={`${journeySrc}-${theme}`}
               src={journeySrc}
               fill
               alt="Journey"
@@ -181,7 +183,6 @@ export const BioSequence = forwardRef<BioSequenceRef, BioSequenceProps>(
               priority
               fetchPriority="high"
               decoding="async"
-
               unoptimized
               className="journey-inner-img object-cover"
             />
@@ -191,7 +192,6 @@ export const BioSequence = forwardRef<BioSequenceRef, BioSequenceProps>(
         <div
           ref={groomBioRef}
           className={cn(
-
             "gsap-element pointer-events-none invisible absolute inset-x-0 bottom-0 z-50 flex w-screen flex-col gap-3 opacity-0",
             "items-center justify-end text-center bg-linear-to-t from-black/90 via-black/60 to-transparent pt-24 pb-12 px-6",
             "xl:inset-y-0 xl:bottom-auto xl:right-0 xl:left-auto xl:h-full xl:w-1/2 xl:items-end xl:justify-center xl:text-right xl:bg-linear-to-l xl:from-black/85 xl:via-black/45 xl:pt-0 xl:pb-0 xl:px-12",
@@ -203,7 +203,6 @@ export const BioSequence = forwardRef<BioSequenceRef, BioSequenceProps>(
             subHeader="The Groom"
             title="Muhamad Salman Adhim Baqy"
             subTitle="Putra Ketiga dari Bapak Suprapto Wibowo dan Ibu Christiana Sri Budhi H"
-
             className="text-white py-10"
             classNameTitle="text-[#f2dfa0] dark:text-primary text-5xl w-full"
             classNameSubTitle="text-md md:text-xl opacity-75"

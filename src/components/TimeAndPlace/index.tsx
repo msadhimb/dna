@@ -19,10 +19,10 @@ const INFO = {
     label: "Hari Pernikahan",
     date: "12 Desember 2026",
     hours: "09.00 — 15.00 WIB",
-    place: "Gedung DPD KNPI Tangerang",
+    place: "Gedung Taman Pabuaran Club",
     mapSrc:
-      "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.645103116751!2d106.6326327!3d-6.178238399999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f8d465b9f9c5%3A0x880e353b4abebf2f!2sDPD%20KNPI%20Tangerang!5e0!3m2!1sen!2sid!4v1786944064704!5m2!1sen!2sid",
-    mapTitle: "Peta Gedung DPD KNPI Tangerang",
+      "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.621581581179!2d106.61727830000001!3d-6.181376200000001!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69ff27d891a29f%3A0xd4c48e004b17edfd!2sGedung%20Taman%20Pabuaran%20Club!5e0!3m2!1sid!2sid!4v1790835297712!5m2!1sid!2sid",
+    mapTitle: "Peta Gedung Taman Pabuaran Club",
   },
   unduh: {
     label: "Hari Unduh Mantu",
@@ -59,7 +59,6 @@ export const TimeAndPlace = () => {
 
   useGSAP(
     () => {
-
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
@@ -141,7 +140,6 @@ export const TimeAndPlace = () => {
       ref={sectionRef}
       className="relative w-full scroll-mt-16 overflow-hidden bg-background min-h-screen"
     >
-
       <div className="absolute inset-0 bg-[#030303]" aria-hidden="true">
         <Image
           src={bgPhoto}
@@ -157,7 +155,6 @@ export const TimeAndPlace = () => {
       <div className="absolute inset-0 bg-black/55" aria-hidden="true" />
 
       <div className="relative z-10 mx-auto flex w-full max-w-2xl flex-col items-center gap-5 px-0 py-24 md:py-32 sm:px-6 md:gap-10 md:px-10">
-
         <Header
           subHeader="Hari Bahagia Kami"
           title="Waktu & Tempat"
@@ -188,7 +185,6 @@ export const TimeAndPlace = () => {
                   className="w-full data-[state=inactive]:hidden"
                 >
                   <div className="flex w-full flex-col gap-5">
-
                     <div
                       className={cn(
                         "tp-card relative overflow-hidden rounded-[20px] border px-5 py-6 text-center md:px-8",
@@ -255,7 +251,6 @@ export const TimeAndPlace = () => {
           </Tabs>
         ) : (
           <div className="flex w-full flex-col gap-5 px-5 ">
-
             <div
               className={cn(
                 "tp-card relative overflow-hidden rounded-[20px] border px-5 py-6 text-center md:px-8",
