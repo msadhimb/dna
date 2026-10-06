@@ -9,7 +9,14 @@ import {
   SidebarMenu,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { LayoutDashboardIcon, ListIcon, SparklesIcon } from "lucide-react"
+import {
+  Book,
+  BookLock,
+  BookOpen,
+  LayoutDashboardIcon,
+  ListIcon,
+  SparklesIcon,
+} from "lucide-react"
 import { useRouter } from "next/navigation"
 import { FaComment } from "react-icons/fa"
 import { createClient } from "@/utils/supabase/client"
@@ -34,9 +41,9 @@ const data = {
       icon: <FaComment />,
     },
     {
-      title: "Pagar Ayu",
-      url: "/dashboard/pagar-ayu",
-      icon: <SparklesIcon />,
+      title: "Buku Tamu",
+      url: "/dashboard/buku-tamu",
+      icon: <BookOpen />,
     },
   ],
 }
