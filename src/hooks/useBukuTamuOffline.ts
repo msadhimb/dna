@@ -17,7 +17,7 @@ import {
   type BukuTamuOutboxItem,
 } from "@/lib/buku-tamu-outbox"
 
-export function useOnlineStatus() {
+export const useOnlineStatus = () => {
   const [isOnline, setIsOnline] = useState(
     () => (typeof navigator === "undefined" ? true : navigator.onLine)
   )
@@ -36,7 +36,7 @@ export function useOnlineStatus() {
   return isOnline
 }
 
-async function fetchAllGuestsOnline(): Promise<CachedGuest[]> {
+const fetchAllGuestsOnline = async (): Promise<CachedGuest[]> => {
   const all: CachedGuest[] = []
   let page = 1
   // Batasi 20 halaman x 100 = 2000 tamu, cukup untuk undangan.
@@ -58,7 +58,7 @@ async function fetchAllGuestsOnline(): Promise<CachedGuest[]> {
   return all
 }
 
-export function useBukuTamuOffline() {
+export const useBukuTamuOffline = () => {
   const isOnline = useOnlineStatus()
   const [outbox, setOutbox] = useState<BukuTamuOutboxItem[]>([])
   const [cacheMeta, setCacheMeta] = useState<{

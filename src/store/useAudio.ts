@@ -23,7 +23,7 @@ interface AudioState {
   prev: () => void
 }
 
-function titleFromSrc(src: string) {
+const titleFromSrc = (src: string) => {
   try {
     const name = decodeURIComponent(src.split("/").pop() ?? src)
     return name.replace(/\.[^/.]+$/, "")

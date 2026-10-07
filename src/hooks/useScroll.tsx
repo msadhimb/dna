@@ -17,7 +17,7 @@ interface UseScrollOptions {
   idleDelay?: number
 }
 
-export function useScroll(options: UseScrollOptions = {}): ScrollState {
+export const useScroll = (options: UseScrollOptions = {}): ScrollState => {
   const { throttle = true, idleDelay = 150 } = options
 
   const [state, setState] = useState<ScrollState>({

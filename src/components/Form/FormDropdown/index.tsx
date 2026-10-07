@@ -87,10 +87,11 @@ function FormDropdown({
           className={cn(
             "flex h-auto w-full items-center justify-between gap-2 rounded-lg border border-input bg-input/30 p-3 text-left text-xs font-medium shadow-none ring-0 transition-all duration-300 outline-none data-[state=open]:border-green-800 data-[state=open]:dark:border-red-800/50 data-[state=open]:ring-3 data-[state=open]:ring-green-800/50 data-[state=open]:dark:ring-red-800/50 disabled:cursor-not-allowed disabled:opacity-50 md:text-base",
             !selectedOption && "text-muted-foreground",
-            error && "border-red-500!",
+            error &&
+              "border-red-500! ring-3! ring-red-500/20! dark:border-red-500! dark:ring-red-500/20! focus-visible:border-red-500! focus-visible:ring-red-500/20! dark:focus-visible:border-red-500! dark:focus-visible:ring-red-500/20! aria-invalid:border-red-500! aria-invalid:ring-red-500/20! dark:aria-invalid:border-red-500! dark:aria-invalid:ring-red-500/20! data-[state=open]:border-red-500! data-[state=open]:ring-red-500/20! dark:data-[state=open]:border-red-500! dark:data-[state=open]:ring-red-500/20!",
             triggerClassName
           )}
-          style={{ borderColor }}
+          style={error ? undefined : { borderColor }}
         >
           <span
             className={cn(

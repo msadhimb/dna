@@ -25,6 +25,7 @@ const eslintConfig = defineConfig([
       "@typescript-eslint/no-require-imports": "off",
       "react-hooks/set-state-in-effect": "off",
       "react/display-name": "off",
+      "react-hooks/refs": "off",
     },
   },
 ])

@@ -7,11 +7,11 @@ export const STORE_GUESTS = "guests-cache"
 export const STORE_OUTBOX = "outbox"
 export const STORE_META = "meta"
 
-function isBrowser() {
+const isBrowser = () => {
   return typeof window !== "undefined" && "indexedDB" in window
 }
 
-function openDb(): Promise<IDBDatabase> {
+const openDb = (): Promise<IDBDatabase> => {
   return new Promise((resolve, reject) => {
     if (!isBrowser()) {
       reject(new Error("IndexedDB tidak tersedia"))
@@ -39,11 +39,11 @@ function openDb(): Promise<IDBDatabase> {
   })
 }
 
-function tx<T>(
+const tx = <T,>(
   store: string,
   mode: IDBTransactionMode,
   run: (s: IDBObjectStore) => IDBRequest<T>
-): Promise<T> {
+): Promise<T> => {
   return openDb().then(
     (db) =>
       new Promise<T>((resolve, reject) => {
@@ -72,7 +72,7 @@ function tx<T>(
   )
 }
 
-export async function idbGetAll<T>(store: string): Promise<T[]> {
+export const idbGetAll = async <T,>(store: string): Promise<T[]> => {
   if (!isBrowser()) return []
   const db = await openDb()
   return new Promise<T[]>((resolve, reject) => {
@@ -85,12 +85,12 @@ export async function idbGetAll<T>(store: string): Promise<T[]> {
   })
 }
 
-export async function idbClear(store: string): Promise<void> {
+export const idbClear = async (store: string): Promise<void> => {
   if (!isBrowser()) return
   await tx(store, "readwrite", (s) => s.clear())
 }
 
-export async function idbBulkPut(store: string, items: unknown[]): Promise<void> {
+export const idbBulkPut = async (store: string, items: unknown[]): Promise<void> => {
   if (!isBrowser() || items.length === 0) return
   const db = await openDb()
   return new Promise<void>((resolve, reject) => {
@@ -106,17 +106,17 @@ export async function idbBulkPut(store: string, items: unknown[]): Promise<void>
   })
 }
 
-export async function idbPut(store: string, item: unknown): Promise<void> {
+export const idbPut = async (store: string, item: unknown): Promise<void> => {
   if (!isBrowser()) return
   await tx(store, "readwrite", (s) => s.put(item))
 }
 
-export async function idbDelete(store: string, key: string): Promise<void> {
+export const idbDelete = async (store: string, key: string): Promise<void> => {
   if (!isBrowser()) return
   await tx(store, "readwrite", (s) => s.delete(key))
 }
 
-export async function idbGet<T>(store: string, key: string): Promise<T | null> {
+export const idbGet = async <T,>(store: string, key: string): Promise<T | null> => {
   if (!isBrowser()) return null
   try {
     const value = await tx<T | undefined>(store, "readonly", (s) =>
@@ -128,6 +128,6 @@ export async function idbGet<T>(store: string, key: string): Promise<T | null> {
   }
 }
 
-export function canUseIndexedDb() {
+export const canUseIndexedDb = () => {
   return isBrowser()
 }

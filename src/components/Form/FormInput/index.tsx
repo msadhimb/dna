@@ -4,7 +4,6 @@ import { cn } from "@/lib/utils"
 import { Label } from "@/components/ui/label"
 
 export interface FormInputProps extends React.ComponentProps<"input"> {
-
   accent?: string
 
   borderColor?: string
@@ -36,13 +35,16 @@ const FormInput = React.forwardRef<HTMLInputElement, FormInputProps>(
           data-slot="wedding-input"
           aria-invalid={!!error}
           className={cn(
-            "h-auto w-full bg-transparent p-3 text-xs font-medium shadow-none ring-0 transition-all duration-300 outline-none placeholder:opacity-40 border-wedding-border text-wedding-text-primary focus-visible:border-wedding-accent focus-visible:ring-wedding-accent/50 md:text-base",
-            error && "border-red-500! focus-visible:ring-red-200",
+            "h-auto w-full bg-transparent p-3 text-xs font-medium shadow-none ring-0 transition-all duration-300 outline-none placeholder:opacity-40 border-wedding-border text-wedding-text-primary focus-visible:border-wedding-accent focus-visible:ring-3 focus-visible:ring-wedding-accent/50 md:text-base",
+            error &&
+              "border-red-500! ring-3! ring-red-500/20! dark:border-red-500! dark:ring-red-500/20! focus-visible:border-red-500! focus-visible:ring-red-500/20! dark:focus-visible:border-red-500! dark:focus-visible:ring-red-500/20! aria-invalid:border-red-500! aria-invalid:ring-red-500/20! dark:aria-invalid:border-red-500! dark:aria-invalid:ring-red-500/20!",
             className
           )}
           style={style}
         />
-        {error && <span className="font-sans text-xs text-red-500">{error}</span>}
+        {error && (
+          <span className="font-sans text-xs text-red-500">{error}</span>
+        )}
       </div>
     )
   }

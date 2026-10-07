@@ -7,7 +7,7 @@ import type { Comment, CommentInput } from "@/types/comment"
 
 const PAGE_SIZE = 10
 
-async function request<T>(url: string, options?: RequestInit): Promise<T> {
+const request = async <T,>(url: string, options?: RequestInit): Promise<T> => {
   const response = await fetch(url, {
     ...options,
     headers: { "Content-Type": "application/json", ...options?.headers },
@@ -18,7 +18,7 @@ async function request<T>(url: string, options?: RequestInit): Promise<T> {
   return body
 }
 
-export function useComments(guestId: string | undefined) {
+export const useComments = (guestId: string | undefined) => {
   const queryClient = useQueryClient()
   const commentsKey = ["comments", guestId] as const
 

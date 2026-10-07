@@ -213,8 +213,29 @@ const BukuTamu = () => {
   }
 
   useQuery({
+    queryKey: ["buku-tamu-preload"],
+    queryFn: async () => {
+      await preloadGuests()
+      return true
+    },
+    enabled: isOnline,
+    staleTime: Infinity,
+    retry: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+  })
+
+  useQuery({
     queryKey: ["buku-tamu-outbox"],
-    queryFn: () => handlePreload(),
+    queryFn: async () => {
+      await handleSync()
+      return true
+    },
+    enabled: isOnline && outbox.length > 0,
+    staleTime: Infinity,
+    retry: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   })
 
   const cacheLabel =
@@ -318,17 +339,6 @@ const BukuTamu = () => {
 
           <div className="flex flex-col gap-2 border-t border-border pt-4 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
             <span>Data offline: {cacheLabel}</span>
-            <div className="flex gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={handleSync}
-                disabled={!isOnline || isSyncing || pendingCount === 0}
-              >
-                {isSyncing ? "Sync..." : `Sinkron (${pendingCount})`}
-              </Button>
-            </div>
           </div>
         </div>
 
@@ -337,9 +347,6 @@ const BukuTamu = () => {
             <h2 className="text-sm font-bold tracking-widest uppercase">
               Antrian Offline ({pendingCount})
             </h2>
-            <span className="text-[11px] text-muted-foreground">
-              Tersimpan di IndexedDB • aman walau reload
-            </span>
           </div>
           {outbox.length === 0 ? (
             <p className="rounded-xl border border-dashed border-border p-4 text-center text-xs text-muted-foreground">
@@ -378,10 +385,6 @@ const BukuTamu = () => {
               ))}
             </ul>
           )}
-          <p className="mt-2 text-[11px] text-muted-foreground">
-            Lihat teknis: F12 → Application → IndexedDB → dna-buku-tamu. Tamu
-            tak terdaftar tidak bisa disimpan offline (tanpa fallback).
-          </p>
         </div>
       </div>
     </div>

@@ -13,11 +13,11 @@ type ToastInput = Omit<Toast, "id">
 let toasts: Toast[] = []
 const listeners = new Set<(value: Toast[]) => void>()
 
-function emit() {
+const emit = () => {
   listeners.forEach((listener) => listener([...toasts]))
 }
 
-export function toast(input: ToastInput) {
+export const toast = (input: ToastInput) => {
   const id = crypto.randomUUID()
   toasts = [...toasts, { ...input, id }]
   emit()
@@ -30,7 +30,7 @@ export function toast(input: ToastInput) {
   }
 }
 
-export function useToast() {
+export const useToast = () => {
   const [items, setItems] = useState<Toast[]>(toasts)
 
   useEffect(() => {

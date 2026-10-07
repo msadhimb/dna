@@ -75,7 +75,7 @@ const clientApi = async (payload: AxiosRequestConfig) => {
     const response = await axiosInterceptorInstance({
       withCredentials: false,
       ...payload,
-      cancelToken: new CancelToken(function executor(c) {
+      cancelToken: new CancelToken((c) => {
         cancel = c
       }),
     })
@@ -101,11 +101,11 @@ const clientApi = async (payload: AxiosRequestConfig) => {
   }
 }
 
-export async function fetchDocument(
+export const fetchDocument = async (
   endpoint: string,
   filename: string,
   setDocumentFile: Dispatch<SetStateAction<File[]>>
-) {
+) => {
   try {
     const response = await fetch(endpoint + filename)
     const blob = await response.blob()

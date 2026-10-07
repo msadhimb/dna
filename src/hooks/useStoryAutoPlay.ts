@@ -26,11 +26,11 @@ const SCROLL_KEYS = new Set([
   " ",
 ])
 
-export function useStoryAutoPlay({
+export const useStoryAutoPlay = ({
   targetId = "time-and-place",
   speed = 150,
   topOffset = 72,
-}: UseStoryAutoPlayOptions = {}) {
+}: UseStoryAutoPlayOptions = {}) => {
   const [isPlaying, setIsPlaying] = useState(false)
   const rafRef = useRef<number | null>(null)
   const lastTsRef = useRef<number | null>(null)

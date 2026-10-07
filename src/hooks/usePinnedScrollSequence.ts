@@ -24,11 +24,11 @@ type Options = {
   theme: string
 }
 
-export function usePinnedScrollSequence(
+export const usePinnedScrollSequence = (
   mainRef: React.RefObject<HTMLElement | null>,
   refs: Refs,
   { isLoaded, theme }: Options
-) {
+) => {
   const masterTlRef = useRef<gsap.core.Timeline | null>(null)
   const curtainWrapRef = useRef<gsap.core.Timeline | null>(null)
   const journeyWrapRef = useRef<gsap.core.Timeline | null>(null)

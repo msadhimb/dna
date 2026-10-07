@@ -22,7 +22,7 @@ type CacheMeta = {
 
 const META_KEY = "guests-cache-meta"
 
-export async function saveGuestsCache(guests: CachedGuest[]) {
+export const saveGuestsCache = async (guests: CachedGuest[]) => {
   await idbClear(STORE_GUESTS)
   await idbBulkPut(STORE_GUESTS, guests)
   await idbBulkPut(STORE_META, [
@@ -30,19 +30,19 @@ export async function saveGuestsCache(guests: CachedGuest[]) {
   ])
 }
 
-export async function getGuestsCacheMeta(): Promise<{
+export const getGuestsCacheMeta = async (): Promise<{
   total: number
   updatedAt: number | null
-} | null> {
+} | null> => {
   const meta = await idbGet<CacheMeta>(STORE_META, META_KEY)
   if (!meta) return null
   return { total: meta.total, updatedAt: meta.updatedAt }
 }
 
-export async function searchGuestsCache(
+export const searchGuestsCache = async (
   search = "",
   limit = 20
-): Promise<CachedGuest[]> {
+): Promise<CachedGuest[]> => {
   const all = await idbGetAll<CachedGuest>(STORE_GUESTS)
   const q = search.trim().toLowerCase()
   const filtered = q
@@ -53,18 +53,18 @@ export async function searchGuestsCache(
     .slice(0, limit)
 }
 
-export async function getGuestFromCache(
+export const getGuestFromCache = async (
   id: string
-): Promise<CachedGuest | null> {
+): Promise<CachedGuest | null> => {
   return idbGet<CachedGuest>(STORE_GUESTS, id)
 }
 
-export async function getAllCachedGuests(): Promise<CachedGuest[]> {
+export const getAllCachedGuests = async (): Promise<CachedGuest[]> => {
   const all = await idbGetAll<CachedGuest>(STORE_GUESTS)
   return all.sort((a, b) => a.full_name.localeCompare(b.full_name))
 }
 
-export async function hasGuestsCache(): Promise<boolean> {
+export const hasGuestsCache = async (): Promise<boolean> => {
   const meta = await getGuestsCacheMeta()
   return (meta?.total ?? 0) > 0
 }
