@@ -176,26 +176,12 @@ const FormSelect = ({
   const { data: resolvedData, isLoading: isResolving } = useQuery({
     queryKey: [...baseQueryKey, "resolve", normalizedValue],
     queryFn: async () => {
-      try {
-        const response = await clientApi({
-          url: `${resolveEndpoint}/${normalizedValue}`,
-          method: "GET",
-        })
+      const response = await clientApi({
+        url: `${resolveEndpoint}/${normalizedValue}`,
+        method: "GET",
+      })
 
-        return mapItem(response.data ?? response)
-      } catch {
-        // Offline fallback: ambil dari IndexedDB guests-cache (Buku Tamu).
-        if (typeof window !== "undefined" && !window.navigator.onLine) {
-          try {
-            const { getGuestFromCache } = await import("@/lib/guests-cache")
-            const cached = await getGuestFromCache(normalizedValue)
-            if (cached) return mapItem(cached)
-          } catch {
-            // abaikan, fallback ke value mentah di bawah
-          }
-        }
-        throw new Error("Gagal memuat data")
-      }
+      return mapItem(response.data)
     },
     enabled:
       isAsync &&
