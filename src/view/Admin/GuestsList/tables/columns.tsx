@@ -8,6 +8,14 @@ export const columns = ({
   handleCopyLink: (id: string) => void
 }) => [
   {
+    id: "no",
+    header: "No",
+    cell: ({ row, table }: { row: any; table: any }) => {
+      const { pageIndex, pageSize } = table.getState().pagination
+      return <div>{pageIndex * pageSize + row.index + 1}</div>
+    },
+  },
+  {
     accessorKey: "full_name",
     header: "Name",
   },

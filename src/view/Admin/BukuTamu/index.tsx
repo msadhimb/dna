@@ -23,7 +23,7 @@ const schema = yup.object({
 
 type FormValues = yup.InferType<typeof schema>
 
-const PagarAyu = () => {
+const BukuTamu = () => {
   const {
     watch,
     control,
@@ -73,10 +73,10 @@ const PagarAyu = () => {
       <div className="flex flex-col gap-4 border-b border-border pb-5 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="font-sans text-3xl font-bold tracking-[0.2em] text-foreground uppercase">
-            Pagar Ayu
+            Buku Tamu
           </h1>
           <p className="mt-1 text-md text-muted-foreground">
-            Kelola tamu yang bertugas sebagai pagar ayu/among tamu.
+            Formulir ini digunakan untuk mencatat tamu yang datang.
           </p>
         </div>
       </div>
@@ -107,7 +107,7 @@ const PagarAyu = () => {
                 <NumericFormat
                   value={field.value}
                   thousandSeparator=","
-                  onValueChange={(values: any) => {
+                  onValueChange={(values: any, sourceInfo: any) => {
                     field.onChange(values.floatValue)
                   }}
                   label="Jumlah Tamu"
@@ -133,4 +133,4 @@ const PagarAyu = () => {
   )
 }
 
-export default PagarAyu
+export default BukuTamu
