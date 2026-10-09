@@ -1,11 +1,14 @@
 import { guestFromList } from "@/helper/guestFormList"
-import { Check, Pencil, Trash, X } from "lucide-react"
+import { BadgeCheck, Check, Edit, Pencil, Repeat, Trash, X } from "lucide-react"
+import { FaWhatsapp } from "react-icons/fa"
 import { toast } from "sonner"
 
 export const columns = ({
   handleCopyLink,
+  handleToggleSended,
 }: {
   handleCopyLink: (id: string) => void
+  handleToggleSended?: (row: any) => void
 }) => [
   {
     id: "no",
@@ -104,8 +107,9 @@ export const columns = ({
   },
   {
     accessorKey: "sended",
-    header: () => <div className="text-center">Terkirim di Whatsapp</div>,
+    header: () => <div className="text-center">Dibagikan</div>,
     cell: ({ row }: { row: any }) => {
+      const isSended = row.original.sended === true
       return (
         <div className="flex justify-center">
           {row.original.sended === true ? (
@@ -121,11 +125,15 @@ export const columns = ({
 
 export const actions = ({
   handleOpenEdit,
+  handleShareWa,
+  handleToggleSended,
   deleteGuest,
   confirm,
   queryClient,
 }: {
   handleOpenEdit: (row: any) => void
+  handleShareWa: (row: any) => void
+  handleToggleSended: (row: any) => void
   deleteGuest: (id: string) => Promise<void>
   confirm: ({
     title,
@@ -136,6 +144,20 @@ export const actions = ({
   }: any) => Promise<boolean>
   queryClient: any
 }) => [
+  {
+    label: "Bagikan",
+    icon: <FaWhatsapp className="h-4 w-4 text-[#25D366]" />,
+    onClick: (row: any) => {
+      handleShareWa(row)
+    },
+  },
+  {
+    label: "Ubah Status Dibagikan",
+    icon: <Repeat className="h-4 w-4" />,
+    onClick: (row: any) => {
+      handleToggleSended(row)
+    },
+  },
   {
     label: "Edit Tamu",
     icon: <Pencil className="h-4 w-4" />,

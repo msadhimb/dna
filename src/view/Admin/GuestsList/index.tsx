@@ -10,7 +10,9 @@ import {
   FileSpreadsheet,
   Filter,
   Loader2,
+  RotateCcw,
   UserPlus,
+  Users,
   XCircle,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -18,6 +20,7 @@ import { FaWhatsapp } from "react-icons/fa"
 import { toast } from "sonner"
 import { useQueryClient } from "@tanstack/react-query"
 import { useConfirm } from "@/components/ConfirmDialog/store"
+import clientApi from "@/services/client"
 import * as XLSX from "xlsx"
 import ModalImport from "./components/ModalImport"
 import ModalShareWa from "./components/ModalShareWa"
@@ -65,6 +68,33 @@ const GuestsListView = () => {
 
   const [shareGlobalOpen, setShareGlobalOpen] = useState(false)
 
+  const buildWaMessage = (guest: any, link: string) => {
+    const guestName = guest?.full_name || "Bapak/Ibu/Saudara/i"
+    const isMantu = guest?.mantu_status === true
+    const isUnduh = guest?.unduh_mantu_status === true
+    let dateStr = "Sabtu, 12 Desember 2026"
+    if (isUnduh && isMantu) dateStr = "Sabtu, 12 & 26 Desember 2026"
+    else if (isUnduh) dateStr = "Sabtu, 26 Desember 2026"
+    else if (isMantu) dateStr = "Sabtu, 12 Desember 2026"
+
+    return `Yth. ${guestName},
+
+Dengan penuh sukacita, kami mengundang Bapak/Ibu/Saudara/i untuk hadir pada acara pernikahan kami:
+
+Devi & Adhim
+${dateStr}
+
+Kehadiran dan doa restu Anda sangat berarti bagi kami.
+
+Berikut link undangan personal Anda:
+${link}
+
+Mohon maaf apabila undangan ini disampaikan melalui pesan singkat. Atas perhatian dan doa restunya kami ucapkan terima kasih.
+
+Salam hangat,
+Devi & Adhim`
+  }
+
   const [guestFromFilter, setGuestFromFilter] = useState<string>("all")
   const [mantuOnly, setMantuOnly] = useState(false)
   const [unduhOnly, setUnduhOnly] = useState(false)
@@ -110,6 +140,54 @@ const GuestsListView = () => {
   const handleOpenEdit = (guest: any) => {
     setEditingGuest(guest)
     setGuestModalOpen(true)
+  }
+
+  const handleShareWa = (guest: any) => {
+    const origin = typeof window !== "undefined" ? window.location.origin : ""
+    const link = `${origin}/${guest.id}`
+    const finalMessage = buildWaMessage(guest, link)
+    // Tanpa nomor tujuan -> WhatsApp membuka picker kontak (pilih orangnya)
+    window.open(
+      `https://wa.me/?text=${encodeURIComponent(finalMessage)}`,
+      "_blank",
+      "noopener,noreferrer"
+    )
+    clientApi({
+      url: `/guests/${guest.id}`,
+      method: "PATCH",
+      data: { sended: true },
+    })
+      .then(() => queryClient.invalidateQueries({ queryKey: ["guests"] }))
+      .catch((err) => console.error("Failed to update sended status:", err))
+    toast.success(`Membuka WhatsApp untuk ${guest.full_name}…`)
+  }
+
+  const handleToggleSended = async (guest: any) => {
+    const next = !guest.sended
+    const toastId = toast.loading(
+      next
+        ? `Menandai ${guest.full_name} sudah dibagikan...`
+        : `Membatalkan tanda dibagikan ${guest.full_name}...`
+    )
+    try {
+      await clientApi({
+        url: `/guests/${guest.id}`,
+        method: "PATCH",
+        data: { sended: next },
+      })
+      toast.success(
+        next
+          ? `${guest.full_name} ditandai sudah dibagikan`
+          : `${guest.full_name} ditandai belum dibagikan`,
+        { id: toastId, duration: 2000 }
+      )
+      queryClient.invalidateQueries({ queryKey: ["guests"] })
+    } catch (error: any) {
+      toast.error(error?.message || "Gagal memperbarui status dibagikan", {
+        id: toastId,
+        duration: 3000,
+      })
+    }
   }
 
   const handleModalSuccess = () => {
@@ -281,21 +359,32 @@ const GuestsListView = () => {
         return
       }
 
-      const exportData = allGuests.map((g: any, idx: number) => ({
+      const getGuestFromName = (g: any) =>
+        guestFromList.find((x) => x.id === g.guest_from)?.name ??
+        (g.guest_from ? String(g.guest_from) : "-")
+
+      // Urutkan berdasarkan Tamu Dari (A-Z), lalu Nama Tamu (A-Z)
+      const sortedGuests = [...allGuests].sort((a: any, b: any) => {
+        const fromCompare = getGuestFromName(a).localeCompare(
+          getGuestFromName(b),
+          "id",
+          { sensitivity: "base" }
+        )
+        if (fromCompare !== 0) return fromCompare
+        return String(a.full_name ?? "").localeCompare(
+          String(b.full_name ?? ""),
+          "id",
+          { sensitivity: "base" }
+        )
+      })
+
+      const exportData = sortedGuests.map((g: any, idx: number) => ({
         No: idx + 1,
         "Nama Tamu": g.full_name ?? "-",
-        "Tamu Dari":
-          guestFromList.find((x) => x.id === g.guest_from)?.name ??
-          g.guest_from ??
-          "-",
+        "Tamu Dari": getGuestFromName(g),
         "Tamu Mantu": g.mantu_status ? "Ya" : "Tidak",
         "Tamu Unduh Mantu": g.unduh_mantu_status ? "Ya" : "Tidak",
         "Undangan Fisik": g.physical_invitation ? "Ya" : "Tidak",
-        "Jumlah Tamu": g.guest_total ?? 0,
-        "Link Undangan":
-          typeof window !== "undefined"
-            ? `${window.location.origin}/${g.id}`
-            : g.id,
       }))
 
       const ws = XLSX.utils.json_to_sheet(exportData)
@@ -371,9 +460,11 @@ const GuestsListView = () => {
       </div>
 
       <DataTable
-        columns={columns({ handleCopyLink })}
+        columns={columns({ handleCopyLink, handleToggleSended })}
         actions={actions({
           handleOpenEdit,
+          handleShareWa,
+          handleToggleSended,
           deleteGuest,
           confirm,
           queryClient,
@@ -391,23 +482,33 @@ const GuestsListView = () => {
                   variant="outline"
                   role="combobox"
                   className={cn(
-                    "w-[180px] justify-between h-8 text-sm font-normal",
-                    guestFromFilter === "all" && "text-muted-foreground"
+                    "col-span-2 h-9 w-full justify-between rounded-lg bg-background text-sm font-medium shadow-xs transition-all hover:-translate-y-px hover:border-primary/40 hover:shadow-sm sm:col-span-1 sm:w-auto lg:w-[200px]",
+                    guestFromFilter === "all"
+                      ? "text-muted-foreground"
+                      : "border-primary/50 bg-primary/5 text-foreground ring-1 ring-primary/20"
                   )}
                 >
-                  {guestFromFilter === "all"
-                    ? "Semua Tamu Dari"
-                    : (guestFromList.find((x) => x.id === guestFromFilter)
-                        ?.name ?? "Tamu Dari")}
+                  <span className="flex min-w-0 items-center gap-2">
+                    <Users className="size-4 shrink-0 text-muted" />
+                    <span className="truncate">
+                      {guestFromFilter === "all"
+                        ? "Semua Tamu Dari"
+                        : (guestFromList.find((x) => x.id === guestFromFilter)
+                            ?.name ?? "Tamu Dari")}
+                    </span>
+                  </span>
                   <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
               <PopoverContent
-                className="w-[25rem] p-0 font-manrope"
+                className="w-[calc(100vw-2rem)] rounded-xl p-0 font-manrope shadow-lg sm:w-[25rem]"
                 align="end"
               >
                 <Command>
-                  <CommandInput placeholder="Cari..." className="h-9" />
+                  <CommandInput
+                    placeholder="Cari tamu dari..."
+                    className="h-9"
+                  />
                   <CommandList>
                     <CommandEmpty>Tidak ditemukan.</CommandEmpty>
                     <CommandGroup>
@@ -450,12 +551,32 @@ const GuestsListView = () => {
 
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="outline" size="sm" className="gap-1.5 h-8">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className={cn(
+                    "relative h-9 w-full gap-1.5 rounded-lg bg-background text-sm font-medium shadow-xs transition-all hover:-translate-y-px hover:shadow-sm sm:w-auto",
+                    (mantuOnly || unduhOnly || physicalOnly || sendedOnly) &&
+                      "border-primary/50 bg-primary/5 ring-1 ring-primary/20"
+                  )}
+                >
                   <Filter className="size-3.5 text-muted" />
-                  Filter Lanjutan
+                  Filter
+                  {(mantuOnly || unduhOnly || physicalOnly || sendedOnly) && (
+                    <span className="ml-0.5 flex size-5 items-center justify-center rounded-full bg-primary text-[11px] font-bold text-primary-foreground">
+                      {
+                        [mantuOnly, unduhOnly, physicalOnly, sendedOnly].filter(
+                          Boolean
+                        ).length
+                      }
+                    </span>
+                  )}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-56 p-4" align="end">
+              <PopoverContent
+                className="w-60 rounded-xl p-4 shadow-lg"
+                align="end"
+              >
                 <div className="space-y-4">
                   <h4 className="font-medium leading-none text-sm">
                     Filter Status
@@ -525,12 +646,13 @@ const GuestsListView = () => {
                 const label = parts.length ? parts.join(" - ") : "Semua Tamu"
                 handleExport(tableFilters, label)
               }}
-              className="gap-1.5 h-8"
+              title="Export Excel (urut Tamu Dari A-Z)"
+              className="h-9 w-full gap-1.5 rounded-lg border-emerald-600/25 bg-emerald-500/10 font-medium shadow-xs transition-all hover:-translate-y-px hover:bg-emerald-500/20 hover:shadow-sm sm:w-auto"
             >
               {isExporting ? (
                 <Loader2 className="size-3.5 animate-spin" />
               ) : (
-                <Download className="size-3.5 text-muted" />
+                <Download className="size-3.5 text-emerald-600" />
               )}
               Export
             </Button>
@@ -539,7 +661,8 @@ const GuestsListView = () => {
               variant="outline"
               size="sm"
               onClick={() => setShareGlobalOpen(true)}
-              className="gap-1.5 h-8 border-[#25D366]/20 bg-[#25D366]/10 hover:bg-[#25D366]/20 text-foreground"
+              title="Bagikan undangan via WhatsApp"
+              className="h-9 w-full gap-1.5 rounded-lg border-[#25D366]/25 bg-[#25D366]/10 font-medium text-foreground shadow-xs transition-all hover:-translate-y-px hover:bg-[#25D366]/20 hover:shadow-sm sm:w-auto"
             >
               <FaWhatsapp className="size-3.5 text-[#25D366]" />
               Share WA
@@ -550,9 +673,10 @@ const GuestsListView = () => {
                 variant="ghost"
                 size="sm"
                 onClick={handleResetFilters}
-                className="gap-1.5 h-8"
+                title="Reset semua filter"
+                className="h-9 w-full gap-1.5 rounded-lg font-medium text-muted-foreground transition-all hover:-translate-y-px hover:bg-destructive/10 hover:text-destructive sm:w-auto"
               >
-                <XCircle className="size-3.5 text-muted" />
+                <RotateCcw className="size-3.5" />
                 Reset
               </Button>
             )}
@@ -653,7 +777,11 @@ const GuestsListView = () => {
         isImporting={isImporting}
       />
 
-      <ModalShareWa open={shareGlobalOpen} onOpenChange={setShareGlobalOpen} />
+      <ModalShareWa
+        open={shareGlobalOpen}
+        onOpenChange={setShareGlobalOpen}
+        onSent={() => queryClient.invalidateQueries({ queryKey: ["guests"] })}
+      />
 
       {!editingGuest && (
         <GuestFormModal

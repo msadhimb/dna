@@ -20,6 +20,8 @@ import clientApi from "@/services/client"
 type Props = {
   open: boolean
   onOpenChange: (open: boolean) => void
+  initialGuest?: any | null
+  onSent?: () => void
 }
 
 function buildDefaultMessage(guest: any, link: string) {
@@ -57,7 +59,7 @@ function normalizeWaNumber(input: string) {
   return digits
 }
 
-const ModalShareWa = ({ open, onOpenChange }: Props) => {
+const ModalShareWa = ({ open, onOpenChange, initialGuest, onSent }: Props) => {
   const origin = typeof window !== "undefined" ? window.location.origin : ""
   const [selectedGuest, setSelectedGuest] = useState<any | null>(null)
   const [selectedGuestId, setSelectedGuestId] = useState<string>("")
@@ -75,13 +77,26 @@ const ModalShareWa = ({ open, onOpenChange }: Props) => {
   }, [])
 
   useEffect(() => {
-    if (!open) {
+    if (open) {
+      if (initialGuest) {
+        // Pre-fill dari action per baris: template sama, nomor dikosongkan
+        // agar user bisa memilih kontak manual di WhatsApp.
+        setSelectedGuest(initialGuest)
+        setSelectedGuestId(initialGuest.id)
+        setPhone("")
+      } else {
+        setSelectedGuest(null)
+        setSelectedGuestId("")
+        setPhone("")
+        setMessage("")
+      }
+    } else {
       setSelectedGuest(null)
       setSelectedGuestId("")
       setPhone("")
       setMessage("")
     }
-  }, [open])
+  }, [open, initialGuest])
 
   useEffect(() => {
     if (selectedGuest && link) {
@@ -116,7 +131,11 @@ const ModalShareWa = ({ open, onOpenChange }: Props) => {
         url: `/guests/${selectedGuestId}`,
         method: "PATCH",
         data: { sended: true },
-      }).catch((err) => console.error("Failed to update sended status:", err))
+      })
+        .then(() => onSent?.())
+        .catch((err) => console.error("Failed to update sended status:", err))
+    } else {
+      onSent?.()
     }
 
     toast.success(
@@ -147,7 +166,6 @@ const ModalShareWa = ({ open, onOpenChange }: Props) => {
 
   const handleClose = (nextOpen: boolean) => {
     if (!nextOpen) {
-
     }
     onOpenChange(nextOpen)
   }
@@ -169,7 +187,6 @@ const ModalShareWa = ({ open, onOpenChange }: Props) => {
         </DialogHeader>
 
         <div className="overflow-y-auto max-h-[60vh] px-6 py-5 space-y-5">
-
           <FormSelect
             label="Pilih Tamu"
             placeholder="Cari & pilih tamu..."

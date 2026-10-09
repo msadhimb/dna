@@ -39,4 +39,16 @@ export const guestFromList = [
     id: "devis_family_neighbor",
     name: "Tetangga Keluarga Devi",
   },
+  {
+    id: "mas_bagas_family",
+    name: "Keluarga Mas Bagas",
+  },
+  {
+    id: "mas_heru_family",
+    name: "Keluarga Mas Heru",
+  },
+  {
+    id: "mas_heru_connections",
+    name: "Rekan Mas Heru",
+  },
 ]

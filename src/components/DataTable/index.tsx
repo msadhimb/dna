@@ -19,6 +19,8 @@ import {
   ChevronsRight,
   Loader2,
   MoreHorizontal,
+  Search,
+  X,
 } from "lucide-react"
 
 import {
@@ -46,7 +48,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Button } from "../Button"
 
 export type ActionItem<TData> = {
@@ -82,7 +83,6 @@ export function DataTable<TData>({
   filters,
   toolbarExtra,
 }: DataTableProps<TData>) {
-
   const [page, setPage] = React.useState(1)
   const [pageSize, setPageSize] = React.useState(20)
   const [search, setSearch] = React.useState("")
@@ -133,41 +133,56 @@ export function DataTable<TData>({
   const canPrev = page > 1
   const canNext = page < totalPages
 
-  const [showShadow, setShowShadow] = React.useState(true)
-  const scrollAreaRef = React.useRef<HTMLDivElement>(null)
+  const [showShadow, setShowShadow] = React.useState(false)
+  const wrapperRef = React.useRef<HTMLDivElement>(null)
+
+  // Yang benar-benar scroll adalah div overflow-x-auto di dalam komponen
+  // Table ([data-slot="table-container"]), bukan wrapper luar.
+  const getScrollEl = React.useCallback(() => {
+    return (
+      wrapperRef.current?.querySelector<HTMLElement>(
+        '[data-slot="table-container"]'
+      ) ?? null
+    )
+  }, [])
+
+  const updateShadow = React.useCallback(() => {
+    const el = getScrollEl()
+    if (!el) return
+    const { scrollLeft, scrollWidth, clientWidth } = el
+    const hasOverflow = scrollWidth > clientWidth + 1
+    const isAtRight = scrollWidth - scrollLeft - clientWidth <= 15
+    setShowShadow(hasOverflow && !isAtRight)
+  }, [getScrollEl])
 
   React.useEffect(() => {
-    const scrollArea = scrollAreaRef.current
-    if (!scrollArea) return
+    updateShadow()
+  }, [rows, updateShadow])
 
-    const viewport = scrollArea.querySelector(
-      '[data-slot="scroll-area-viewport"]'
-    )
-    if (!viewport) return
+  React.useEffect(() => {
+    const el = getScrollEl()
+    if (!el) return
 
-    const handleScroll = () => {
-      const { scrollLeft, scrollWidth, clientWidth } = viewport
-      const isAtRight = scrollWidth - scrollLeft - clientWidth <= 15
-      const hasOverflow = scrollWidth > clientWidth
+    updateShadow()
 
-      setShowShadow(hasOverflow && !isAtRight)
-    }
-
-    handleScroll()
+    const onScroll = () => updateShadow()
+    el.addEventListener("scroll", onScroll, { passive: true })
 
     const resizeObserver = new ResizeObserver(() => {
-      handleScroll()
+      updateShadow()
     })
-
-    viewport.addEventListener("scroll", handleScroll)
-    resizeObserver.observe(viewport)
-    resizeObserver.observe(scrollArea)
+    resizeObserver.observe(el)
+    window.addEventListener("resize", updateShadow)
+    // Font/viewport settle sesaat setelah mount (mobile)
+    const t = setTimeout(updateShadow, 100)
 
     return () => {
-      viewport.removeEventListener("scroll", handleScroll)
+      el.removeEventListener("scroll", onScroll)
       resizeObserver.disconnect()
+      window.removeEventListener("resize", updateShadow)
+      clearTimeout(t)
     }
-  }, [rows])
+  }, [getScrollEl, updateShadow])
 
   const columnsWithActions = React.useMemo<ColumnDef<TData, unknown>[]>(() => {
     if (!actions?.length) return columns
@@ -185,10 +200,7 @@ export function DataTable<TData>({
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="end"
-              className="font-manrope min-w-[150px]"
-            >
+            <DropdownMenuContent align="end" className="font-manrope min-w-50">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               {actions.map((action, index) => (
                 <React.Fragment key={index}>
@@ -241,22 +253,37 @@ export function DataTable<TData>({
   })
 
   return (
-    <div className="space-y-4 max-w-screen">
-      <div className="flex flex-col gap-3 py-2 sm:flex-row sm:items-center sm:justify-between">
-        <Input
-          placeholder={filterPlaceholder}
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full sm:max-w-[240px] lg:max-w-sm"
-        />
+    <div className="w-full max-w-full min-w-0 space-y-4">
+      <div className="flex flex-col gap-3 rounded-xl border border-border/70 bg-card/40 p-3 shadow-sm sm:p-3.5 lg:flex-row lg:items-center">
+        <div className="relative w-full shrink-0 lg:max-w-[280px]">
+          <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder={filterPlaceholder}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="h-9 w-full rounded-lg bg-background pr-9 pl-9 text-sm shadow-xs transition-all placeholder:text-muted-foreground/70 focus-visible:border-primary/50 focus-visible:ring-primary/20"
+          />
+          {search && (
+            <button
+              type="button"
+              onClick={() => setSearch("")}
+              aria-label="Clear search"
+              className="absolute top-1/2 right-2.5 -translate-y-1/2 rounded-full p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            >
+              <X className="size-3.5" />
+            </button>
+          )}
+        </div>
         {toolbarExtra && (
-          <div className="flex flex-wrap items-center gap-2">{toolbarExtra}</div>
+          <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center lg:ml-auto lg:justify-end">
+            {toolbarExtra}
+          </div>
         )}
       </div>
 
-      <ScrollArea
-        ref={scrollAreaRef}
-        className="w-full rounded-md border border-border"
+      <div
+        ref={wrapperRef}
+        className="w-full overflow-hidden rounded-md border border-border"
       >
         <Table className="min-w-[760px] w-full">
           <TableHeader>
@@ -268,11 +295,11 @@ export function DataTable<TData>({
                     className={cn(
                       "whitespace-nowrap border-b border-border bg-border px-4 py-3",
                       header.id === "actions" &&
-                        "relative sticky right-0 z-20 bg-border border-l border-border/50"
+                        "relative sticky right-0 z-20 border-l border-border/50 bg-border dark:bg-[color-mix(in_srgb,white_10%,var(--background))]"
                     )}
                   >
                     {header.id === "actions" && showShadow && (
-                      <div className="absolute top-0 -left-3 bottom-0 w-3 pointer-events-none bg-linear-to-l from-black/80 to-transparent" />
+                      <div className="absolute top-0 -left-3 bottom-0 w-3 pointer-events-none bg-linear-to-l from-muted/30 dark:from-white/2  to-transparent" />
                     )}
                     {header.isPlaceholder
                       ? null
@@ -322,7 +349,7 @@ export function DataTable<TData>({
                       )}
                     >
                       {cell.column.id === "actions" && showShadow && (
-                        <div className="absolute top-0 -left-3 bottom-0 w-3 pointer-events-none bg-linear-to-l from-black/80 to-transparent" />
+                        <div className="absolute top-0 -left-3 bottom-0 w-3 pointer-events-none bg-linear-to-l from-muted/30 dark:from-white/2 to-transparent" />
                       )}
                       {flexRender(
                         cell.column.columnDef.cell,
@@ -344,17 +371,18 @@ export function DataTable<TData>({
             )}
           </TableBody>
         </Table>
-        <ScrollBar orientation="horizontal" />
-      </ScrollArea>
+      </div>
 
-      <div className="flex items-center justify-between px-2">
-        <p className="text-sm text-muted-foreground">
+      <div className="flex flex-col gap-3 px-1 py-1 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-xs text-muted-foreground sm:text-sm">
           {totalItems} row(s) total.
         </p>
 
-        <div className="flex items-center space-x-6 lg:space-x-8">
-          <div className="flex items-center space-x-2">
-            <p className="text-sm font-medium">Rows per page</p>
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 sm:justify-end">
+          <div className="flex items-center gap-2">
+            <p className="text-xs font-medium whitespace-nowrap sm:text-sm">
+              Rows per page
+            </p>
             <Select
               value={`${pageSize}`}
               onValueChange={(v) => {
@@ -375,14 +403,14 @@ export function DataTable<TData>({
             </Select>
           </div>
 
-          <p className="flex w-[110px] items-center justify-center text-sm font-medium">
+          <p className="flex items-center text-xs font-medium whitespace-nowrap sm:text-sm">
             Page {page} of {totalPages}
           </p>
 
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center gap-2">
             <Button
               variant="outline"
-              className="hidden h-8 w-8 p-0 lg:flex"
+              className="hidden h-8 w-8 p-0 sm:flex"
               onClick={() => setPage(1)}
               disabled={!canPrev}
             >
@@ -409,7 +437,7 @@ export function DataTable<TData>({
             </Button>
             <Button
               variant="outline"
-              className="hidden h-8 w-8 p-0 lg:flex"
+              className="hidden h-8 w-8 p-0 sm:flex"
               onClick={() => setPage(totalPages)}
               disabled={!canNext}
             >

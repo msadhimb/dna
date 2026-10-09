@@ -142,16 +142,21 @@
   --book-edge-light: #f4ecd8;
   --book-edge-dark: #cbb98a;
 
-  --wedding-accent: #16A34A;
-  --wedding-surface: #F8F8F8;
+  --wedding-accent: #16a34a;
+  --wedding-surface: #f8f8f8;
   --wedding-text-primary: #111111;
   --wedding-text-secondary: #555555;
-  --wedding-text-muted: #AAAAAA;
+  --wedding-text-muted: #aaaaaa;
   --wedding-border: rgba(0, 0, 0, 0.08);
   --wedding-border-accent: rgba(22, 163, 74, 0.25);
   --wedding-dot: rgba(22, 163, 74, 0.06);
-  --wedding-bg-gradient: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(22, 163, 74, 0.06), transparent);
-  --wedding-card-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.04);
+  --wedding-bg-gradient: radial-gradient(
+    ellipse 60% 50% at 50% 50%,
+    rgba(22, 163, 74, 0.06),
+    transparent
+  );
+  --wedding-card-shadow:
+    0 25px 50px -12px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.04);
 }
 
 .dark {
@@ -213,23 +218,32 @@
   --book-edge-light: #2a1c18;
   --book-edge-dark: #150c0a;
 
-  --wedding-accent: #FF2D55;
-  --wedding-surface: #0A0A0A;
-  --wedding-text-primary: #FFFFFF;
+  --wedding-accent: #ff2d55;
+  --wedding-surface: #0a0a0a;
+  --wedding-text-primary: #ffffff;
   --wedding-text-secondary: #888888;
   --wedding-text-muted: #444444;
   --wedding-border: rgba(255, 255, 255, 0.08);
   --wedding-border-accent: rgba(255, 45, 85, 0.25);
   --wedding-dot: rgba(255, 45, 85, 0.06);
-  --wedding-bg-gradient: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(255, 45, 85, 0.06), transparent);
-  --wedding-card-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.04);
+  --wedding-bg-gradient: radial-gradient(
+    ellipse 60% 50% at 50% 50%,
+    rgba(255, 45, 85, 0.06),
+    transparent
+  );
+  --wedding-card-shadow:
+    0 25px 50px -12px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.04);
 }
 
 .shadow-wedding-card {
   box-shadow: var(--wedding-card-shadow);
 }
 .bg-wedding-dot {
-  background-image: radial-gradient(circle, var(--wedding-dot) 1px, transparent 0);
+  background-image: radial-gradient(
+    circle,
+    var(--wedding-dot) 1px,
+    transparent 0
+  );
   background-size: 28px 28px;
 }
 .bg-wedding-gradient {
@@ -322,7 +336,6 @@
 .curtain-bg,
 [class*="photo-bg"],
 [class*="photo-inner"] {
-
 }
 
 .gsap-element {
@@ -339,14 +352,12 @@
 }
 
 @media (max-width: 390px) {
-
   #book-flip-wrapper {
     font-size: 14px;
   }
 }
 
 @media (max-width: 390px) and (max-height: 850px) {
-
   #book-flip-wrapper > section {
     padding-top: max(8px, env(safe-area-inset-top));
     padding-bottom: max(8px, env(safe-area-inset-bottom));
