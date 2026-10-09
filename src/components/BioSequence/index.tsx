@@ -70,10 +70,9 @@ export const BioSequence = forwardRef<BioSequenceRef, BioSequenceProps>(
               scale: groomScale,
               x:
                 theme === "dark"
-                  ? dist("-35vw", "-35vw")
+                  ? dist("-35vw", "-25vw")
                   : dist("-55vw", "-50vw"),
-              y:
-                theme === "dark" ? dist("-15vh", "20vh") : dist("20vh", "50vh"),
+              y: theme === "dark" ? dist("-15vh", "5vh") : dist("20vh", "50vh"),
               duration: 1.5,
               force3D: true,
             },
@@ -217,7 +216,7 @@ export const BioSequence = forwardRef<BioSequenceRef, BioSequenceProps>(
           ref={brideBioRef}
           className={cn(
             "gsap-element pointer-events-none invisible absolute inset-x-0 bottom-0 z-50 flex w-screen flex-col gap-3 opacity-0",
-            "items-center justify-end text-center bg-gradient-to-t from-black/90 via-black/60 to-transparent pt-24 pb-12 px-6",
+            "items-center justify-end text-center bg-linear-to-t from-black/90 via-black/60 to-transparent pt-24 pb-12 px-6",
             "xl:inset-y-0 xl:bottom-auto xl:left-0 xl:right-auto xl:h-full xl:w-1/2 xl:items-start xl:justify-center xl:text-left xl:bg-gradient-to-r xl:from-black/85 xl:via-black/45 xl:pt-0 xl:pb-0 xl:px-12",
             "max-[1024px]:landscape:inset-x-0 max-[1024px]:landscape:bottom-0 max-[1024px]:landscape:top-auto max-[1024px]:landscape:h-auto max-[1024px]:landscape:w-screen max-[1024px]:landscape:items-center max-[1024px]:landscape:justify-end max-[1024px]:landscape:text-center max-[1024px]:landscape:pt-24 max-[1024px]:landscape:pb-12"
           )}

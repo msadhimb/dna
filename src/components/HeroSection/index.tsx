@@ -6,6 +6,7 @@ import { Countdown } from "@/components/CountDown"
 import { ChevronDown, Heart } from "lucide-react"
 import Image from "next/image"
 import { useImageUrl } from "@/store/useImageUrl"
+import ScrollIndicator from "../ScrollIndicator"
 
 const HeroSection = () => {
   const { resolvedTheme } = useTheme()
@@ -85,9 +86,9 @@ const HeroSection = () => {
             className="group flex flex-col items-center gap-2 text-primary"
           >
             <span className="text-[9px] font-medium tracking-[0.4em] uppercase transition-colors group-hover:text-white/60">
-              Mulai Perjalanan
+              Swipe ke Bawah
             </span>
-            <ChevronDown className="animate-gentle-bounce h-4 w-4 text-primary transition-colors group-hover:text-white/60" />
+            <ScrollIndicator className="text-primary" />
           </a>
         </div>
       </div>

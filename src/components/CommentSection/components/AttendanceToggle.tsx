@@ -12,8 +12,8 @@ interface AttendanceToggleProps {
 }
 
 const ATTENDANCE = {
-  hadir: { label: "Hadir", color: "#16A34A", bg: "#016630", text: "#fff" },
-  ragu: { label: "Ragu", color: "#D4AF37", bg: "#E6B432", text: "#111" },
+  hadir: { label: "Hadir", color: "#16A34A", bg: "#16A34A", text: "#fff" },
+  ragu: { label: "Ragu", color: "#D4AF37", bg: "#dde0c2", text: "#111" },
   tidak_hadir: {
     label: "Tidak Hadir",
     color: "#EF4444",

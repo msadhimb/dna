@@ -7,6 +7,8 @@ import { useImageUrl } from "@/store/useImageUrl"
 import { Card } from "@/components/Card"
 import { Separator } from "../ui/separator"
 import Header from "../Header"
+import { ArrowDown, ArrowDownZa, ChevronDown } from "lucide-react"
+import ScrollIndicator from "../ScrollIndicator"
 
 export interface LoveJourneyHorizontalRef {
   getTimeline: () => gsap.core.Timeline
@@ -40,7 +42,7 @@ const LoveJourneyHorizontal = forwardRef<LoveJourneyHorizontalRef, Props>(
     const photos = [
       theme === "dark" ? imageUrl?.dark?.[2]?.link : imageUrl?.light?.[1]?.link,
       theme === "dark" ? imageUrl?.dark?.[5]?.link : imageUrl?.light?.[2]?.link,
-      theme === "dark" ? imageUrl?.dark?.[4]?.link : imageUrl?.light?.[3]?.link,
+      theme === "dark" ? imageUrl?.dark?.[4]?.link : imageUrl?.light?.[4]?.link,
     ]
 
     useImperativeHandle(
@@ -191,7 +193,6 @@ const LoveJourneyHorizontal = forwardRef<LoveJourneyHorizontalRef, Props>(
         ref={rootRef}
         className="ljh-root relative flex h-full w-full flex-col justify-center overflow-hidden bg-background"
       >
-
         <div
           className="pointer-events-none absolute inset-0 bg-wedding-dot opacity-60"
           style={{
@@ -236,7 +237,6 @@ const LoveJourneyHorizontal = forwardRef<LoveJourneyHorizontalRef, Props>(
                     scrollSnapStop: "always",
                   }}
                 >
-
                   <div className="ljh-photo relative h-[24vh] max-h-[220px] min-h-[150px] w-full overflow-hidden md:h-auto md:max-h-none md:min-h-[320px] md:w-[46%] md:shrink-0">
                     {photo ? (
                       <Image
@@ -283,7 +283,7 @@ const LoveJourneyHorizontal = forwardRef<LoveJourneyHorizontalRef, Props>(
         <div className="ljh-hint relative z-10 flex shrink-0 flex-col items-center gap-1.5 px-5 pt-4 pb-4 md:px-10 md:pt-6 md:pb-6">
           <p className="font-sans text-[11px] tracking-[0.2em] text-wedding-text-secondary uppercase">
             <span className="hidden md:inline">
-              scroll untuk menggeser cerita
+              scroll kebawah untuk menggeser cerita
             </span>
             <span className="md:hidden">geser kebawah pelan</span>
           </p>
@@ -291,6 +291,7 @@ const LoveJourneyHorizontal = forwardRef<LoveJourneyHorizontalRef, Props>(
             2018 <span className="mx-1 opacity-40">—</span> 2024{" "}
             <span className="mx-1 opacity-40">—</span> selamanya
           </p>
+          <ScrollIndicator />
         </div>
       </div>
     )
