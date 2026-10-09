@@ -129,7 +129,7 @@ export function CommentForm({
               type="button"
               onClick={handleSubmit}
               disabled={isSubmitting}
-              className="h-9 rounded-full px-4 text-[10px] font-bold tracking-[0.14em] uppercase transition-all duration-200 focus-visible:ring-2 focus-visible:ring-wedding-accent focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.98] text-white dark:text-white"
+              className="h-9 rounded-full px-4 text-[10px] font-bold tracking-[0.14em] uppercase transition-all duration-200 focus-visible:ring-2 focus-visible:ring-wedding-accent focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.98] text-white dark:text-white bg-wedding-accent dark:bg-primary"
             >
               {isSubmitting ? (
                 <Loader2 className="animate-spin" />
