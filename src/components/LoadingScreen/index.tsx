@@ -8,11 +8,11 @@ interface LoadingScreenProps {
 
 const MESSAGES = [
   "Mohon Menunggu sebentar",
-  "Internet kamu agak lemot ya?",
-  "Eve sedang bekerja",
   "Hampir Sampai",
   "Loading...",
   "Tunggu sebentar lagi",
+  "Internet kamu agak lemot ya?",
+  "Eve sedang bekerja",
 ]
 
 export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete }) => {

@@ -1,18 +1,11 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
-import {
-  STORY_START_ID,
-  getSectionY,
-  scrollToSection,
-} from "@/components/SequenceNav/helper/scrollToSection"
+import { getSectionY } from "@/components/SequenceNav/helper/scrollToSection"
 
 interface UseStoryAutoPlayOptions {
-
   targetId?: string
-
   speed?: number
-
   topOffset?: number
 }
 
@@ -34,9 +27,8 @@ export const useStoryAutoPlay = ({
   const [isPlaying, setIsPlaying] = useState(false)
   const rafRef = useRef<number | null>(null)
   const lastTsRef = useRef<number | null>(null)
-  const timeoutRef = useRef<number | null>(null)
-  const rewindRafRef = useRef<number | null>(null)
   const runIdRef = useRef(0)
+  const startingRef = useRef(false)
   const speedRef = useRef(speed)
 
   useEffect(() => {
@@ -45,17 +37,10 @@ export const useStoryAutoPlay = ({
 
   const stop = useCallback(() => {
     runIdRef.current += 1
+    startingRef.current = false
     if (rafRef.current !== null) {
       cancelAnimationFrame(rafRef.current)
       rafRef.current = null
-    }
-    if (rewindRafRef.current !== null) {
-      cancelAnimationFrame(rewindRafRef.current)
-      rewindRafRef.current = null
-    }
-    if (timeoutRef.current !== null) {
-      window.clearTimeout(timeoutRef.current)
-      timeoutRef.current = null
     }
     lastTsRef.current = null
     setIsPlaying(false)
@@ -63,12 +48,7 @@ export const useStoryAutoPlay = ({
 
   const start = useCallback(() => {
     if (typeof window === "undefined") return
-    if (
-      rafRef.current !== null ||
-      timeoutRef.current !== null ||
-      rewindRafRef.current !== null
-    )
-      return
+    if (rafRef.current !== null || startingRef.current) return
 
     const target = document.getElementById(targetId)
     if (!target) return
@@ -82,13 +62,16 @@ export const useStoryAutoPlay = ({
     runIdRef.current = runId
     const alive = () => runIdRef.current === runId
 
+    let pos = 0
+
     const step = (ts: number) => {
       if (!alive()) return
       if (lastTsRef.current === null) lastTsRef.current = ts
       const dt = Math.min((ts - lastTsRef.current) / 1000, 0.1)
       lastTsRef.current = ts
 
-      window.scrollBy(0, speedRef.current * dt)
+      pos += speedRef.current * dt
+      window.scrollTo({ top: pos, behavior: "instant" })
 
       const el = document.getElementById(targetId)
       if (!el) {
@@ -97,16 +80,15 @@ export const useStoryAutoPlay = ({
       }
 
       if (el.getBoundingClientRect().top <= topOffset + 8) {
-
         const y = getSectionY(targetId) ?? window.scrollY
-        window.scrollTo({ top: Math.max(0, y), behavior: "auto" })
+        window.scrollTo({ top: Math.max(0, y), behavior: "instant" })
         stop()
         return
       }
 
       const maxScroll =
         document.documentElement.scrollHeight - window.innerHeight
-      if (window.scrollY >= maxScroll - 2) {
+      if (pos >= maxScroll - 2) {
         stop()
         return
       }
@@ -114,46 +96,26 @@ export const useStoryAutoPlay = ({
       rafRef.current = requestAnimationFrame(step)
     }
 
-    const begin = () => {
+    startingRef.current = true
+    setIsPlaying(true)
+
+    // tunggu React commit dulu, baru lompat ke 0 (instan)
+    requestAnimationFrame(() => {
       if (!alive()) return
-      timeoutRef.current = null
-      lastTsRef.current = null
-      setIsPlaying(true)
-      rafRef.current = requestAnimationFrame(step)
-    }
+      window.scrollTo({ top: 0, behavior: "instant" })
+      pos = 0
 
-    const startY = getSectionY(STORY_START_ID) ?? 0
-    const atStart = Math.abs(window.scrollY - startY) <= 4
-    if (!atStart) {
-      setIsPlaying(true)
-      scrollToSection(STORY_START_ID, "smooth")
-      const deadline = performance.now() + 4000
-      const poll = () => {
+      requestAnimationFrame(() => {
         if (!alive()) return
-        const near = Math.abs(window.scrollY - startY) <= 8
-        if (near || performance.now() >= deadline) {
-          rewindRafRef.current = null
-
-          window.scrollTo({ top: startY, behavior: "auto" })
-          timeoutRef.current = window.setTimeout(begin, 200)
-          return
-        }
-        rewindRafRef.current = requestAnimationFrame(poll)
-      }
-      rewindRafRef.current = requestAnimationFrame(poll)
-      return
-    }
-
-    begin()
+        startingRef.current = false
+        lastTsRef.current = null
+        rafRef.current = requestAnimationFrame(step)
+      })
+    })
   }, [targetId, topOffset, stop])
 
   const toggle = useCallback(() => {
-    if (
-      rafRef.current !== null ||
-      timeoutRef.current !== null ||
-      rewindRafRef.current !== null
-    )
-      stop()
+    if (rafRef.current !== null || startingRef.current) stop()
     else start()
   }, [start, stop])
 

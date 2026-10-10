@@ -18,7 +18,10 @@ export const SequenceNav = ({ visible = true }: { visible?: boolean }) => {
   const SECTION_IDS = useMemo(() => LINKS.map((l) => l.id), [])
 
   const activeId = useActiveSection(SECTION_IDS)
-  const { isPlaying, toggle } = useStoryAutoPlay({ targetId: "time-and-place" })
+  const { isPlaying, toggle } = useStoryAutoPlay({
+    targetId: "time-and-place",
+    speed: 250, // sedikit lebih cepat
+  })
   const shown = visible
 
   const close = useCallback(() => setOpen(false), [])
@@ -48,7 +51,6 @@ export const SequenceNav = ({ visible = true }: { visible?: boolean }) => {
     <div
       aria-hidden={!shown}
       className={cn(
-
         "pointer-events-none fixed inset-0 z-30 transition-opacity duration-500",
         shown ? "opacity-100" : "opacity-0"
       )}
