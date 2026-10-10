@@ -34,7 +34,8 @@ export async function GET(request: NextRequest) {
     request.nextUrl.searchParams.get("unduh_mantu_status")
   const physicalInvitationParam = request.nextUrl.searchParams.get("physical_invitation")
   const sendedParam = request.nextUrl.searchParams.get("sended")
-  const allowedSort = ["full_name", "id"]
+  const checkedInParam = request.nextUrl.searchParams.get("checked_in")
+  const allowedSort = ["full_name", "id", "checked_in_at"]
   const requestedSort =
     request.nextUrl.searchParams.get("sortBy") ?? "full_name"
   const sortBy = allowedSort.includes(requestedSort)
@@ -58,11 +59,32 @@ export async function GET(request: NextRequest) {
   if (physicalInvitationParam === "false") query = query.eq("physical_invitation", false)
   if (sendedParam === "true") query = query.eq("sended", true)
   if (sendedParam === "false") query = query.eq("sended", false)
+  if (checkedInParam === "true") query = query.not("checked_in_at", "is", null)
+  if (checkedInParam === "false") query = query.is("checked_in_at", null)
   const from = (page - 1) * pageSize
   const { data, error, count } = await query.range(from, from + pageSize - 1)
   if (error) return bad(error.message, 500)
 
   const totalItems = count ?? 0
+
+  // Ringkasan untuk daftar check-in (dipakai Buku Tamu agar tahan refresh).
+  // Dihitung dari seluruh baris, bukan hanya halaman aktif.
+  let summary: { totalGuests: number; totalPeople: number } | undefined
+  if (checkedInParam === "true") {
+    const { data: checkedRows, error: summaryError } = await client
+      .from("guests")
+      .select("checked_in_count")
+      .not("checked_in_at", "is", null)
+    if (summaryError) return bad(summaryError.message, 500)
+    summary = {
+      totalGuests: checkedRows?.length ?? 0,
+      totalPeople: (checkedRows ?? []).reduce(
+        (sum, row: any) => sum + (Number(row?.checked_in_count) || 0),
+        0
+      ),
+    }
+  }
+
   return NextResponse.json({
     data: { guests: data ?? [] },
     pagination: {
@@ -71,6 +93,7 @@ export async function GET(request: NextRequest) {
       totalItems,
       totalPages: Math.max(1, Math.ceil(totalItems / pageSize)),
     },
+    ...(summary ? { summary } : {}),
   })
 }
 
