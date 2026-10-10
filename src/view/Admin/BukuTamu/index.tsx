@@ -61,7 +61,7 @@ const BukuTamu = () => {
   const { mutate: checkInScanned, isPending: isCheckingIn } = useMutation({
     mutationFn: async () => {
       const res = await clientApi({
-        url: `/guests/${scannedGuest.id}/pager-ayu`,
+        url: `/guests/${scannedGuest.id}/buku-tamu`,
         method: "PATCH",
         data: { arrived_count: Math.trunc(arrived) },
       })

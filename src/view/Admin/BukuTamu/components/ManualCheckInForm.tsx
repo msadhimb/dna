@@ -39,7 +39,7 @@ export const ManualCheckInForm = () => {
   const { mutate, isPending } = useMutation({
     mutationFn: async (data: ManualValues) => {
       const res = await clientApi({
-        url: `/guests/${data.guest}/pager-ayu`,
+        url: `/guests/${data.guest}/buku-tamu`,
         method: "PATCH",
         data: { arrived_count: data.arrived_count },
       })
