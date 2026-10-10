@@ -9,11 +9,11 @@ export const guestFromList = [
   },
   {
     id: "adhims_mother",
-    name: "Kerabat Ibunya Adhim",
+    name: "Rekan Ibunya Adhim",
   },
   {
     id: "adhims_father",
-    name: "Kerabat Bapaknya Adhim",
+    name: "Rekan Bapaknya Adhim",
   },
   {
     id: "adhims_family_neighbor",
@@ -29,11 +29,11 @@ export const guestFromList = [
   },
   {
     id: "devis_mother",
-    name: "Kerabat Mamanya Devi",
+    name: "Rekan Mamanya Devi",
   },
   {
     id: "devis_father",
-    name: "Kerabat Papanya Devi",
+    name: "Rekan Papanya Devi",
   },
   {
     id: "devis_family_neighbor",

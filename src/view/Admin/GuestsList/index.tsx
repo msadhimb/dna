@@ -22,6 +22,7 @@ import { useQueryClient } from "@tanstack/react-query"
 import { useConfirm } from "@/components/ConfirmDialog/store"
 import clientApi from "@/services/client"
 import * as XLSX from "xlsx"
+import * as XLSXStyle from "xlsx-js-style"
 import ModalImport from "./components/ModalImport"
 import ModalShareWa from "./components/ModalShareWa"
 import GuestFormModal from "@/components/GuestFormModal"
@@ -378,6 +379,11 @@ Devi & Adhim`
         )
       })
 
+      const totalTamu = sortedGuests.reduce(
+        (sum: number, g: any) => sum + (Number(g.guest_total) || 0),
+        0
+      )
+
       const exportData = sortedGuests.map((g: any, idx: number) => ({
         No: idx + 1,
         "Nama Tamu": g.full_name ?? "-",
@@ -385,24 +391,129 @@ Devi & Adhim`
         "Tamu Mantu": g.mantu_status ? "Ya" : "Tidak",
         "Tamu Unduh Mantu": g.unduh_mantu_status ? "Ya" : "Tidak",
         "Undangan Fisik": g.physical_invitation ? "Ya" : "Tidak",
+        "Jumlah Tamu": Number(g.guest_total) || 0,
       }))
 
-      const ws = XLSX.utils.json_to_sheet(exportData)
+      const ws = XLSXStyle.utils.json_to_sheet(exportData)
+      const rowCount = exportData.length + 1 // header + data (baris Excel terakhir data)
+
+      // Rekap di kolom I:J (bukan di bawah tabel) — pakai rumus agar live
+      XLSXStyle.utils.sheet_add_aoa(
+        ws,
+        [
+          ["REKAP TAMU", ""],
+          ["Jumlah Undangan", allGuests.length],
+          ["Total Semua Tamu", totalTamu],
+        ],
+        { origin: "I1" }
+      )
+      // Override nilai statis dengan rumus Excel (v = nilai cache awal)
+      ws["J2"] = {
+        t: "n",
+        f: `ROWS(A2:A${rowCount})`,
+        v: allGuests.length,
+      } as any
+      ws["J3"] = {
+        t: "n",
+        f: `SUM(G2:G${rowCount})`,
+        v: totalTamu,
+      } as any
+
+      const thinBorder = {
+        top: { style: "thin" as const, color: { rgb: "9CA3AF" } },
+        bottom: { style: "thin" as const, color: { rgb: "9CA3AF" } },
+        left: { style: "thin" as const, color: { rgb: "9CA3AF" } },
+        right: { style: "thin" as const, color: { rgb: "9CA3AF" } },
+      }
+
+      const titleStyle = {
+        font: { bold: true, sz: 12, color: { rgb: "FFFFFF" } },
+        fill: { fgColor: { rgb: "059669" } },
+        alignment: { horizontal: "center" as const, vertical: "center" as const },
+        border: thinBorder,
+      }
+      const labelStyle = {
+        font: { bold: true, sz: 11, color: { rgb: "064E3B" } },
+        fill: { fgColor: { rgb: "D1FAE5" } },
+        alignment: { horizontal: "left" as const, vertical: "center" as const },
+        border: thinBorder,
+      }
+      const valueStyle = {
+        font: { bold: true, sz: 11, color: { rgb: "064E3B" } },
+        fill: { fgColor: { rgb: "ECFDF5" } },
+        alignment: { horizontal: "center" as const, vertical: "center" as const },
+        border: thinBorder,
+      }
+      const totalLabelStyle = {
+        font: { bold: true, sz: 11, color: { rgb: "713F12" } },
+        fill: { fgColor: { rgb: "FEF08A" } },
+        alignment: { horizontal: "left" as const, vertical: "center" as const },
+        border: thinBorder,
+      }
+      const totalValueStyle = {
+        font: { bold: true, sz: 12, color: { rgb: "713F12" } },
+        fill: { fgColor: { rgb: "FEF9C3" } },
+        alignment: { horizontal: "center" as const, vertical: "center" as const },
+        border: thinBorder,
+      }
+
+      // Header + border untuk tabel utama A:G
+      const tableHeaderStyle = {
+        font: { bold: true, sz: 11, color: { rgb: "FFFFFF" } },
+        fill: { fgColor: { rgb: "047857" } },
+        alignment: { horizontal: "center" as const, vertical: "center" as const },
+        border: thinBorder,
+      }
+      for (let c = 0; c < 7; c++) {
+        const addr = XLSXStyle.utils.encode_cell({ r: 0, c })
+        if (ws[addr]) (ws[addr] as any).s = tableHeaderStyle
+      }
+      for (let r = 1; r < rowCount; r++) {
+        const zebraFill =
+          r % 2 === 0 ? { fgColor: { rgb: "ECFDF5" } } : { fgColor: { rgb: "FFFFFF" } }
+        for (let c = 0; c < 7; c++) {
+          const addr = XLSXStyle.utils.encode_cell({ r, c })
+          const cell = ws[addr]
+          if (!cell) continue
+          const align: "left" | "center" = c === 1 || c === 2 ? "left" : "center"
+          ;(cell as any).s = {
+            font: { sz: 11, color: { rgb: "111827" } },
+            fill: zebraFill,
+            alignment: {
+              horizontal: align,
+              vertical: "center",
+            },
+            border: thinBorder,
+          }
+        }
+      }
+      ws["!autofilter"] = { ref: `A1:G${rowCount}` }
+
+      if (ws["I1"]) (ws["I1"] as any).s = titleStyle
+      if (ws["J1"]) (ws["J1"] as any).s = titleStyle
+      if (ws["I2"]) (ws["I2"] as any).s = labelStyle
+      if (ws["J2"]) (ws["J2"] as any).s = valueStyle
+      if (ws["I3"]) (ws["I3"] as any).s = totalLabelStyle
+      if (ws["J3"]) (ws["J3"] as any).s = totalValueStyle
+
+      ws["!merges"] = [{ s: { r: 0, c: 8 }, e: { r: 0, c: 9 } }]
       ws["!cols"] = [
-        { wch: 5 },
-        { wch: 30 },
-        { wch: 25 },
-        { wch: 13 },
-        { wch: 18 },
-        { wch: 15 },
-        { wch: 13 },
-        { wch: 45 },
+        { wch: 5 }, // A No
+        { wch: 30 }, // B Nama Tamu
+        { wch: 25 }, // C Tamu Dari
+        { wch: 13 }, // D Tamu Mantu
+        { wch: 18 }, // E Tamu Unduh Mantu
+        { wch: 15 }, // F Undangan Fisik
+        { wch: 13 }, // G Jumlah Tamu
+        { wch: 3 }, // H spacer
+        { wch: 20 }, // I label rekap
+        { wch: 18 }, // J nilai rekap
       ]
-      const wb = XLSX.utils.book_new()
-      XLSX.utils.book_append_sheet(wb, ws, "Daftar Tamu")
+      const wb = XLSXStyle.utils.book_new()
+      XLSXStyle.utils.book_append_sheet(wb, ws, "Daftar Tamu")
       const safeLabel = label.toLowerCase().replace(/[^a-z0-9]+/g, "-")
       const fileName = `daftar-tamu-${safeLabel}.xlsx`
-      XLSX.writeFile(wb, fileName)
+      XLSXStyle.writeFile(wb, fileName)
 
       toast.success(
         `Berhasil mengekspor ${allGuests.length} tamu (${label}).`,
