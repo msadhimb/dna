@@ -91,6 +91,23 @@ export const CommentSection = forwardRef<
   const { toast } = useToast()
   const [submitted, setSubmitted] = useState(false)
   const [showCheckInQr, setShowCheckInQr] = useState(false)
+
+  // QR lintas device: tampil jika tamu ini pernah RSVP Hadir (data server).
+  useEffect(() => {
+    if (!guestId) return
+    let cancelled = false
+    fetch(`/api/comments?limit=50&offset=0&guest_id=${guestId}`)
+      .then((res) => (res.ok ? res.json() : []))
+      .then((items) => {
+        if (cancelled || !Array.isArray(items)) return
+        if (items.some((item) => item?.attendance === "hadir"))
+          setShowCheckInQr(true)
+      })
+      .catch(() => {})
+    return () => {
+      cancelled = true
+    }
+  }, [guestId])
   const comments: Comment[] = remoteComments.map((comment) => ({
     id: comment.id,
     name: comment.name,

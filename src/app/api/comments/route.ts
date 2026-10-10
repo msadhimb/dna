@@ -33,7 +33,13 @@ export async function GET(request: NextRequest) {
     .from("comments")
     .select("id, guest_id, name, comment, attendance, created_at, updated_at")
     .order("created_at", { ascending: false })
-    .range(offset, offset + limit - 1)
+
+  // Filter opsional untuk halaman undangan personal: cek status RSVP 1 tamu.
+  // Dipakai publik (tanpa auth) agar QR check-in bisa dibuka dari device mana pun.
+  const guestIdParam = request.nextUrl.searchParams.get("guest_id")?.trim() ?? ""
+  if (guestIdParam) query = query.eq("guest_id", guestIdParam)
+
+  query = query.range(offset, offset + limit - 1)
 
   if (isAdminQuery) {
     const { data: claims } = await client.auth.getClaims()
