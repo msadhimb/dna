@@ -35,14 +35,14 @@ export function Countdown({
           const now = new Date().getTime()
           if (now > new Date(mantuDate).getTime()) {
             finalTargetDate = unduhDate
-            currentCaption = "Menuju Unduh Mantu"
+            currentCaption = "Menuju Ngunduh Mantu"
           } else {
             finalTargetDate = mantuDate
             currentCaption = "Menuju Hari Pernikahan"
           }
         } else if (guest.unduh_mantu_status) {
           finalTargetDate = unduhDate
-          currentCaption = "Menuju Unduh Mantu"
+          currentCaption = "Menuju Ngunduh Mantu"
         } else {
           finalTargetDate = mantuDate
           currentCaption = "Menuju Hari Pernikahan"

@@ -389,7 +389,7 @@ Devi & Adhim`
         "Nama Tamu": g.full_name ?? "-",
         "Tamu Dari": getGuestFromName(g),
         "Tamu Mantu": g.mantu_status ? "Ya" : "Tidak",
-        "Tamu Unduh Mantu": g.unduh_mantu_status ? "Ya" : "Tidak",
+        "Tamu Ngunduh Mantu": g.unduh_mantu_status ? "Ya" : "Tidak",
         "Undangan Fisik": g.physical_invitation ? "Ya" : "Tidak",
         "Jumlah Tamu": Number(g.guest_total) || 0,
       }))
@@ -517,7 +517,7 @@ Devi & Adhim`
         { wch: 30 }, // B Nama Tamu
         { wch: 25 }, // C Tamu Dari
         { wch: 13 }, // D Tamu Mantu
-        { wch: 18 }, // E Tamu Unduh Mantu
+        { wch: 18 }, // E Tamu Ngunduh Mantu
         { wch: 15 }, // F Undangan Fisik
         { wch: 13 }, // G Jumlah Tamu
         { wch: 3 }, // H spacer
@@ -721,7 +721,7 @@ Devi & Adhim`
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-medium text-foreground">
-                        Unduh Mantu
+                        Ngunduh Mantu
                       </span>
                       <Switch
                         checked={unduhOnly}
@@ -767,7 +767,7 @@ Devi & Adhim`
                   parts.push(name)
                 }
                 if (mantuOnly) parts.push("Mantu")
-                if (unduhOnly) parts.push("Unduh Mantu")
+                if (unduhOnly) parts.push("Ngunduh Mantu")
                 if (physicalOnly) parts.push("Undangan Fisik")
                 if (sendedOnly) parts.push("WA Terkirim")
                 const label = parts.length ? parts.join(" - ") : "Semua Tamu"
@@ -850,7 +850,7 @@ Devi & Adhim`
               variant="outline"
               className="gap-1.5 border-muted bg-muted/20 py-1 text-xs font-normal"
             >
-              <span className="text-muted-foreground">Unduh Mantu:</span>
+              <span className="text-muted-foreground">Ngunduh Mantu:</span>
               <span className="font-medium text-foreground">Ya</span>
               <button
                 onClick={() => setUnduhOnly(false)}

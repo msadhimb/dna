@@ -62,7 +62,7 @@ const ModalImport = ({
                   Mantu
                 </th>
                 <th className="px-4 py-2 font-medium text-secondary text-center">
-                  Unduh Mantu
+                  Ngunduh Mantu
                 </th>
                 <th className="px-4 py-2 font-medium text-secondary text-center">
                   Undangan Fisik

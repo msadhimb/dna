@@ -35,7 +35,7 @@ export const defaultPages = ({ isDark }: { isDark: boolean }) => {
 
             <div className="flex flex-col items-center gap-2">
               <span className="font-sans font-bold text-[clamp(10px,2.6vw,13px)] sm:text-sm tracking-[0.32em] sm:tracking-[0.4em] text-[#9a865a] uppercase dark:text-[#a38d53]">
-                Hari Unduh Mantu
+                Hari Ngunduh Mantu
               </span>
               <div className="flex flex-col items-center">
                 <span className="font-signature leading-tight text-[#1e1a14] dark:text-[#e0d8d0] text-[clamp(1.45rem,6.4vw,2.25rem)] sm:text-4xl">
@@ -69,7 +69,7 @@ export const defaultPages = ({ isDark }: { isDark: boolean }) => {
           Lokasi
         </span>
         <span className="font-signature leading-tight text-[#1e1a14] dark:text-[#e0d8d0] text-[clamp(1.3rem,5.6vw,1.875rem)] sm:text-3xl">
-          {guest?.mantu_status ? "Gedung Pernikahan" : "Gedung Unduh Mantu"}
+          {guest?.mantu_status ? "Gedung Pernikahan" : "Gedung Ngunduh Mantu"}
         </span>
 
         <div
@@ -104,7 +104,7 @@ export const defaultPages = ({ isDark }: { isDark: boolean }) => {
                 Lokasi
               </span>
               <span className="font-signature leading-tight text-[#1e1a14] dark:text-[#e0d8d0] text-[clamp(1.3rem,5.6vw,1.875rem)] sm:text-3xl">
-                Gedung Unduh Mantu
+                Gedung Ngunduh Mantu
               </span>
 
               <div

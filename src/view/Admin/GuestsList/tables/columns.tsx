@@ -57,7 +57,7 @@ export const columns = ({
   },
   {
     accessorKey: "unduh_mantu_status",
-    header: () => <div className="text-center">Tamu Unduh Mantu</div>,
+    header: () => <div className="text-center">Tamu Ngunduh Mantu</div>,
     cell: ({ row }: { row: any }) => {
       return (
         <div className="flex justify-center">

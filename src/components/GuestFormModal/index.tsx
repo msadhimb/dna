@@ -224,7 +224,7 @@ const GuestFormModal = (props: GuestFormModalProps) => {
             <div className="flex flex-row items-center justify-between rounded-lg border border-input p-3 flex-1 bg-transparent">
               <div className="space-y-0.5">
                 <Label className="font-sans text-[10px] md:text-[11px] font-bold tracking-[0.30em] uppercase">
-                  Unduh Mantu
+                  Ngunduh Mantu
                 </Label>
               </div>
               <Switch

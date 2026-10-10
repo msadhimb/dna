@@ -25,7 +25,7 @@ const INFO = {
     mapTitle: "Peta Gedung Taman Pabuaran Club",
   },
   unduh: {
-    label: "Hari Unduh Mantu",
+    label: "Hari Ngunduh Mantu",
     date: "26 Desember 2026",
     hours: "11.00 — 13.00 WIB",
     place: "Hotel Laras Asri Resort & Spa",
@@ -169,7 +169,7 @@ export const TimeAndPlace = () => {
             onValueChange={(v) => setActiveTab(v as "mantu" | "unduh")}
             items={[
               { value: "mantu", label: "Pernikahan" },
-              { value: "unduh", label: "Unduh Mantu" },
+              { value: "unduh", label: "Ngunduh Mantu" },
             ]}
             listLabel="Pilih acara"
             listClassName="tp-tabs"
