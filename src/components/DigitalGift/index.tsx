@@ -17,7 +17,6 @@ gsap.registerPlugin(ScrollTrigger)
 export const DigitalGift = () => {
   const { guest } = useGuest()
 
-  const sectionRef = useRef<HTMLElement>(null)
   const [activeTab, setActiveTab] = useState<"bank" | "qris">("bank")
 
   const qrisUrl: string = "/assets/qris/QRIS-Gopay.jpeg"
@@ -27,34 +26,7 @@ export const DigitalGift = () => {
     guest?.guest_from === "devis_father" ||
     guest?.guest_from === "devis_family_neighbor"
 
-  useGSAP(
-    () => {
-
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top 82%",
-          toggleActions: "play none none reverse",
-        },
-        defaults: { ease: "expo.out" },
-      })
-
-      tl.fromTo(
-        ".dg-rise",
-        { opacity: 0, y: 28 },
-        { opacity: 1, y: 0, duration: 0.9, stagger: 0.1 }
-      ).fromTo(
-        ".dg-card",
-        { opacity: 0, y: 24, scale: 0.98 },
-        { opacity: 1, y: 0, scale: 1, duration: 0.7, stagger: 0.12 },
-        "-=0.5"
-      )
-    },
-    { scope: sectionRef }
-  )
-
   useEffect(() => {
-    if (!sectionRef.current) return
     gsap.fromTo(
       ".dg-cards-wrapper",
       { opacity: 0, y: 12 },
@@ -64,7 +36,6 @@ export const DigitalGift = () => {
 
   return (
     <section
-      ref={sectionRef}
       id="digital-gift"
       className="dg-section relative w-full scroll-mt-16 overflow-hidden bg-background"
     >

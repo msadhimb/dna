@@ -21,6 +21,7 @@ import LoveJourneyHorizontal, {
 } from "@/components/LoveJourneyHorizontal"
 import DigitalGift from "@/components/DigitalGift"
 import CommentSection, { CommentSectionRef } from "@/components/CommentSection"
+import CheckInTicket from "@/components/CheckInTicket"
 import Footer from "@/components/Footer"
 import SequenceNav from "@/components/SequenceNav"
 import Image from "next/image"
@@ -231,6 +232,7 @@ const MainView = ({
           guestId={guestId}
           guestName={guestName}
         />
+        <CheckInTicket guestId={guestId} guestName={guestName} />
         <DigitalGift />
         <RomanticQuote />
         <Footer />
