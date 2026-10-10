@@ -1,5 +1,7 @@
 import { guestFromList } from "@/helper/guestFormList"
+import { size } from "lodash"
 import { BadgeCheck, Check, Edit, Pencil, Repeat, Trash, X } from "lucide-react"
+import moment from "moment"
 import { FaWhatsapp } from "react-icons/fa"
 import { toast } from "sonner"
 
@@ -13,6 +15,7 @@ export const columns = ({
   {
     id: "no",
     header: "No",
+    size: 64,
     cell: ({ row, table }: { row: any; table: any }) => {
       const { pageIndex, pageSize } = table.getState().pagination
       return <div>{pageIndex * pageSize + row.index + 1}</div>
@@ -92,6 +95,7 @@ export const columns = ({
   {
     accessorKey: "url",
     header: "Link",
+    size: 340,
     cell: ({ row }: { row: any }) => {
       const origin = typeof window !== "undefined" ? window.location.origin : ""
       const id = row.original.id
@@ -117,6 +121,31 @@ export const columns = ({
           ) : (
             <X className="h-4 w-4 text-red-500" />
           )}
+        </div>
+      )
+    },
+  },
+  {
+    accessorKey: "checked_in_count",
+    header: () => <div className="text-center">Check In</div>,
+    cell: ({ row }: { row: any }) => {
+      return (
+        <div className="flex justify-center">
+          {row.original.checked_in_count}
+        </div>
+      )
+    },
+  },
+  {
+    accessorKey: "checked_in_at",
+    size: 200,
+    header: () => <div className="text-center">Waktu Check In</div>,
+    cell: ({ row }: { row: any }) => {
+      return (
+        <div className="flex justify-center">
+          {row.original.checked_in_at
+            ? moment(row.original.checked_in_at).format("YYYY-MM-DD HH:mm:ss")
+            : "-"}
         </div>
       )
     },

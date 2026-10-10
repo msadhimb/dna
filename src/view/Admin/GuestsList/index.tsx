@@ -429,7 +429,10 @@ Devi & Adhim`
       const titleStyle = {
         font: { bold: true, sz: 12, color: { rgb: "FFFFFF" } },
         fill: { fgColor: { rgb: "059669" } },
-        alignment: { horizontal: "center" as const, vertical: "center" as const },
+        alignment: {
+          horizontal: "center" as const,
+          vertical: "center" as const,
+        },
         border: thinBorder,
       }
       const labelStyle = {
@@ -441,7 +444,10 @@ Devi & Adhim`
       const valueStyle = {
         font: { bold: true, sz: 11, color: { rgb: "064E3B" } },
         fill: { fgColor: { rgb: "ECFDF5" } },
-        alignment: { horizontal: "center" as const, vertical: "center" as const },
+        alignment: {
+          horizontal: "center" as const,
+          vertical: "center" as const,
+        },
         border: thinBorder,
       }
       const totalLabelStyle = {
@@ -453,7 +459,10 @@ Devi & Adhim`
       const totalValueStyle = {
         font: { bold: true, sz: 12, color: { rgb: "713F12" } },
         fill: { fgColor: { rgb: "FEF9C3" } },
-        alignment: { horizontal: "center" as const, vertical: "center" as const },
+        alignment: {
+          horizontal: "center" as const,
+          vertical: "center" as const,
+        },
         border: thinBorder,
       }
 
@@ -461,7 +470,10 @@ Devi & Adhim`
       const tableHeaderStyle = {
         font: { bold: true, sz: 11, color: { rgb: "FFFFFF" } },
         fill: { fgColor: { rgb: "047857" } },
-        alignment: { horizontal: "center" as const, vertical: "center" as const },
+        alignment: {
+          horizontal: "center" as const,
+          vertical: "center" as const,
+        },
         border: thinBorder,
       }
       for (let c = 0; c < 7; c++) {
@@ -470,12 +482,15 @@ Devi & Adhim`
       }
       for (let r = 1; r < rowCount; r++) {
         const zebraFill =
-          r % 2 === 0 ? { fgColor: { rgb: "ECFDF5" } } : { fgColor: { rgb: "FFFFFF" } }
+          r % 2 === 0
+            ? { fgColor: { rgb: "ECFDF5" } }
+            : { fgColor: { rgb: "FFFFFF" } }
         for (let c = 0; c < 7; c++) {
           const addr = XLSXStyle.utils.encode_cell({ r, c })
           const cell = ws[addr]
           if (!cell) continue
-          const align: "left" | "center" = c === 1 || c === 2 ? "left" : "center"
+          const align: "left" | "center" =
+            c === 1 || c === 2 ? "left" : "center"
           ;(cell as any).s = {
             font: { sz: 11, color: { rgb: "111827" } },
             fill: zebraFill,
@@ -585,6 +600,7 @@ Devi & Adhim`
         filterColumn="guests_name"
         filterPlaceholder="Search guests..."
         filters={tableFilters}
+        actionsColumnWidth={90}
         toolbarExtra={
           <>
             <Popover>

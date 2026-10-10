@@ -1,4 +1,4 @@
-import { Gift, LucideIcon, MapPin, MessageCircle } from "lucide-react"
+import { Gift, LucideIcon, MapPin, MessageCircle, QrCode } from "lucide-react"
 
 export interface NavLink {
   id: string
@@ -24,8 +24,15 @@ export const LINKS: readonly NavLink[] = [
     Icon: MessageCircle,
   },
   {
-    id: "digital-gift",
+    id: "check-in-ticket",
     no: "03",
+    label: "Tiket Masuk",
+    hint: "QR check-in acara",
+    Icon: QrCode,
+  },
+  {
+    id: "digital-gift",
+    no: "04",
     label: "Wedding Gift",
     hint: "Tanda kasih untuk kami",
     Icon: Gift,

@@ -70,6 +70,8 @@ interface DataTableProps<TData> {
   actions?: ActionItem<TData>[]
   filters?: Record<string, any>
   toolbarExtra?: React.ReactNode
+  // Lebar kolom Actions (px). Default 160 (10rem) seperti kolom lain.
+  actionsColumnWidth?: number
 }
 
 const PAGE_SIZE_OPTIONS = [5, 10, 20, 30, 50]
@@ -82,6 +84,7 @@ export function DataTable<TData>({
   actions,
   filters,
   toolbarExtra,
+  actionsColumnWidth = 160,
 }: DataTableProps<TData>) {
   const [page, setPage] = React.useState(1)
   const [pageSize, setPageSize] = React.useState(20)
@@ -134,6 +137,7 @@ export function DataTable<TData>({
   const canNext = page < totalPages
 
   const [showShadow, setShowShadow] = React.useState(false)
+  const [fitWidth, setFitWidth] = React.useState<number | null>(null)
   const wrapperRef = React.useRef<HTMLDivElement>(null)
 
   // Yang benar-benar scroll adalah div overflow-x-auto di dalam komponen
@@ -190,6 +194,8 @@ export function DataTable<TData>({
     const actionColumn: ColumnDef<TData, unknown> = {
       id: "actions",
       enableHiding: false,
+      size: actionsColumnWidth,
+      minSize: actionsColumnWidth,
       header: () => <div className="text-center">Actions</div>,
       cell: ({ row }: { row: Row<TData> }) => (
         <div className="flex justify-center">
@@ -228,11 +234,15 @@ export function DataTable<TData>({
     }
 
     return [...columns, actionColumn]
-  }, [columns, actions])
+  }, [columns, actions, actionsColumnWidth])
 
   const table = useReactTable({
     data: rows,
     columns: columnsWithActions,
+    defaultColumn: {
+      size: 160,
+      minSize: 20,
+    },
     manualPagination: true,
     manualSorting: true,
     pageCount: totalPages,
@@ -251,6 +261,23 @@ export function DataTable<TData>({
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
   })
+
+  React.useEffect(() => {
+    const el = wrapperRef.current
+    if (!el) return
+    const measure = () => setFitWidth(el.clientWidth)
+    measure()
+    const resizeObserver = new ResizeObserver(measure)
+    resizeObserver.observe(el)
+    return () => resizeObserver.disconnect()
+  }, [])
+
+  const totalSize = table.getCenterTotalSize()
+  // Kunci lebar kolom (fixed + scroll) hanya bila: ada data DAN total
+  // lebar kolom melebihi wadah. Kalau kolom sedikit / muat / kosong,
+  // tabel melebar natural (w-full) tanpa overflow.
+  const useFixedLayout =
+    rows.length > 0 && fitWidth !== null && totalSize > fitWidth
 
   return (
     <div className="w-full max-w-full min-w-0 space-y-4">
@@ -285,20 +312,32 @@ export function DataTable<TData>({
         ref={wrapperRef}
         className="w-full overflow-hidden rounded-md border border-border"
       >
-        <Table className="min-w-[760px] w-full">
+        <Table
+          className={useFixedLayout ? "table-fixed" : undefined}
+          style={useFixedLayout ? { width: totalSize } : { width: "100%" }}
+        >
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id} className="hover:!bg-transparent">
                 {headerGroup.headers.map((header) => (
                   <TableHead
                     key={header.id}
+                    style={
+                      useFixedLayout
+                        ? { width: header.getSize() }
+                        : { minWidth: header.getSize() }
+                    }
                     className={cn(
-                      "whitespace-nowrap border-b border-border bg-border px-4 py-3",
+                      "border-b border-border bg-border px-4 py-3 whitespace-nowrap",
+                      // overflow-hidden agar teks header terpotong rapi saat
+                      // kolom dipersempit — kecuali Actions (bayangannya
+                      // menjulur ke kiri dan harus tetap terlihat).
+                      header.id !== "actions" && "overflow-hidden",
                       header.id === "actions" &&
                         "relative sticky right-0 z-20 border-l border-border/50 bg-border dark:bg-[color-mix(in_srgb,white_10%,var(--background))]"
                     )}
                   >
-                    {header.id === "actions" && showShadow && (
+                    {header.id === "actions" && (
                       <div className="absolute top-0 -left-3 bottom-0 w-3 pointer-events-none bg-linear-to-l from-muted/30 dark:from-white/2  to-transparent" />
                     )}
                     {header.isPlaceholder
@@ -342,8 +381,13 @@ export function DataTable<TData>({
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
                       key={cell.id}
+                      style={
+                        useFixedLayout
+                          ? { width: cell.column.getSize() }
+                          : { minWidth: cell.column.getSize() }
+                      }
                       className={cn(
-                        "whitespace-break-spaces border-b border-border px-4 py-3",
+                        "border-b border-border px-4 py-3 break-all whitespace-break-spaces",
                         cell.column.id === "actions" &&
                           "relative sticky right-0 z-10 bg-background border-l border-border/50"
                       )}

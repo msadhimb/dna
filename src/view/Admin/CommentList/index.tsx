@@ -114,6 +114,7 @@ const CommentListView = () => {
         fetcher={getCommentsData}
         filterColumn="comment"
         filterPlaceholder="Search wishes & comments..."
+        actionsColumnWidth={90}
       />
     </div>
   )
