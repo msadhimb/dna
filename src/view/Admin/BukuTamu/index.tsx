@@ -26,6 +26,7 @@ import {
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
+import Card from "@/components/Card"
 
 type SimpleCamera = { id: string; label: string }
 
@@ -92,42 +93,39 @@ const BukuTamu = () => {
     }
   }, [])
 
-  const handleScanSuccess = React.useCallback(
-    async (decodedText: string) => {
-      if (busyRef.current) return
-      const guestId = parseGuestId(decodedText)
-      if (!guestId) {
-        toast?.error?.("QR tidak valid")
-        return
-      }
-      busyRef.current = true
+  const handleScanSuccess = React.useCallback(async (decodedText: string) => {
+    if (busyRef.current) return
+    const guestId = parseGuestId(decodedText)
+    if (!guestId) {
+      toast?.error?.("QR tidak valid")
+      return
+    }
+    busyRef.current = true
+    try {
+      qrRef.current?.pause()
+    } catch {
+      // abaikan
+    }
+    setIsFetchingGuest(true)
+    try {
+      const res = await clientApi({ url: `/guests/${guestId}`, method: "GET" })
+      const guest = res?.data ?? res
+      setScannedGuest(guest)
+      setArrived(Number(guest?.guest_total) || 1)
+    } catch (err: any) {
+      toast?.error?.(
+        err?.response?.data?.error || "Tamu tidak ditemukan, coba lagi"
+      )
       try {
-        qrRef.current?.pause()
+        qrRef.current?.resume()
       } catch {
         // abaikan
       }
-      setIsFetchingGuest(true)
-      try {
-        const res = await clientApi({ url: `/guests/${guestId}`, method: "GET" })
-        const guest = res?.data ?? res
-        setScannedGuest(guest)
-        setArrived(Number(guest?.guest_total) || 1)
-      } catch (err: any) {
-        toast?.error?.(
-          err?.response?.data?.error || "Tamu tidak ditemukan, coba lagi"
-        )
-        try {
-          qrRef.current?.resume()
-        } catch {
-          // abaikan
-        }
-        busyRef.current = false
-      } finally {
-        setIsFetchingGuest(false)
-      }
-    },
-    []
-  )
+      busyRef.current = false
+    } finally {
+      setIsFetchingGuest(false)
+    }
+  }, [])
 
   const startScanner = React.useCallback(
     async (deviceId?: string) => {
@@ -248,7 +246,9 @@ const BukuTamu = () => {
         res?.data?.checked_in_count ?? res?.checked_in_count ?? arrived
       const name =
         res?.data?.full_name ?? res?.full_name ?? scannedGuest?.full_name ?? ""
-      toast?.success?.(`Silahkan Masuk${name ? `, ${name}` : ""} (${count} orang)`)
+      toast?.success?.(
+        `Silahkan Masuk${name ? `, ${name}` : ""} (${count} orang)`
+      )
       setRecent((prev) =>
         [
           {
@@ -359,68 +359,49 @@ const BukuTamu = () => {
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-2">
-        <Badge
-          variant="outline"
-          className="gap-1.5 border-muted bg-muted/20 py-1 text-xs font-normal"
-        >
-          <span className="text-muted-foreground">Check-in sesi ini:</span>
-          <span className="font-medium text-foreground">{recent.length}</span>
-        </Badge>
-        <Badge
-          variant="outline"
-          className="gap-1.5 border-muted bg-muted/20 py-1 text-xs font-normal"
-        >
-          <span className="text-muted-foreground">Orang masuk:</span>
-          <span className="font-medium text-foreground">{totalRecentOrang}</span>
-        </Badge>
-      </div>
-
       {mode === "scan" ? (
         <div className="grid w-full gap-6 lg:grid-cols-[1fr_320px]">
           <div className="flex min-w-0 flex-col gap-4">
             {!scannedGuest ? (
-              <div className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
-                <div className="flex items-center justify-between gap-2 px-4 py-3">
-                  <div className="flex min-w-0 items-center gap-2 text-sm text-muted-foreground">
-                    <span
-                      className={cn(
-                        "size-2.5 shrink-0 rounded-full",
-                        scanning ? "animate-pulse bg-emerald-500" : "bg-amber-500"
+              <Card className="flex items-center justify-between gap-2 px-4 py-3">
+                <div className="flex min-w-0 items-center gap-2 text-sm text-muted-foreground">
+                  <span
+                    className={cn(
+                      "size-2.5 shrink-0 rounded-full",
+                      scanning ? "animate-pulse bg-emerald-500" : "bg-amber-500"
+                    )}
+                  />
+                  <span className="truncate">
+                    {scanning
+                      ? `Kamera belakang aktif${cameras[cameraIndex]?.label ? ` • ${cameras[cameraIndex].label}` : ""}`
+                      : "Menyiapkan kamera..."}
+                  </span>
+                </div>
+                <div className="flex shrink-0 gap-2">
+                  {torchSupported && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      title="Flash"
+                      onClick={toggleTorch}
+                    >
+                      {torchOn ? (
+                        <Flashlight className="size-4" />
+                      ) : (
+                        <FlashlightOff className="size-4" />
                       )}
-                    />
-                    <span className="truncate">
-                      {scanning
-                        ? `Kamera belakang aktif${cameras[cameraIndex]?.label ? ` • ${cameras[cameraIndex].label}` : ""}`
-                        : "Menyiapkan kamera..."}
-                    </span>
-                  </div>
-                  <div className="flex shrink-0 gap-2">
-                    {torchSupported && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        title="Flash"
-                        onClick={toggleTorch}
-                      >
-                        {torchOn ? (
-                          <Flashlight className="size-4" />
-                        ) : (
-                          <FlashlightOff className="size-4" />
-                        )}
-                      </Button>
-                    )}
-                    {cameras.length > 1 && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        title="Ganti kamera"
-                        onClick={handleSwitchCamera}
-                      >
-                        <SwitchCamera className="size-4" />
-                      </Button>
-                    )}
-                  </div>
+                    </Button>
+                  )}
+                  {cameras.length > 1 && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      title="Ganti kamera"
+                      onClick={handleSwitchCamera}
+                    >
+                      <SwitchCamera className="size-4" />
+                    </Button>
+                  )}
                 </div>
                 {/* Viewfinder */}
                 <div className="px-4">
@@ -434,7 +415,10 @@ const BukuTamu = () => {
                       {scanning && !isFetchingGuest && (
                         <div
                           className="absolute right-8 left-8 h-0.5 rounded-full bg-emerald-500"
-                          style={{ animation: "bukutamu-scanline 2.4s ease-in-out infinite" }}
+                          style={{
+                            animation:
+                              "bukutamu-scanline 2.4s ease-in-out infinite",
+                          }}
                         />
                       )}
                     </div>
@@ -445,66 +429,39 @@ const BukuTamu = () => {
                     ? "Memeriksa data tamu..."
                     : "Posisikan QR undangan di dalam bingkai."}
                 </p>
-              </div>
+              </Card>
             ) : (
-              <div className="flex flex-col gap-5 rounded-xl border border-border bg-card p-6 shadow-sm sm:p-8">
+              <Card className="p-5 flex flex-col gap-8">
                 <div className="min-w-0">
                   <p className="text-xs font-medium text-muted-foreground">
                     Tamu terdeteksi
                   </p>
                   <p className="truncate text-2xl font-bold text-foreground">
-                    {scannedGuest.full_name}
+                    {scannedGuest?.full_name}
                   </p>
                   <div className="mt-2 flex flex-wrap items-center gap-2">
-                    <Badge
-                      variant="outline"
-                      className="gap-1.5 border-muted bg-muted/20 py-1 text-xs font-normal"
-                    >
-                      <span className="text-muted-foreground">Tamu Dari:</span>
-                      <span className="font-medium text-foreground">
-                        {scannedGuestFrom}
-                      </span>
-                    </Badge>
-                    <Badge
-                      variant="outline"
-                      className="gap-1.5 border-muted bg-muted/20 py-1 text-xs font-normal"
-                    >
-                      <span className="text-muted-foreground">Diundang:</span>
-                      <span className="font-medium text-foreground">
-                        {Number(scannedGuest.guest_total) || 0} orang
-                      </span>
-                    </Badge>
-                    {scannedGuest.checked_in_at ? (
-                      <Badge
-                        variant="outline"
-                        className="gap-1.5 border-muted bg-muted/20 py-1 text-xs font-normal"
-                      >
-                        <span className="text-muted-foreground">Sudah masuk:</span>
-                        <span className="font-medium text-foreground">
-                          {Number(scannedGuest.checked_in_count) || 0} orang (scan ulang memperbarui)
-                        </span>
+                    <Badge className="p-3 text-white">{scannedGuestFrom}</Badge>
+                    {scannedGuest?.checked_in_at ? (
+                      <Badge className="text-white p-3">
+                        {Number(scannedGuest.checked_in_count) || 0} orang (scan
+                        ulang memperbarui)
                       </Badge>
                     ) : (
-                      <Badge
-                        variant="outline"
-                        className="gap-1.5 border-muted bg-muted/20 py-1 text-xs font-normal"
-                      >
-                        <span className="font-medium text-foreground">
-                          Belum check-in
-                        </span>
-                      </Badge>
+                      <Badge className="text-white p-3">Belum check-in</Badge>
                     )}
                   </div>
                 </div>
 
                 <div>
                   <p className="mb-2 text-sm font-medium">Jumlah Datang</p>
-                  <div className="flex items-center gap-3">
+                  <div className="flex justify-center md:justify-start items-center gap-3">
                     <Button
                       variant="outline"
                       size="sm"
                       className="size-9 shrink-0"
-                      onClick={() => setArrived((v) => Math.max(1, (v || 1) - 1))}
+                      onClick={() =>
+                        setArrived((v) => Math.max(1, (v || 1) - 1))
+                      }
                     >
                       <Minus className="size-4" />
                     </Button>
@@ -530,11 +487,11 @@ const BukuTamu = () => {
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-2 sm:flex-row">
+                <div className="flex  gap-2 ">
                   <Button
                     variant="outline"
                     size="sm"
-                    className="h-9 flex-1 gap-1.5"
+                    className="w-full"
                     onClick={handleScanAgain}
                   >
                     <RotateCcw className="size-3.5" />
@@ -542,22 +499,22 @@ const BukuTamu = () => {
                   </Button>
                   <Button
                     size="sm"
-                    className="h-9 flex-1 gap-1.5"
+                    className="w-full"
                     disabled={isCheckingIn || !arrived || arrived < 1}
                     onClick={() => checkInScanned()}
                   >
-                    {isCheckingIn ? "Menyimpan..." : `Konfirmasi Masuk (${arrived || 0})`}
+                    {isCheckingIn
+                      ? "Menyimpan..."
+                      : `Konfirmasi Masuk (${arrived || 0})`}
                   </Button>
                 </div>
-              </div>
+              </Card>
             )}
           </div>
 
           {/* Riwayat sesi ini */}
-          <div className="flex flex-col gap-3 rounded-xl border border-border bg-card p-5 shadow-sm lg:sticky lg:top-4 lg:self-start">
-            <p className="text-sm font-medium">
-              Baru masuk ({recent.length})
-            </p>
+          <Card className="flex flex-col gap-3 rounded-xl  p-5 shadow-sm lg:sticky lg:top-4 lg:self-start">
+            <p className="text-sm font-medium">Baru masuk ({recent.length})</p>
             {recent.length === 0 ? (
               <p className="text-sm text-muted-foreground">
                 Belum ada check-in sesi ini. Hasil scan akan muncul di sini.
@@ -581,7 +538,7 @@ const BukuTamu = () => {
                 ))}
               </div>
             )}
-          </div>
+          </Card>
         </div>
       ) : (
         <div className="flex items-center justify-center">

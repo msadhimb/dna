@@ -22,6 +22,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { Button } from "../Button"
 import { defaultGuestValues } from "./form"
 import { guestFormSchema } from "./validation"
+import Card from "../Card"
 
 export type GuestFormModalProps = {
   isModal?: boolean
@@ -323,9 +324,7 @@ const GuestFormModal = (props: GuestFormModalProps) => {
 
   return (
     <div className="w-full h-full flex items-center justify-center">
-      <div className="bg-card border border-border rounded-xl shadow-sm w-2xl flex flex-col gap-8 p-8">
-        {content}
-      </div>
+      <Card className="w-2xl flex flex-col gap-8 p-8">{content}</Card>
     </div>
   )
 }
