@@ -14,6 +14,7 @@ import { useImageUrl } from "@/store/useImageUrl"
 import { useComments } from "@/hooks/useComments"
 import { useToast } from "@/hooks/use-toast"
 import type { Attendance } from "@/types/comment"
+import { QRCodeSVG } from "qrcode.react"
 import Header from "../Header"
 
 interface Comment {
@@ -89,6 +90,7 @@ export const CommentSection = forwardRef<
   } = useComments(guestId)
   const { toast } = useToast()
   const [submitted, setSubmitted] = useState(false)
+  const [showCheckInQr, setShowCheckInQr] = useState(false)
   const comments: Comment[] = remoteComments.map((comment) => ({
     id: comment.id,
     name: comment.name,
@@ -265,6 +267,7 @@ export const CommentSection = forwardRef<
         description: "Terima kasih atas doa dan harapannya.",
       })
       setSubmitted(true)
+      if (data.attendance === "hadir") setShowCheckInQr(true)
       setTimeout(() => setSubmitted(false), 3000)
     } catch (submitError) {
       loadingToast.dismiss()
@@ -318,6 +321,31 @@ export const CommentSection = forwardRef<
           submitted={submitted}
           guestName={guestName}
         />
+
+        {guestId && showCheckInQr && (
+          <div className="mx-auto flex w-full max-w-md flex-col items-center gap-3 rounded-xl border border-border bg-card p-6 text-center shadow-sm">
+            <p className="font-sans text-sm font-bold tracking-[0.2em] uppercase">
+              Tiket Check-in
+            </p>
+            <div className="rounded-lg bg-white p-4">
+              <QRCodeSVG
+                value={
+                  typeof window !== "undefined"
+                    ? `${window.location.origin}/${guestId}`
+                    : guestId
+                }
+                size={200}
+              />
+            </div>
+            {guestName ? (
+              <p className="text-sm font-medium">{guestName}</p>
+            ) : null}
+            <p className="text-xs text-muted-foreground">
+              Tunjukkan QR ini kepada panitia saat tiba di lokasi. Simpan
+              tangkapan layar agar mudah dibuka kembali.
+            </p>
+          </div>
+        )}
 
         <CommentList
           comments={comments}

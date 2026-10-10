@@ -3,7 +3,7 @@ import { cookies } from "next/headers"
 import { createClient } from "@/utils/supabase/server"
 
 const FIELDS =
-  "id, full_name, guest_from, mantu_status, unduh_mantu_status, guest_total, physical_invitation, sended"
+  "id, full_name, guest_from, mantu_status, unduh_mantu_status, guest_total, physical_invitation, sended, checked_in_count, checked_in_at"
 
 async function adminClient() {
   const client = createClient(await cookies())

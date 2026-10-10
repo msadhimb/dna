@@ -3,7 +3,7 @@ import { cookies } from "next/headers"
 import { createClient } from "@/utils/supabase/server"
 
 const FIELDS =
-  "id, full_name, mantu_status, unduh_mantu_status, guest_from, guest_total, physical_invitation, sended"
+  "id, full_name, mantu_status, unduh_mantu_status, guest_from, guest_total, physical_invitation, sended, checked_in_count, checked_in_at"
 
 async function getAdmin() {
   const client = createClient(await cookies())
@@ -60,6 +60,13 @@ export async function PATCH(
     payload.physical_invitation = body.physical_invitation
   if (typeof body?.sended === "boolean")
     payload.sended = body.sended
+  if (body?.checked_in_count !== undefined) {
+    if (!Number.isInteger(body.checked_in_count) || body.checked_in_count < 0)
+      return bad("Jumlah check-in harus berupa angka bulat positif")
+    payload.checked_in_count = body.checked_in_count
+  }
+  if (body?.checked_in_at !== undefined)
+    payload.checked_in_at = body.checked_in_at
   if (!Object.keys(payload).length) return bad("Tidak ada data yang diubah")
 
   const { data, error } = await client
