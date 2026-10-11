@@ -61,7 +61,9 @@ const BukuTamu = () => {
   const handleScanAgain = () => {
     setScannedGuest(null)
     setArrived(1)
-    scanner.unlock()
+    // Kamera dihidupkan ulang oleh ScannerPanel saat di-mount ulang
+    // (onViewportReady) — unlock/resume saja tidak cukup karena
+    // #qr-viewport ikut di-unmount saat kartu hasil scan tampil.
   }
 
   const { mutate: checkInScanned, isPending: isCheckingIn } = useMutation({
@@ -134,6 +136,7 @@ const BukuTamu = () => {
                 isFetchingGuest={isFetchingGuest}
                 onToggleTorch={() => void scanner.toggleTorch()}
                 onSwitchCamera={scanner.switchCamera}
+                onViewportReady={() => scanner.restartCurrent()}
               />
             ) : (
               <ScannedGuestCard

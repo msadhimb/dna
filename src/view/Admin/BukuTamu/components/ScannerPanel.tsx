@@ -1,5 +1,6 @@
 "use client"
 
+import React from "react"
 import { Button } from "@/components/Button"
 import Card from "@/components/Card"
 import { cn } from "@/lib/utils"
@@ -14,6 +15,9 @@ type ScannerPanelProps = {
   isFetchingGuest: boolean
   onToggleTorch: () => void
   onSwitchCamera: () => void
+  // Dipanggil sekali saat panel (+ #qr-viewport) selesai mount —
+  // untuk menghidupkan ulang kamera setelah kartu hasil scan ditutup.
+  onViewportReady?: () => void
 }
 
 // Viewfinder kamera + status bar. Video dirender html5-qrcode ke #qr-viewport.
@@ -26,7 +30,13 @@ export const ScannerPanel = ({
   isFetchingGuest,
   onToggleTorch,
   onSwitchCamera,
+  onViewportReady,
 }: ScannerPanelProps) => {
+  const readyRef = React.useRef(onViewportReady)
+  readyRef.current = onViewportReady
+  React.useEffect(() => {
+    readyRef.current?.()
+  }, [])
   return (
     <Card className="overflow-hidden p-0">
       <style>{`@keyframes bukutamu-scanline { 0% { top: 6%; } 50% { top: 90%; } 100% { top: 6%; } }`}</style>

@@ -22,6 +22,12 @@ export const useQrScanner = ({ enabled, onScan }: UseQrScannerOptions) => {
   const [scanning, setScanning] = useState(false)
   const [torchOn, setTorchOn] = useState(false)
   const [torchSupported, setTorchSupported] = useState(false)
+  // deviceId terakhir yang dipakai — untuk menghidupkan ulang kamera
+  // saat panel scanner di-mount ulang (viewport lama sudah di-unmount).
+  const deviceIdRef = useRef<string | undefined>(undefined)
+  // true bila kamera pernah berhasil start — agar restart saat mount
+  // pertama (yang di-handle efek enumerasi kamera) tidak double-start.
+  const sessionRef = useRef(false)
 
   const stop = useCallback(async () => {
     const qr = qrRef.current
@@ -72,6 +78,7 @@ export const useQrScanner = ({ enabled, onScan }: UseQrScannerOptions) => {
     async (deviceId?: string) => {
       const el = document.getElementById("qr-viewport")
       if (!el) return
+      deviceIdRef.current = deviceId
       el.innerHTML = ""
       await stop()
       const qr = new Html5Qrcode("qr-viewport")
@@ -93,6 +100,7 @@ export const useQrScanner = ({ enabled, onScan }: UseQrScannerOptions) => {
           () => {}
         )
         setScanning(true)
+        sessionRef.current = true
         try {
           const caps: any = qr.getRunningTrackCapabilities?.()
           setTorchSupported(Boolean(caps && "torch" in caps))
@@ -108,6 +116,15 @@ export const useQrScanner = ({ enabled, onScan }: UseQrScannerOptions) => {
     },
     [pause, stop]
   )
+
+  // Hidupkan ulang kamera dari nol (instance + viewport baru).
+  // Dipakai saat ScannerPanel di-mount ulang setelah kartu hasil scan
+  // ditutup — resume() saja tidak cukup karena elemen video lama mati.
+  const restartCurrent = useCallback(() => {
+    if (!sessionRef.current) return
+    lockedRef.current = false
+    void start(deviceIdRef.current)
+  }, [start])
 
   // Ambil daftar kamera sekali saat mode scan aktif, default ke kamera belakang
   useEffect(() => {
@@ -175,6 +192,7 @@ export const useQrScanner = ({ enabled, onScan }: UseQrScannerOptions) => {
     toggleTorch,
     lock,
     unlock,
+    restartCurrent,
     pause,
     resume,
     restart: start,
