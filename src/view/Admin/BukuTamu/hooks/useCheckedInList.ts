@@ -29,10 +29,11 @@ export const useCheckedInList = () => {
     query.data?.summary?.totalGuests ??
     query.data?.pagination?.totalItems ??
     guests.length
+  // Jiwa hadir = total guest_total dari tamu yang sudah check-in.
   const totalPeople =
     query.data?.summary?.totalPeople ??
     guests.reduce(
-      (sum: number, g: any) => sum + (Number(g?.checked_in_count) || 0),
+      (sum: number, g: any) => sum + (Number(g?.guest_total) || 0),
       0
     )
 

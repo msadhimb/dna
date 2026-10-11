@@ -1,5 +1,5 @@
-import LinkGeneratorForm from "@/view/Admin/LinkGeneartor"
+import DashboardView from "@/view/Admin/Dashboard"
 
-export default function LinkGeneratorPage() {
-  return <LinkGeneratorForm />
+export default function DashboardPage() {
+  return <DashboardView />
 }

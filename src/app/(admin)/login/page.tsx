@@ -36,7 +36,7 @@ export default function LoginPage() {
             <div className="flex size-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
               <GalleryVerticalEndIcon className="size-4" />
             </div>
-            Link Generator
+            Dashboard
           </div>
         </div>
         <div className="flex flex-1 items-center justify-center">
@@ -47,7 +47,11 @@ export default function LoginPage() {
       </div>
       <div className="relative hidden overflow-hidden bg-muted lg:block">
         {image ? (
-          <img src={image} alt="Foto pre-wedding" className="absolute inset-0 size-full object-cover" />
+          <img
+            src={image}
+            alt="Foto pre-wedding"
+            className="absolute inset-0 size-full object-cover"
+          />
         ) : (
           <div className="absolute inset-0 bg-muted" />
         )}

@@ -4,7 +4,7 @@ import { Button } from "@/components/Button"
 import Card from "@/components/Card"
 import { FormInput } from "@/components/Form/FormInput"
 import { Badge } from "@/components/ui/badge"
-import { Minus, Plus, RotateCcw } from "lucide-react"
+import { Check, Minus, Plus, RotateCcw } from "lucide-react"
 import { NumericFormat } from "react-number-format"
 
 type ScannedGuestCardProps = {
@@ -27,39 +27,43 @@ export const ScannedGuestCard = ({
   onScanAgain,
   onConfirm,
 }: ScannedGuestCardProps) => {
+  const checkedIn = !!guest?.checked_in_at
   return (
-    <Card className="flex flex-col gap-8 p-5">
+    <Card className="gap-6 p-5 sm:p-6">
       <div className="min-w-0">
-        <p className="text-xs font-medium text-muted-foreground">
+        <p className="text-[11px] font-bold tracking-[0.24em] text-muted uppercase">
           Tamu terdeteksi
         </p>
-        <p className="truncate text-2xl font-bold text-foreground">
+        <p className="mt-1 truncate font-serif text-3xl font-semibold text-foreground">
           {guest?.full_name}
         </p>
-        <div className="mt-2 flex flex-wrap items-center gap-2">
-          <Badge className="bg-muted-foreground p-3 text-white">
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <Badge variant="outline" className="border-wedding-border bg-wedding-surface px-3 py-1 text-muted">
             {guestFrom}
           </Badge>
-          {guest?.checked_in_at ? (
-            <Badge className="bg-muted-foreground p-3 text-white">
-              {Number(guest.checked_in_count) || 0} orang (scan ulang
-              memperbarui)
+          {checkedIn ? (
+            <Badge className="border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-emerald-600">
+              <Check className="size-3.5" />
+              Sudah masuk • +{Number(guest.checked_in_count) || 0}
             </Badge>
           ) : (
-            <Badge className="bg-muted-foreground p-3 text-white">
+            <Badge variant="outline" className="border-book-ornament/40 bg-book-ornament/10 px-3 py-1 text-book-ornament dark:text-book-cover-title">
               Belum check-in
             </Badge>
           )}
         </div>
       </div>
 
-      <div>
-        <p className="mb-2 text-sm font-medium">Jumlah Datang</p>
-        <div className="flex items-center justify-center gap-3 md:justify-start">
+      <div className="rounded-2xl border border-wedding-border bg-wedding-surface/60 p-4">
+        <p className="text-center text-[11px] font-bold tracking-[0.24em] text-muted uppercase">
+          Jumlah datang
+        </p>
+        <div className="mt-3 flex items-center justify-center gap-3">
           <Button
             variant="outline"
             size="sm"
-            className="size-9 shrink-0"
+            aria-label="Kurangi"
+            className="size-10 shrink-0 rounded-full"
             onClick={() => onArrivedChange(Math.max(1, (arrived || 1) - 1))}
           >
             <Minus className="size-4" />
@@ -69,36 +73,34 @@ export const ScannedGuestCard = ({
             thousandSeparator=","
             allowNegative={false}
             decimalScale={0}
-            onValueChange={(values: any) => {
-              onArrivedChange(values.floatValue ?? 0)
-            }}
+            onValueChange={(values: any) => onArrivedChange(values.floatValue ?? 0)}
             customInput={FormInput}
-            className="text-center font-bold"
+            className="max-w-28 text-center font-serif text-2xl font-bold"
           />
           <Button
             variant="outline"
             size="sm"
-            className="size-9 shrink-0"
+            aria-label="Tambah"
+            className="size-10 shrink-0 rounded-full"
             onClick={() => onArrivedChange((arrived || 0) + 1)}
           >
             <Plus className="size-4" />
           </Button>
         </div>
+        {checkedIn && (
+          <p className="mt-2 text-center text-xs text-muted-foreground">
+            Scan ulang akan memperbarui jumlah kedatangan.
+          </p>
+        )}
       </div>
 
-      <div className="flex gap-2">
-        <Button
-          variant="outline"
-          size="sm"
-          className="w-full"
-          onClick={onScanAgain}
-        >
-          <RotateCcw className="size-3.5" />
+      <div className="flex flex-col gap-2 sm:flex-row">
+        <Button variant="outline" className="w-full rounded-xl" onClick={onScanAgain}>
+          <RotateCcw className="size-4" />
           Scan Lagi
         </Button>
         <Button
-          size="sm"
-          className="w-full"
+          className="w-full rounded-xl"
           disabled={isConfirming || !arrived || arrived < 1}
           onClick={onConfirm}
         >

@@ -1,163 +1,54 @@
 "use client"
 
-import React, { useState, useRef } from "react"
-import { DataTable } from "@/components/DataTable"
-import useGuestsList from "./store"
-import {
-  Check,
-  ChevronsUpDown,
-  Download,
-  FileSpreadsheet,
-  Filter,
-  Loader2,
-  RotateCcw,
-  UserPlus,
-  Users,
-  XCircle,
-} from "lucide-react"
-import { cn } from "@/lib/utils"
-import { FaWhatsapp } from "react-icons/fa"
-import { toast } from "sonner"
+import React, { useState } from "react"
 import { useQueryClient } from "@tanstack/react-query"
-import { useConfirm } from "@/components/ConfirmDialog/store"
+import { FileSpreadsheet, UserPlus } from "lucide-react"
+import { toast } from "sonner"
 import clientApi from "@/services/client"
-import * as XLSX from "xlsx"
-import * as XLSXStyle from "xlsx-js-style"
+import { DataTable } from "@/components/DataTable"
+import GuestFormModal from "@/components/GuestFormModal"
+import AdminPageHeader from "@/components/AdminPageHeader"
+import { Button } from "@/components/Button"
+import { useConfirm } from "@/components/ConfirmDialog/store"
+import { buildWaMessage } from "@/helper/buildWaMessage"
+import { guestFromList } from "@/helper/guestFormList"
+import useGuestsList from "./store"
+import { actions, columns } from "./tables/columns"
 import ModalImport from "./components/ModalImport"
 import ModalShareWa from "./components/ModalShareWa"
-import GuestFormModal from "@/components/GuestFormModal"
-import { actions, columns } from "./tables/columns"
-import { Button } from "@/components/Button"
-import { guestFromList } from "@/helper/guestFormList"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { Badge } from "@/components/ui/badge"
-import { Switch } from "@/components/ui/switch"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command"
+import { GuestToolbar } from "./components/GuestToolbar"
+import { ActiveFilterChips } from "./components/ActiveFilterChips"
+import { useGuestFilters } from "./hooks/useGuestFilters"
+import { useGuestImport } from "./hooks/useGuestImport"
+import { useGuestExport } from "./hooks/useGuestExport"
 
 const GuestsListView = () => {
-  const { getGuestsData, deleteGuest, importGuests } = useGuestsList()
+  const { getGuestsData, deleteGuest } = useGuestsList()
   const queryClient = useQueryClient()
   const confirm = useConfirm()
-
-  const fileInputRef = useRef<HTMLInputElement>(null)
-  const [file, setFile] = useState<File | null>(null)
-  const [parsedData, setParsedData] = useState<any[]>([])
-  const [isPreviewOpen, setIsPreviewOpen] = useState(false)
-  const [isImporting, setIsImporting] = useState(false)
+  const filters = useGuestFilters()
+  const guestImport = useGuestImport()
+  const { isExporting, handleExport } = useGuestExport()
 
   const [guestModalOpen, setGuestModalOpen] = useState(false)
   const [editingGuest, setEditingGuest] = useState<any | null>(null)
-  const [isExporting, setIsExporting] = useState(false)
-
   const [shareGlobalOpen, setShareGlobalOpen] = useState(false)
-
-  const buildWaMessage = (guest: any, link: string) => {
-    const guestName = guest?.full_name || "Bapak/Ibu/Saudara/i"
-    const isMantu = guest?.mantu_status === true
-    const isUnduh = guest?.unduh_mantu_status === true
-    let dateStr = "Sabtu, 12 Desember 2026"
-    if (isUnduh && isMantu) dateStr = "Sabtu, 12 & 26 Desember 2026"
-    else if (isUnduh) dateStr = "Sabtu, 26 Desember 2026"
-    else if (isMantu) dateStr = "Sabtu, 12 Desember 2026"
-
-    return `Yth. ${guestName},
-
-Dengan penuh sukacita, kami mengundang Bapak/Ibu/Saudara/i untuk hadir pada acara pernikahan kami:
-
-Devi & Adhim
-${dateStr}
-
-Kehadiran dan doa restu Anda sangat berarti bagi kami.
-
-Berikut link undangan personal Anda:
-${link}
-
-Mohon maaf apabila undangan ini disampaikan melalui pesan singkat. Atas perhatian dan doa restunya kami ucapkan terima kasih.
-
-Salam hangat,
-Devi & Adhim`
-  }
-
-  const [guestFromFilter, setGuestFromFilter] = useState<string>("all")
-  const [mantuOnly, setMantuOnly] = useState(false)
-  const [unduhOnly, setUnduhOnly] = useState(false)
-  const [physicalOnly, setPhysicalOnly] = useState(false)
-  const [sendedOnly, setSendedOnly] = useState(false)
-
-  const tableFilters = React.useMemo(() => {
-    const f: Record<string, any> = {}
-    if (guestFromFilter !== "all") f.guest_from = guestFromFilter
-    if (mantuOnly) f.mantu_status = true
-    if (unduhOnly) f.unduh_mantu_status = true
-    if (physicalOnly) f.physical_invitation = true
-    if (sendedOnly) f.sended = true
-    return f
-  }, [guestFromFilter, mantuOnly, unduhOnly, physicalOnly, sendedOnly])
-
-  const hasActiveFilters =
-    guestFromFilter !== "all" ||
-    mantuOnly ||
-    unduhOnly ||
-    physicalOnly ||
-    sendedOnly
-
-  const handleResetFilters = () => {
-    setGuestFromFilter("all")
-    setMantuOnly(false)
-    setUnduhOnly(false)
-    setPhysicalOnly(false)
-    setSendedOnly(false)
-  }
 
   const handleCopyLink = (id: string) => {
     const origin = typeof window !== "undefined" ? window.location.origin : ""
     navigator.clipboard.writeText(`${origin}/${id}`)
-    toast.success("Link copied to clipboard")
-  }
-
-  const handleOpenCreate = () => {
-    setEditingGuest(null)
-    setGuestModalOpen(true)
-  }
-
-  const handleOpenEdit = (guest: any) => {
-    setEditingGuest(guest)
-    setGuestModalOpen(true)
+    toast.success("Link disalin ke clipboard")
   }
 
   const handleShareWa = (guest: any) => {
     const origin = typeof window !== "undefined" ? window.location.origin : ""
     const link = `${origin}/${guest.id}`
-    const finalMessage = buildWaMessage(guest, link)
-    // Tanpa nomor tujuan -> WhatsApp membuka picker kontak (pilih orangnya)
     window.open(
-      `https://wa.me/?text=${encodeURIComponent(finalMessage)}`,
+      `https://wa.me/?text=${encodeURIComponent(buildWaMessage(guest, link))}`,
       "_blank",
       "noopener,noreferrer"
     )
-    clientApi({
-      url: `/guests/${guest.id}`,
-      method: "PATCH",
-      data: { sended: true },
-    })
+    clientApi({ url: `/guests/${guest.id}`, method: "PATCH", data: { sended: true } })
       .then(() => queryClient.invalidateQueries({ queryKey: ["guests"] }))
       .catch((err) => console.error("Failed to update sended status:", err))
     toast.success(`Membuka WhatsApp untuk ${guest.full_name}…`)
@@ -166,429 +57,65 @@ Devi & Adhim`
   const handleToggleSended = async (guest: any) => {
     const next = !guest.sended
     const toastId = toast.loading(
-      next
-        ? `Menandai ${guest.full_name} sudah dibagikan...`
-        : `Membatalkan tanda dibagikan ${guest.full_name}...`
+      next ? `Menandai ${guest.full_name} sudah dibagikan...` : `Membatalkan tanda ${guest.full_name}...`
     )
     try {
-      await clientApi({
-        url: `/guests/${guest.id}`,
-        method: "PATCH",
-        data: { sended: next },
+      await clientApi({ url: `/guests/${guest.id}`, method: "PATCH", data: { sended: next } })
+      toast.success(next ? `${guest.full_name} sudah dibagikan` : `${guest.full_name} belum dibagikan`, {
+        id: toastId,
+        duration: 2000,
       })
-      toast.success(
-        next
-          ? `${guest.full_name} ditandai sudah dibagikan`
-          : `${guest.full_name} ditandai belum dibagikan`,
-        { id: toastId, duration: 2000 }
-      )
       queryClient.invalidateQueries({ queryKey: ["guests"] })
-    } catch (error: any) {
-      toast.error(error?.message || "Gagal memperbarui status dibagikan", {
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : "Gagal memperbarui status", {
         id: toastId,
-        duration: 3000,
       })
     }
   }
 
-  const handleModalSuccess = () => {
-    queryClient.invalidateQueries({ queryKey: ["guests"] })
+  const handleExportClick = () => {
+    const parts: string[] = []
+    if (filters.guestFromFilter !== "all")
+      parts.push(guestFromList.find((x) => x.id === filters.guestFromFilter)?.name ?? filters.guestFromFilter)
+    if (filters.mantuOnly) parts.push("Mantu")
+    if (filters.unduhOnly) parts.push("Ngunduh Mantu")
+    if (filters.physicalOnly) parts.push("Undangan Fisik")
+    if (filters.sendedOnly) parts.push("WA Terkirim")
+    handleExport(filters.tableFilters, parts.length ? parts.join(" - ") : "Semua Tamu")
   }
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files
-    if (!files || files.length === 0) return
-
-    const selectedFile = files[0]
-    const reader = new FileReader()
-
-    reader.onload = (evt) => {
-      try {
-        const bstr = evt.target?.result
-        const wb = XLSX.read(bstr, { type: "binary" })
-        const wsname = wb.SheetNames[0]
-        const ws = wb.Sheets[wsname]
-        const rawJson = XLSX.utils.sheet_to_json<any>(ws)
-
-        if (rawJson.length === 0) {
-          toast.error("File Excel kosong atau tidak valid.")
-          return
-        }
-
-        const mappedGuests = rawJson
-          .map((row: any) => {
-            const nameKey = Object.keys(row).find((key) =>
-              /name|nama|full_name/i.test(key)
-            )
-            const guestFromKey = Object.keys(row).find((key) =>
-              /^(guest[\s_-]*from|tamu[\s_-]*dari)$/i.test(key.trim())
-            )
-            const mantuKey = Object.keys(row).find((key) => /mantu/i.test(key))
-            const unduhKey = Object.keys(row).find((key) =>
-              /unduh|unduh.*mantu/i.test(key)
-            )
-            const physicalKey = Object.keys(row).find((key) =>
-              /physical|fisik|cetak/i.test(key)
-            )
-            const full_name = nameKey ? String(row[nameKey] ?? "").trim() : ""
-
-            const parseBool = (val: any) => {
-              if (val === undefined || val === null) return false
-              if (typeof val === "boolean") return val
-              if (typeof val === "number") return val === 1
-              const str = String(val).toLowerCase().trim()
-              return (
-                str === "true" || str === "yes" || str === "ya" || str === "1"
-              )
-            }
-
-            const payload: any = {
-              full_name,
-              guest_from: guestFromKey ? String(row[guestFromKey]).trim() : "",
-            }
-            if (mantuKey) payload.mantu_status = parseBool(row[mantuKey])
-            if (unduhKey) payload.unduh_mantu_status = parseBool(row[unduhKey])
-            if (physicalKey)
-              payload.physical_invitation = parseBool(row[physicalKey])
-
-            return payload
-          })
-          .filter((g) => !!g.full_name)
-
-        if (mappedGuests.length === 0) {
-          toast.error(
-            "Tidak ditemukan kolom nama tamu yang valid (Nama/Guest Name/Nama Tamu)."
-          )
-          return
-        }
-
-        setParsedData(mappedGuests)
-        setFile(selectedFile)
-        setIsPreviewOpen(true)
-      } catch (err) {
-        toast.error("Gagal membaca file Excel. Pastikan format file benar.")
-      }
-
-      e.target.value = ""
-    }
-
-    reader.readAsBinaryString(selectedFile)
-  }
-
-  const handleImportSubmit = async () => {
-    if (parsedData.length === 0) return
-
-    setIsImporting(true)
-    const toastId = toast.loading("Sedang mengimpor data tamu...")
-
-    try {
-      const res = await importGuests(parsedData)
-
-      if (res.success) {
-        toast.success(
-          `Berhasil: ${res.inserted} tamu ditambahkan, ${res.updated} tamu diperbarui.`,
-          {
-            id: toastId,
-            duration: 4000,
-          }
-        )
-
-        setIsPreviewOpen(false)
-        setParsedData([])
-        setFile(null)
-
-        queryClient.invalidateQueries({ queryKey: ["guests"] })
-      } else {
-        toast.error(res.message || "Gagal mengimpor data tamu.", {
-          id: toastId,
-          duration: 3000,
-        })
-      }
-    } catch (error: any) {
-      toast.error(
-        error?.message || "Terjadi kesalahan saat mengimpor data tamu.",
-        {
-          id: toastId,
-          duration: 3000,
-        }
-      )
-    } finally {
-      setIsImporting(false)
-    }
-  }
-
-  const triggerFileSelect = () => {
-    fileInputRef.current?.click()
-  }
-
-  const handleExport = async (
-    filters: {
-      guest_from?: string
-      mantu_status?: boolean
-      unduh_mantu_status?: boolean
-      physical_invitation?: boolean
-      sended?: boolean
-    },
-    label: string
-  ) => {
-    setIsExporting(true)
-    const toastId = toast.loading(`Sedang mengekspor ${label}...`)
-
-    try {
-      const allGuests: any[] = []
-      let page = 1
-      const pageSize = 100
-
-      while (true) {
-        const res: any = await getGuestsData({
-          page,
-          pageSize,
-          sortBy: "full_name",
-          sortDir: "asc",
-          ...filters,
-        })
-        const guests: any[] = res?.data?.guests ?? res?.data?.data?.guests ?? []
-        if (guests.length === 0) break
-        allGuests.push(...guests)
-        const totalPages = res?.pagination?.totalPages ?? 1
-        if (page >= totalPages || guests.length < pageSize) break
-        page++
-      }
-
-      if (allGuests.length === 0) {
-        toast.error(`Tidak ada data untuk ${label}.`, { id: toastId })
-        return
-      }
-
-      const getGuestFromName = (g: any) =>
-        guestFromList.find((x) => x.id === g.guest_from)?.name ??
-        (g.guest_from ? String(g.guest_from) : "-")
-
-      // Urutkan berdasarkan Tamu Dari (A-Z), lalu Nama Tamu (A-Z)
-      const sortedGuests = [...allGuests].sort((a: any, b: any) => {
-        const fromCompare = getGuestFromName(a).localeCompare(
-          getGuestFromName(b),
-          "id",
-          { sensitivity: "base" }
-        )
-        if (fromCompare !== 0) return fromCompare
-        return String(a.full_name ?? "").localeCompare(
-          String(b.full_name ?? ""),
-          "id",
-          { sensitivity: "base" }
-        )
-      })
-
-      const totalTamu = sortedGuests.reduce(
-        (sum: number, g: any) => sum + (Number(g.guest_total) || 0),
-        0
-      )
-
-      const exportData = sortedGuests.map((g: any, idx: number) => ({
-        No: idx + 1,
-        "Nama Tamu": g.full_name ?? "-",
-        "Tamu Dari": getGuestFromName(g),
-        "Tamu Mantu": g.mantu_status ? "Ya" : "Tidak",
-        "Tamu Ngunduh Mantu": g.unduh_mantu_status ? "Ya" : "Tidak",
-        "Undangan Fisik": g.physical_invitation ? "Ya" : "Tidak",
-        "Jumlah Tamu": Number(g.guest_total) || 0,
-      }))
-
-      const ws = XLSXStyle.utils.json_to_sheet(exportData)
-      const rowCount = exportData.length + 1 // header + data (baris Excel terakhir data)
-
-      // Rekap di kolom I:J (bukan di bawah tabel) — pakai rumus agar live
-      XLSXStyle.utils.sheet_add_aoa(
-        ws,
-        [
-          ["REKAP TAMU", ""],
-          ["Jumlah Undangan", allGuests.length],
-          ["Total Semua Tamu", totalTamu],
-        ],
-        { origin: "I1" }
-      )
-      // Override nilai statis dengan rumus Excel (v = nilai cache awal)
-      ws["J2"] = {
-        t: "n",
-        f: `ROWS(A2:A${rowCount})`,
-        v: allGuests.length,
-      } as any
-      ws["J3"] = {
-        t: "n",
-        f: `SUM(G2:G${rowCount})`,
-        v: totalTamu,
-      } as any
-
-      const thinBorder = {
-        top: { style: "thin" as const, color: { rgb: "9CA3AF" } },
-        bottom: { style: "thin" as const, color: { rgb: "9CA3AF" } },
-        left: { style: "thin" as const, color: { rgb: "9CA3AF" } },
-        right: { style: "thin" as const, color: { rgb: "9CA3AF" } },
-      }
-
-      const titleStyle = {
-        font: { bold: true, sz: 12, color: { rgb: "FFFFFF" } },
-        fill: { fgColor: { rgb: "059669" } },
-        alignment: {
-          horizontal: "center" as const,
-          vertical: "center" as const,
-        },
-        border: thinBorder,
-      }
-      const labelStyle = {
-        font: { bold: true, sz: 11, color: { rgb: "064E3B" } },
-        fill: { fgColor: { rgb: "D1FAE5" } },
-        alignment: { horizontal: "left" as const, vertical: "center" as const },
-        border: thinBorder,
-      }
-      const valueStyle = {
-        font: { bold: true, sz: 11, color: { rgb: "064E3B" } },
-        fill: { fgColor: { rgb: "ECFDF5" } },
-        alignment: {
-          horizontal: "center" as const,
-          vertical: "center" as const,
-        },
-        border: thinBorder,
-      }
-      const totalLabelStyle = {
-        font: { bold: true, sz: 11, color: { rgb: "713F12" } },
-        fill: { fgColor: { rgb: "FEF08A" } },
-        alignment: { horizontal: "left" as const, vertical: "center" as const },
-        border: thinBorder,
-      }
-      const totalValueStyle = {
-        font: { bold: true, sz: 12, color: { rgb: "713F12" } },
-        fill: { fgColor: { rgb: "FEF9C3" } },
-        alignment: {
-          horizontal: "center" as const,
-          vertical: "center" as const,
-        },
-        border: thinBorder,
-      }
-
-      // Header + border untuk tabel utama A:G
-      const tableHeaderStyle = {
-        font: { bold: true, sz: 11, color: { rgb: "FFFFFF" } },
-        fill: { fgColor: { rgb: "047857" } },
-        alignment: {
-          horizontal: "center" as const,
-          vertical: "center" as const,
-        },
-        border: thinBorder,
-      }
-      for (let c = 0; c < 7; c++) {
-        const addr = XLSXStyle.utils.encode_cell({ r: 0, c })
-        if (ws[addr]) (ws[addr] as any).s = tableHeaderStyle
-      }
-      for (let r = 1; r < rowCount; r++) {
-        const zebraFill =
-          r % 2 === 0
-            ? { fgColor: { rgb: "ECFDF5" } }
-            : { fgColor: { rgb: "FFFFFF" } }
-        for (let c = 0; c < 7; c++) {
-          const addr = XLSXStyle.utils.encode_cell({ r, c })
-          const cell = ws[addr]
-          if (!cell) continue
-          const align: "left" | "center" =
-            c === 1 || c === 2 ? "left" : "center"
-          ;(cell as any).s = {
-            font: { sz: 11, color: { rgb: "111827" } },
-            fill: zebraFill,
-            alignment: {
-              horizontal: align,
-              vertical: "center",
-            },
-            border: thinBorder,
-          }
-        }
-      }
-      ws["!autofilter"] = { ref: `A1:G${rowCount}` }
-
-      if (ws["I1"]) (ws["I1"] as any).s = titleStyle
-      if (ws["J1"]) (ws["J1"] as any).s = titleStyle
-      if (ws["I2"]) (ws["I2"] as any).s = labelStyle
-      if (ws["J2"]) (ws["J2"] as any).s = valueStyle
-      if (ws["I3"]) (ws["I3"] as any).s = totalLabelStyle
-      if (ws["J3"]) (ws["J3"] as any).s = totalValueStyle
-
-      ws["!merges"] = [{ s: { r: 0, c: 8 }, e: { r: 0, c: 9 } }]
-      ws["!cols"] = [
-        { wch: 5 }, // A No
-        { wch: 30 }, // B Nama Tamu
-        { wch: 25 }, // C Tamu Dari
-        { wch: 13 }, // D Tamu Mantu
-        { wch: 18 }, // E Tamu Ngunduh Mantu
-        { wch: 15 }, // F Undangan Fisik
-        { wch: 13 }, // G Jumlah Tamu
-        { wch: 3 }, // H spacer
-        { wch: 20 }, // I label rekap
-        { wch: 18 }, // J nilai rekap
-      ]
-      const wb = XLSXStyle.utils.book_new()
-      XLSXStyle.utils.book_append_sheet(wb, ws, "Daftar Tamu")
-      const safeLabel = label.toLowerCase().replace(/[^a-z0-9]+/g, "-")
-      const fileName = `daftar-tamu-${safeLabel}.xlsx`
-      XLSXStyle.writeFile(wb, fileName)
-
-      toast.success(
-        `Berhasil mengekspor ${allGuests.length} tamu (${label}).`,
-        {
-          id: toastId,
-          duration: 3000,
-        }
-      )
-    } catch (error: any) {
-      toast.error(error?.message || `Gagal mengekspor ${label}.`, {
-        id: toastId,
-        duration: 3000,
-      })
-    } finally {
-      setIsExporting(false)
-    }
-  }
+  const invalidate = () => queryClient.invalidateQueries({ queryKey: ["guests"] })
 
   return (
-    <div className="font-manrope w-full max-w-full space-y-6">
-      <div className="flex flex-col gap-4 border-b border-border pb-5 lg:flex-row lg:items-center lg:justify-between">
-        <div className="min-w-0">
-          <h1 className="font-sans text-2xl font-bold tracking-[0.15em] text-foreground uppercase sm:text-3xl sm:tracking-[0.2em]">
-            Daftar Tamu Undangan
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground sm:text-base">
-            Kelola data tamu undangan pernikahan, salin link undangan personal,
-            dan import data massal dari Excel.
-          </p>
-        </div>
-        <div className="flex flex-col gap-2 w-full sm:flex-row sm:items-center sm:gap-3 lg:w-auto">
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleFileChange}
-            accept=".xlsx, .xls, .csv"
-            className="hidden"
-          />
-          <Button
-            onClick={handleOpenCreate}
-            className="flex w-full items-center justify-center gap-2 hover:cursor-pointer sm:w-auto"
-          >
-            <UserPlus className="size-4" />
-            Tambah Tamu
-          </Button>
-          <Button
-            onClick={triggerFileSelect}
-            className="flex w-full items-center justify-center gap-2 hover:cursor-pointer sm:w-auto"
-            variant="outline"
-          >
-            <FileSpreadsheet className="size-4 text-muted" />
-            Import Excel
-          </Button>
-        </div>
-      </div>
+    <div className="w-full max-w-full space-y-6 font-manrope">
+      <AdminPageHeader
+        title="Daftar Tamu"
+        description="Kelola tamu, salin link personal, import Excel, dan bagikan undangan via WhatsApp."
+        actions={
+          <>
+            <input
+              type="file"
+              ref={guestImport.fileInputRef}
+              onChange={guestImport.handleFileChange}
+              accept=".xlsx, .xls, .csv"
+              className="hidden"
+            />
+            <Button onClick={() => { setEditingGuest(null); setGuestModalOpen(true) }} className="w-full sm:w-auto">
+              <UserPlus className="size-4" />
+              Tambah Tamu
+            </Button>
+            <Button onClick={guestImport.triggerFileSelect} variant="outline" className="w-full sm:w-auto">
+              <FileSpreadsheet className="size-4 text-muted" />
+              Import Excel
+            </Button>
+          </>
+        }
+      />
 
       <DataTable
-        columns={columns({ handleCopyLink, handleToggleSended })}
+        columns={columns({ handleCopyLink })}
         actions={actions({
-          handleOpenEdit,
+          handleOpenEdit: (g: any) => { setEditingGuest(g); setGuestModalOpen(true) },
           handleShareWa,
           handleToggleSended,
           deleteGuest,
@@ -598,337 +125,41 @@ Devi & Adhim`
         queryKey="guests"
         fetcher={getGuestsData}
         filterColumn="guests_name"
-        filterPlaceholder="Search guests..."
-        filters={tableFilters}
+        filterPlaceholder="Cari nama tamu..."
+        filters={filters.tableFilters}
         actionsColumnWidth={90}
         toolbarExtra={
-          <>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  className={cn(
-                    "col-span-2 h-9 w-full justify-between rounded-lg bg-background text-sm font-medium shadow-xs transition-all hover:-translate-y-px hover:border-primary/40 hover:shadow-sm sm:col-span-1 sm:w-auto lg:w-[200px]",
-                    guestFromFilter === "all"
-                      ? "text-muted-foreground"
-                      : "border-primary/50 bg-primary/5 text-foreground ring-1 ring-primary/20"
-                  )}
-                >
-                  <span className="flex min-w-0 items-center gap-2">
-                    <Users className="size-4 shrink-0 text-muted" />
-                    <span className="truncate">
-                      {guestFromFilter === "all"
-                        ? "Semua Tamu Dari"
-                        : (guestFromList.find((x) => x.id === guestFromFilter)
-                            ?.name ?? "Tamu Dari")}
-                    </span>
-                  </span>
-                  <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent
-                className="w-[calc(100vw-2rem)] rounded-xl p-0 font-manrope shadow-lg sm:w-[25rem]"
-                align="end"
-              >
-                <Command>
-                  <CommandInput
-                    placeholder="Cari tamu dari..."
-                    className="h-9"
-                  />
-                  <CommandList>
-                    <CommandEmpty>Tidak ditemukan.</CommandEmpty>
-                    <CommandGroup>
-                      <CommandItem
-                        value="all"
-                        onSelect={() => setGuestFromFilter("all")}
-                      >
-                        <Check
-                          className={cn(
-                            "mr-2 size-4",
-                            guestFromFilter === "all"
-                              ? "opacity-100"
-                              : "opacity-0"
-                          )}
-                        />
-                        Semua Tamu Dari
-                      </CommandItem>
-                      {guestFromList.map((item) => (
-                        <CommandItem
-                          value={item.id}
-                          key={item.id}
-                          onSelect={() => setGuestFromFilter(item.id)}
-                        >
-                          <Check
-                            className={cn(
-                              "mr-2 size-4",
-                              item.id === guestFromFilter
-                                ? "opacity-100"
-                                : "opacity-0"
-                            )}
-                          />
-                          {item.name}
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
-
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className={cn(
-                    "relative h-9 w-full gap-1.5 rounded-lg bg-background text-sm font-medium shadow-xs transition-all hover:-translate-y-px hover:shadow-sm sm:w-auto",
-                    (mantuOnly || unduhOnly || physicalOnly || sendedOnly) &&
-                      "border-primary/50 bg-primary/5 ring-1 ring-primary/20"
-                  )}
-                >
-                  <Filter className="size-3.5 text-muted" />
-                  Filter
-                  {(mantuOnly || unduhOnly || physicalOnly || sendedOnly) && (
-                    <span className="ml-0.5 flex size-5 items-center justify-center rounded-full bg-primary text-[11px] font-bold text-primary-foreground">
-                      {
-                        [mantuOnly, unduhOnly, physicalOnly, sendedOnly].filter(
-                          Boolean
-                        ).length
-                      }
-                    </span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent
-                className="w-60 rounded-xl p-4 shadow-lg"
-                align="end"
-              >
-                <div className="space-y-4">
-                  <h4 className="font-medium leading-none text-sm">
-                    Filter Status
-                  </h4>
-                  <div className="grid gap-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-medium text-foreground">
-                        Mantu
-                      </span>
-                      <Switch
-                        checked={mantuOnly}
-                        onCheckedChange={setMantuOnly}
-                        size="sm"
-                      />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-medium text-foreground">
-                        Ngunduh Mantu
-                      </span>
-                      <Switch
-                        checked={unduhOnly}
-                        onCheckedChange={setUnduhOnly}
-                        size="sm"
-                      />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-medium text-foreground">
-                        Undangan Fisik
-                      </span>
-                      <Switch
-                        checked={physicalOnly}
-                        onCheckedChange={setPhysicalOnly}
-                        size="sm"
-                      />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-medium text-foreground">
-                        WA Terkirim
-                      </span>
-                      <Switch
-                        checked={sendedOnly}
-                        onCheckedChange={setSendedOnly}
-                        size="sm"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </PopoverContent>
-            </Popover>
-
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={isExporting}
-              onClick={() => {
-                const parts: string[] = []
-                if (guestFromFilter !== "all") {
-                  const name =
-                    guestFromList.find((x) => x.id === guestFromFilter)?.name ??
-                    guestFromFilter
-                  parts.push(name)
-                }
-                if (mantuOnly) parts.push("Mantu")
-                if (unduhOnly) parts.push("Ngunduh Mantu")
-                if (physicalOnly) parts.push("Undangan Fisik")
-                if (sendedOnly) parts.push("WA Terkirim")
-                const label = parts.length ? parts.join(" - ") : "Semua Tamu"
-                handleExport(tableFilters, label)
-              }}
-              title="Export Excel (urut Tamu Dari A-Z)"
-              className="h-9 w-full gap-1.5 rounded-lg border-emerald-600/25 bg-emerald-500/10 font-medium shadow-xs transition-all hover:-translate-y-px hover:bg-emerald-500/20 hover:shadow-sm sm:w-auto"
-            >
-              {isExporting ? (
-                <Loader2 className="size-3.5 animate-spin" />
-              ) : (
-                <Download className="size-3.5 text-emerald-600" />
-              )}
-              Export
-            </Button>
-
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShareGlobalOpen(true)}
-              title="Bagikan undangan via WhatsApp"
-              className="h-9 w-full gap-1.5 rounded-lg border-[#25D366]/25 bg-[#25D366]/10 font-medium text-foreground shadow-xs transition-all hover:-translate-y-px hover:bg-[#25D366]/20 hover:shadow-sm sm:w-auto"
-            >
-              <FaWhatsapp className="size-3.5 text-[#25D366]" />
-              Share WA
-            </Button>
-
-            {hasActiveFilters && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleResetFilters}
-                title="Reset semua filter"
-                className="h-9 w-full gap-1.5 rounded-lg font-medium text-muted-foreground transition-all hover:-translate-y-px hover:bg-destructive/10 hover:text-destructive sm:w-auto"
-              >
-                <RotateCcw className="size-3.5" />
-                Reset
-              </Button>
-            )}
-          </>
+          <GuestToolbar
+            filters={filters}
+            isExporting={isExporting}
+            onExport={handleExportClick}
+            onShareWa={() => setShareGlobalOpen(true)}
+          />
         }
       />
-      {hasActiveFilters && (
-        <div className="flex flex-wrap items-center gap-2 -mt-2">
-          {guestFromFilter !== "all" && (
-            <Badge
-              variant="outline"
-              className="gap-1.5 border-muted bg-muted/20 py-1 text-xs font-normal"
-            >
-              <span className="text-muted-foreground">Tamu Dari:</span>
-              <span className="font-medium text-foreground">
-                {guestFromList.find((x) => x.id === guestFromFilter)?.name ??
-                  guestFromFilter}
-              </span>
-              <button
-                onClick={() => setGuestFromFilter("all")}
-                className="ml-1 rounded-full p-0.5 hover:bg-muted"
-              >
-                <XCircle className="size-3 text-muted-foreground" />
-              </button>
-            </Badge>
-          )}
-          {mantuOnly && (
-            <Badge
-              variant="outline"
-              className="gap-1.5 border-muted bg-muted/20 py-1 text-xs font-normal"
-            >
-              <span className="text-muted-foreground">Mantu:</span>
-              <span className="font-medium text-foreground">Ya</span>
-              <button
-                onClick={() => setMantuOnly(false)}
-                className="ml-1 rounded-full p-0.5 hover:bg-muted"
-              >
-                <XCircle className="size-3 text-muted-foreground" />
-              </button>
-            </Badge>
-          )}
-          {unduhOnly && (
-            <Badge
-              variant="outline"
-              className="gap-1.5 border-muted bg-muted/20 py-1 text-xs font-normal"
-            >
-              <span className="text-muted-foreground">Ngunduh Mantu:</span>
-              <span className="font-medium text-foreground">Ya</span>
-              <button
-                onClick={() => setUnduhOnly(false)}
-                className="ml-1 rounded-full p-0.5 hover:bg-muted"
-              >
-                <XCircle className="size-3 text-muted-foreground" />
-              </button>
-            </Badge>
-          )}
-          {physicalOnly && (
-            <Badge
-              variant="outline"
-              className="gap-1.5 border-muted bg-muted/20 py-1 text-xs font-normal"
-            >
-              <span className="text-muted-foreground">Undangan Fisik:</span>
-              <span className="font-medium text-foreground">Ya</span>
-              <button
-                onClick={() => setPhysicalOnly(false)}
-                className="ml-1 rounded-full p-0.5 hover:bg-muted"
-              >
-                <XCircle className="size-3 text-muted-foreground" />
-              </button>
-            </Badge>
-          )}
-          {sendedOnly && (
-            <Badge
-              variant="outline"
-              className="gap-1.5 border-muted bg-muted/20 py-1 text-xs font-normal"
-            >
-              <span className="text-muted-foreground">WA Terkirim:</span>
-              <span className="font-medium text-foreground">Ya</span>
-              <button
-                onClick={() => setSendedOnly(false)}
-                className="ml-1 rounded-full p-0.5 hover:bg-muted"
-              >
-                <XCircle className="size-3 text-muted-foreground" />
-              </button>
-            </Badge>
-          )}
-        </div>
-      )}
+      <ActiveFilterChips filters={filters} />
 
       <ModalImport
-        isPreviewOpen={isPreviewOpen}
-        setIsPreviewOpen={setIsPreviewOpen}
-        parsedData={parsedData}
-        setParsedData={setParsedData}
-        file={file}
-        setFile={setFile}
-        handleImportSubmit={handleImportSubmit}
-        isImporting={isImporting}
+        isPreviewOpen={guestImport.isPreviewOpen}
+        setIsPreviewOpen={guestImport.setIsPreviewOpen}
+        parsedData={guestImport.parsedData}
+        setParsedData={guestImport.setParsedData}
+        file={guestImport.file}
+        setFile={guestImport.setFile}
+        handleImportSubmit={guestImport.handleImportSubmit}
+        isImporting={guestImport.isImporting}
       />
+      <ModalShareWa open={shareGlobalOpen} onOpenChange={setShareGlobalOpen} onSent={invalidate} />
 
-      <ModalShareWa
-        open={shareGlobalOpen}
-        onOpenChange={setShareGlobalOpen}
-        onSent={() => queryClient.invalidateQueries({ queryKey: ["guests"] })}
-      />
-
-      {!editingGuest && (
-        <GuestFormModal
-          mode="create"
-          open={guestModalOpen}
-          onOpenChange={setGuestModalOpen}
-          onSuccess={handleModalSuccess}
-        />
-      )}
-
-      {editingGuest && (
+      {!editingGuest ? (
+        <GuestFormModal mode="create" open={guestModalOpen} onOpenChange={setGuestModalOpen} onSuccess={invalidate} />
+      ) : (
         <GuestFormModal
           mode="edit"
           open={guestModalOpen}
-          onOpenChange={(open) => {
-            setGuestModalOpen(open)
-            if (!open) setEditingGuest(null)
-          }}
+          onOpenChange={(open) => { setGuestModalOpen(open); if (!open) setEditingGuest(null) }}
           guest={editingGuest}
-          onSuccess={handleModalSuccess}
+          onSuccess={invalidate}
         />
       )}
     </div>

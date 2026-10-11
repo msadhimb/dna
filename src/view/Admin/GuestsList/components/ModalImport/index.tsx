@@ -48,7 +48,7 @@ const ModalImport = ({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="overflow-y-auto max-h-[40vh] border border-border rounded-lg mx-6">
+        <div className="overflow-auto max-h-[40vh] border border-border rounded-lg mx-6">
           <table className="w-full text-left border-collapse text-xs">
             <thead className="sticky top-0 bg-muted  border-b border-border">
               <tr>

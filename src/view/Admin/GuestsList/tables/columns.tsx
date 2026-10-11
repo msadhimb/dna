@@ -1,16 +1,27 @@
 import { guestFromList } from "@/helper/guestFormList"
-import { size } from "lodash"
-import { BadgeCheck, Check, Edit, Pencil, Repeat, Trash, X } from "lucide-react"
+import { Check, Copy, Pencil, Repeat, Trash, X } from "lucide-react"
 import moment from "moment"
 import { FaWhatsapp } from "react-icons/fa"
 import { toast } from "sonner"
+import { cn } from "@/lib/utils"
+
+const StatusDot = ({ ok }: { ok: boolean }) => (
+  <span
+    className={cn(
+      "inline-flex size-6 items-center justify-center rounded-full border",
+      ok
+        ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-600"
+        : "border-border bg-muted/10 text-muted-foreground"
+    )}
+  >
+    {ok ? <Check className="size-3.5" /> : <X className="size-3.5" />}
+  </span>
+)
 
 export const columns = ({
   handleCopyLink,
-  handleToggleSended,
 }: {
   handleCopyLink: (id: string) => void
-  handleToggleSended?: (row: any) => void
 }) => [
   {
     id: "no",
@@ -18,93 +29,98 @@ export const columns = ({
     size: 64,
     cell: ({ row, table }: { row: any; table: any }) => {
       const { pageIndex, pageSize } = table.getState().pagination
-      return <div>{pageIndex * pageSize + row.index + 1}</div>
+      return (
+        <span className="text-xs font-semibold text-muted-foreground">
+          {String(pageIndex * pageSize + row.index + 1).padStart(2, "0")}
+        </span>
+      )
     },
   },
   {
     accessorKey: "full_name",
-    header: "Name",
+    header: "Nama Tamu",
+    size: 200,
+    cell: ({ row }: { row: any }) => (
+      <div className="min-w-0">
+        <p className="truncate font-serif text-[15px] font-semibold text-foreground">
+          {row.original.full_name}
+        </p>
+        <p className="truncate text-[11px] text-muted-foreground">
+          {guestFromList.find((g) => g.id === row.original.guest_from)?.name ??
+            row.original.guest_from ??
+            "-"}
+        </p>
+      </div>
+    ),
   },
   {
     accessorKey: "guest_from",
     header: () => <div className="min-w-40">Tamu Dari</div>,
-    cell: ({ row }: { row: any }) => {
-      return (
-        <div className="min-w-40">
-          {
-            guestFromList.find(
-              (guestFrom) => guestFrom.id === row.original.guest_from
-            )?.name
-          }
-        </div>
-      )
-    },
+    cell: ({ row }: { row: any }) => (
+      <span className="inline-flex max-w-44 truncate rounded-full border border-wedding-border bg-wedding-surface px-2.5 py-1 text-xs font-medium text-muted">
+        {guestFromList.find((g) => g.id === row.original.guest_from)?.name ??
+          row.original.guest_from ??
+          "-"}
+      </span>
+    ),
   },
   {
     accessorKey: "mantu_status",
-    header: () => <div className="text-center">Tamu Mantu</div>,
-    cell: ({ row }: { row: any }) => {
-      return (
-        <div className="flex justify-center">
-          {row.original.mantu_status === true ? (
-            <Check className="h-4 w-4 text-green-500" />
-          ) : (
-            <X className="h-4 w-4 text-red-500" />
-          )}
-        </div>
-      )
-    },
+    header: () => <div className="text-center">Mantu</div>,
+    size: 90,
+    cell: ({ row }: { row: any }) => (
+      <div className="flex justify-center">
+        <StatusDot ok={row.original.mantu_status === true} />
+      </div>
+    ),
   },
   {
     accessorKey: "unduh_mantu_status",
-    header: () => <div className="text-center">Tamu Ngunduh Mantu</div>,
-    cell: ({ row }: { row: any }) => {
-      return (
-        <div className="flex justify-center">
-          {row.original.unduh_mantu_status === true ? (
-            <Check className="h-4 w-4 text-green-500" />
-          ) : (
-            <X className="h-4 w-4 text-red-500" />
-          )}
-        </div>
-      )
-    },
+    header: () => <div className="text-center">Ngunduh</div>,
+    size: 90,
+    cell: ({ row }: { row: any }) => (
+      <div className="flex justify-center">
+        <StatusDot ok={row.original.unduh_mantu_status === true} />
+      </div>
+    ),
   },
   {
     accessorKey: "physical_invitation",
-    header: () => <div className="text-center">Undangan Fisik</div>,
-    cell: ({ row }: { row: any }) => {
-      return (
-        <div className="flex justify-center">
-          {row.original.physical_invitation === true ? (
-            <Check className="h-4 w-4 text-green-500" />
-          ) : (
-            <X className="h-4 w-4 text-red-500" />
-          )}
-        </div>
-      )
-    },
+    header: () => <div className="text-center">Fisik</div>,
+    size: 80,
+    cell: ({ row }: { row: any }) => (
+      <div className="flex justify-center">
+        <StatusDot ok={row.original.physical_invitation === true} />
+      </div>
+    ),
   },
   {
     accessorKey: "guest_total",
-    header: () => <div className="text-center">Jumlah Tamu</div>,
-    cell: ({ row }: { row: any }) => {
-      return <div className="text-center">{row.original.guest_total} Orang</div>
-    },
+    header: () => <div className="text-center">Tamu</div>,
+    size: 80,
+    cell: ({ row }: { row: any }) => (
+      <div className="text-center text-sm font-bold text-foreground">
+        {row.original.guest_total}
+      </div>
+    ),
   },
   {
     accessorKey: "url",
     header: "Link",
-    size: 340,
+    size: 300,
     cell: ({ row }: { row: any }) => {
       const origin = typeof window !== "undefined" ? window.location.origin : ""
       const id = row.original.id
       return (
         <button
-          className="hover:cursor-pointer hover:underline text-left"
+          className="group flex max-w-full cursor-pointer items-center gap-1.5 text-left text-xs text-muted-foreground hover:text-foreground"
           onClick={() => handleCopyLink(id)}
+          title="Salin link"
         >
-          {`${origin}/${id}`}
+          <Copy className="size-3.5 shrink-0 text-book-ornament" />
+          <span className="truncate font-mono group-hover:underline">
+            {`${origin}/${id}`}
+          </span>
         </button>
       )
     },
@@ -112,43 +128,40 @@ export const columns = ({
   {
     accessorKey: "sended",
     header: () => <div className="text-center">Dibagikan</div>,
-    cell: ({ row }: { row: any }) => {
-      const isSended = row.original.sended === true
-      return (
-        <div className="flex justify-center">
-          {row.original.sended === true ? (
-            <Check className="h-4 w-4 text-green-500" />
-          ) : (
-            <X className="h-4 w-4 text-red-500" />
-          )}
-        </div>
-      )
-    },
+    size: 100,
+    cell: ({ row }: { row: any }) => (
+      <div className="flex justify-center">
+        <StatusDot ok={row.original.sended === true} />
+      </div>
+    ),
   },
   {
     accessorKey: "checked_in_count",
-    header: () => <div className="text-center">Check In</div>,
-    cell: ({ row }: { row: any }) => {
-      return (
-        <div className="flex justify-center">
-          {row.original.checked_in_count}
-        </div>
-      )
-    },
+    header: () => <div className="text-center">Check-In</div>,
+    size: 90,
+    cell: ({ row }: { row: any }) => (
+      <div className="flex justify-center">
+        {row.original.checked_in_at ? (
+          <span className="rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-bold text-emerald-600">
+            +{Number(row.original.checked_in_count) || 0}
+          </span>
+        ) : (
+          <span className="text-xs text-muted-foreground">—</span>
+        )}
+      </div>
+    ),
   },
   {
     accessorKey: "checked_in_at",
-    size: 200,
-    header: () => <div className="text-center">Waktu Check In</div>,
-    cell: ({ row }: { row: any }) => {
-      return (
-        <div className="flex justify-center">
-          {row.original.checked_in_at
-            ? moment(row.original.checked_in_at).format("YYYY-MM-DD HH:mm:ss")
-            : "-"}
-        </div>
-      )
-    },
+    size: 170,
+    header: () => <div className="text-center">Waktu Check-In</div>,
+    cell: ({ row }: { row: any }) => (
+      <div className="flex justify-center text-xs whitespace-nowrap text-muted-foreground">
+        {row.original.checked_in_at
+          ? moment(row.original.checked_in_at).format("DD MMM YYYY • HH:mm")
+          : "-"}
+      </div>
+    ),
   },
 ]
 
@@ -174,28 +187,22 @@ export const actions = ({
   queryClient: any
 }) => [
   {
-    label: "Bagikan",
+    label: "Bagikan WA",
     icon: <FaWhatsapp className="h-4 w-4 text-[#25D366]" />,
-    onClick: (row: any) => {
-      handleShareWa(row)
-    },
+    onClick: (row: any) => handleShareWa(row),
   },
   {
     label: "Ubah Status Dibagikan",
     icon: <Repeat className="h-4 w-4" />,
-    onClick: (row: any) => {
-      handleToggleSended(row)
-    },
+    onClick: (row: any) => handleToggleSended(row),
   },
   {
     label: "Edit Tamu",
     icon: <Pencil className="h-4 w-4" />,
-    onClick: (row: any) => {
-      handleOpenEdit(row)
-    },
+    onClick: (row: any) => handleOpenEdit(row),
   },
   {
-    label: "Delete Guest",
+    label: "Hapus Tamu",
     icon: <Trash className="h-4 w-4" />,
     destructive: true,
     onClick: async (row: any) => {
@@ -207,20 +214,13 @@ export const actions = ({
         variant: "destructive",
       })
       if (!isConfirmed) return
-
-      const toastId = toast.loading(`Sedang menghapus tamu ${row.full_name}...`)
+      const toastId = toast.loading(`Menghapus ${row.full_name}...`)
       try {
         await deleteGuest(row.id)
-        toast.success("Tamu berhasil dihapus", {
-          id: toastId,
-          duration: 2000,
-        })
+        toast.success("Tamu berhasil dihapus", { id: toastId, duration: 2000 })
         queryClient.invalidateQueries({ queryKey: ["guests"] })
-      } catch (error) {
-        toast.error("Gagal menghapus tamu", {
-          id: toastId,
-          duration: 3000,
-        })
+      } catch {
+        toast.error("Gagal menghapus tamu", { id: toastId })
       }
     },
   },

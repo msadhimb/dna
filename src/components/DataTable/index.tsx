@@ -310,7 +310,7 @@ export function DataTable<TData>({
 
       <div
         ref={wrapperRef}
-        className="w-full overflow-hidden rounded-md border border-border"
+        className="w-full overflow-hidden rounded-md border border-border bg-white dark:bg-black"
       >
         <Table
           className={useFixedLayout ? "table-fixed" : undefined}
@@ -328,13 +328,13 @@ export function DataTable<TData>({
                         : { minWidth: header.getSize() }
                     }
                     className={cn(
-                      "border-b border-border bg-border px-4 py-3 whitespace-nowrap",
+                      "border-b border-border bg-neutral-100 px-4 py-3 whitespace-nowrap dark:bg-neutral-900",
                       // overflow-hidden agar teks header terpotong rapi saat
                       // kolom dipersempit — kecuali Actions (bayangannya
                       // menjulur ke kiri dan harus tetap terlihat).
                       header.id !== "actions" && "overflow-hidden",
                       header.id === "actions" &&
-                        "relative sticky right-0 z-20 border-l border-border/50 bg-border dark:bg-[color-mix(in_srgb,white_10%,var(--background))]"
+                        "relative sticky right-0 z-20 border-l border-border/50 bg-neutral-100 dark:bg-neutral-900"
                     )}
                   >
                     {header.id === "actions" && (
@@ -376,7 +376,7 @@ export function DataTable<TData>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  className="hover:bg-border/25! data-[state=selected]:bg-border/25! has-aria-expanded:bg-border/25!"
+                  className="bg-white hover:bg-neutral-50! data-[state=selected]:bg-neutral-100! has-aria-expanded:bg-neutral-100! dark:bg-black dark:hover:bg-neutral-900! dark:data-[state=selected]:bg-neutral-900! dark:has-aria-expanded:bg-neutral-900!"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
@@ -387,9 +387,9 @@ export function DataTable<TData>({
                           : { minWidth: cell.column.getSize() }
                       }
                       className={cn(
-                        "border-b border-border px-4 py-3 break-all whitespace-break-spaces",
+                        "border-b border-border bg-white px-4 py-3 break-all whitespace-break-spaces dark:bg-black",
                         cell.column.id === "actions" &&
-                          "relative sticky right-0 z-10 bg-background border-l border-border/50"
+                          "relative sticky right-0 z-10 border-l border-border/50 bg-white dark:bg-black"
                       )}
                     >
                       {cell.column.id === "actions" && showShadow && (

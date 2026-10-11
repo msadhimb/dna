@@ -19,6 +19,7 @@ import { FormDropdown } from "@/components/Form/FormDropdown"
 import { guestFromList } from "@/helper/guestFormList"
 import { toast } from "sonner"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { NumericFormat } from "react-number-format"
 import { Button } from "../Button"
 import { defaultGuestValues } from "./form"
 import { guestFormSchema } from "./validation"
@@ -28,6 +29,9 @@ export type GuestFormModalProps = {
   isModal?: boolean
   open?: boolean
   onOpenChange?: (open: boolean) => void
+  // Sembunyikan judul dalam form (dipakai saat form ditanam di Card
+  // yang sudah punya header sendiri, mis. Dashboard).
+  hideHeader?: boolean
 } & (
   | {
       mode: "create"
@@ -123,6 +127,7 @@ const GuestFormModal = (props: GuestFormModalProps) => {
       form.reset({
         full_name: props.guest.full_name,
         guest_from: props.guest.guest_from,
+        guest_total: props.guest.guest_total ?? 1,
         mantu_status: props.guest.mantu_status,
         unduh_mantu_status: props.guest.unduh_mantu_status,
       })
@@ -192,6 +197,31 @@ const GuestFormModal = (props: GuestFormModalProps) => {
               placeholder="Pilih asal tamu"
               required
               disabled={isLoading}
+              error={fieldState.error?.message}
+            />
+          </div>
+        )}
+      />
+
+      <Controller
+        control={form.control}
+        name="guest_total"
+        render={({ field, fieldState }) => (
+          <div className="flex flex-col gap-1">
+            <NumericFormat
+              value={field.value}
+              thousandSeparator="."
+              decimalSeparator=","
+              allowNegative={false}
+              decimalScale={0}
+              onValueChange={(values) => {
+                field.onChange(values.floatValue)
+              }}
+              label="Jumlah Tamu"
+              placeholder="Contoh: 2"
+              required
+              disabled={isLoading}
+              customInput={FormInput}
               error={fieldState.error?.message}
             />
           </div>
@@ -304,7 +334,7 @@ const GuestFormModal = (props: GuestFormModalProps) => {
         </div>
       ) : (
         <>
-          {renderHeader()}
+          {!props.hideHeader && renderHeader()}
           {renderFields()}
         </>
       )}
@@ -315,7 +345,7 @@ const GuestFormModal = (props: GuestFormModalProps) => {
   if (isModal) {
     return (
       <Dialog open={props.open} onOpenChange={props.onOpenChange}>
-        <DialogContent className="max-w-2xl! flex flex-col justify-center gap-8 !p-0 overflow-hidden max-h-[90vh]">
+        <DialogContent className="max-w-[calc(100%-2rem)]! sm:max-w-2xl! flex flex-col justify-center gap-8 !p-0 overflow-hidden max-h-[90vh]">
           {content}
         </DialogContent>
       </Dialog>
@@ -324,7 +354,7 @@ const GuestFormModal = (props: GuestFormModalProps) => {
 
   return (
     <div className="w-full h-full flex items-center justify-center">
-      <Card className="w-2xl flex flex-col gap-8 p-8">{content}</Card>
+      <Card className="w-full max-w-2xl flex flex-col gap-8 p-5 sm:p-8">{content}</Card>
     </div>
   )
 }

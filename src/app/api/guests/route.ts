@@ -69,17 +69,18 @@ export async function GET(request: NextRequest) {
 
   // Ringkasan untuk daftar check-in (dipakai Buku Tamu agar tahan refresh).
   // Dihitung dari seluruh baris, bukan hanya halaman aktif.
+  // totalPeople = jumlah guest_total dari tamu yang sudah check-in.
   let summary: { totalGuests: number; totalPeople: number } | undefined
   if (checkedInParam === "true") {
     const { data: checkedRows, error: summaryError } = await client
       .from("guests")
-      .select("checked_in_count")
+      .select("guest_total")
       .not("checked_in_at", "is", null)
     if (summaryError) return bad(summaryError.message, 500)
     summary = {
       totalGuests: checkedRows?.length ?? 0,
       totalPeople: (checkedRows ?? []).reduce(
-        (sum, row: any) => sum + (Number(row?.checked_in_count) || 0),
+        (sum, row: any) => sum + (Number(row?.guest_total) || 0),
         0
       ),
     }
