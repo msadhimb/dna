@@ -1,6 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect } from "react"
+import { Controller, useForm } from "react-hook-form"
+import { yupResolver } from "@hookform/resolvers/yup"
+import * as yup from "yup"
 import { Button } from "@/components/Button"
 import Card from "@/components/Card"
 import { FormInput } from "@/components/Form/FormInput"
@@ -17,9 +20,21 @@ type ScannedGuestCardProps = {
   onConfirm: (partySize?: number) => void
 }
 
+const partySchema = yup.object({
+  party_size: yup
+    .number()
+    .typeError("Jumlah rombongan harus berupa angka")
+    .required("Jumlah rombongan wajib diisi")
+    .integer("Jumlah rombongan harus bilangan bulat")
+    .min(1, "Jumlah rombongan minimal 1"),
+})
+
+type PartyValues = yup.InferType<typeof partySchema>
+
 // Kartu konfirmasi tamu hasil scan. Satu tamu scan sekali per acara.
 // Jika guest_total > 0: angka ikut database (tampil saja, tanpa stepper).
-// Jika guest_total = 0 (belum diketahui): tampilkan form isi jumlah.
+// Jika guest_total = 0 (belum diketahui): form isi jumlah dengan
+// validasi RHF + yup (wajib diisi, minimal 1).
 export const ScannedGuestCard = ({
   guest,
   guestFrom,
@@ -36,9 +51,24 @@ export const ScannedGuestCard = ({
   const eventLabel = activeEvent === "mantu" ? "Mantu" : "Ngunduh Mantu"
   const partySize = Number(guest?.guest_total) || 0
   const needsManualCount = partySize <= 0
-  const [manualCount, setManualCount] = useState(1)
-  const confirmDisabled =
-    isConfirming || (needsManualCount && (!manualCount || manualCount < 1))
+
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<PartyValues>({
+    resolver: yupResolver(partySchema),
+    defaultValues: { party_size: 1 },
+  })
+
+  useEffect(() => {
+    reset({ party_size: 1 })
+  }, [guest?.id, reset])
+
+  const submitConfirm = handleSubmit((values) =>
+    onConfirm(needsManualCount ? Math.trunc(values.party_size) : undefined)
+  )
 
   return (
     <Card className="gap-6 p-5 sm:p-6">
@@ -103,37 +133,54 @@ export const ScannedGuestCard = ({
           <p className="text-center text-[11px] font-bold tracking-[0.24em] text-muted uppercase">
             Jumlah rombongan • belum tercatat
           </p>
-          <div className="mt-3 flex items-center justify-center gap-3">
-            <Button
-              variant="outline"
-              size="sm"
-              aria-label="Kurangi"
-              className="size-10 shrink-0 rounded-full"
-              onClick={() => setManualCount(Math.max(1, (manualCount || 1) - 1))}
-            >
-              <Minus className="size-4" />
-            </Button>
-            <NumericFormat
-              value={manualCount}
-              thousandSeparator=","
-              allowNegative={false}
-              decimalScale={0}
-              onValueChange={(values: any) =>
-                setManualCount(values.floatValue ?? 0)
-              }
-              customInput={FormInput}
-              className="max-w-28 text-center font-serif text-2xl font-bold"
-            />
-            <Button
-              variant="outline"
-              size="sm"
-              aria-label="Tambah"
-              className="size-10 shrink-0 rounded-full"
-              onClick={() => setManualCount((manualCount || 0) + 1)}
-            >
-              <Plus className="size-4" />
-            </Button>
-          </div>
+          <Controller
+            name="party_size"
+            control={control}
+            render={({ field: { value, onChange, ...field } }) => (
+              <>
+                <div className="mt-3 flex items-center justify-center gap-3">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    aria-label="Kurangi"
+                    className="size-10 shrink-0 rounded-full"
+                    onClick={() => onChange(Math.max(1, (value || 1) - 1))}
+                  >
+                    <Minus className="size-4" />
+                  </Button>
+                  <NumericFormat
+                    {...field}
+                    value={value}
+                    thousandSeparator=","
+                    allowNegative={false}
+                    decimalScale={0}
+                    onValueChange={(values: any) =>
+                      onChange(values.floatValue ?? undefined)
+                    }
+                    customInput={FormInput}
+                    className="max-w-28 text-center font-serif text-2xl font-bold"
+                    error={errors.party_size?.message}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    aria-label="Tambah"
+                    className="size-10 shrink-0 rounded-full"
+                    onClick={() => onChange((value || 0) + 1)}
+                  >
+                    <Plus className="size-4" />
+                  </Button>
+                </div>
+                {errors.party_size?.message && (
+                  <p className="mt-2 text-center text-xs font-medium text-destructive">
+                    {errors.party_size.message}
+                  </p>
+                )}
+              </>
+            )}
+          />
           <p className="mt-2 text-center text-xs text-muted-foreground">
             Jumlah tamu ini belum ada di database — isi sesuai rombongan yang
             datang.
@@ -159,10 +206,8 @@ export const ScannedGuestCard = ({
         </Button>
         <Button
           className="w-full rounded-xl"
-          disabled={confirmDisabled}
-          onClick={() =>
-            onConfirm(needsManualCount ? Math.trunc(manualCount) : undefined)
-          }
+          disabled={isConfirming}
+          onClick={submitConfirm}
         >
           {isConfirming ? "Menyimpan..." : `Konfirmasi ${eventLabel}`}
         </Button>
