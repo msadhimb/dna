@@ -1,8 +1,8 @@
 "use client"
 
 import Image from "next/image"
-import { useState } from "react"
 import { Download, QrCode } from "lucide-react"
+import { useMutation } from "@tanstack/react-query"
 import { Button } from "@/components/Button"
 import { Card } from "@/components/Card"
 
@@ -23,30 +23,33 @@ const QrisCard = ({
   qrisUrl,
   qrisName = "WEDDING ADHIM & DEVI",
 }: QrisCardProps) => {
-  const [downloading, setDownloading] = useState(false)
-
-  const handleDownload = async () => {
-    if (!qrisUrl) return
-    try {
-      setDownloading(true)
+  const downloadMutation = useMutation({
+    mutationFn: async () => {
       const res = await fetch(qrisUrl)
+      if (!res.ok) throw new Error("Gagal mengunduh QRIS")
       const blob = await res.blob()
       const url = URL.createObjectURL(blob)
-      const a = document.createElement("a")
-      a.href = url
+      try {
+        const a = document.createElement("a")
+        a.href = url
+        const ext = qrisUrl.split(".").pop()?.split("?")[0] ?? "png"
+        a.download = `QRIS-${qrisName.replace(/\s+/g, "-")}.${ext}`
+        document.body.appendChild(a)
+        a.click()
+        a.remove()
+      } finally {
+        URL.revokeObjectURL(url)
+      }
+    },
+    // Fallback: buka gambar di tab baru jika unduhan gagal.
+    onError: () => window.open(qrisUrl, "_blank"),
+    retry: false,
+  })
+  const downloading = downloadMutation.isPending
 
-      const ext = qrisUrl.split(".").pop()?.split("?")[0] ?? "png"
-      a.download = `QRIS-${qrisName.replace(/\s+/g, "-")}.${ext}`
-      document.body.appendChild(a)
-      a.click()
-      a.remove()
-      URL.revokeObjectURL(url)
-    } catch {
-
-      window.open(qrisUrl, "_blank")
-    } finally {
-      setDownloading(false)
-    }
+  const handleDownload = () => {
+    if (!qrisUrl || downloading) return
+    downloadMutation.mutate()
   }
 
   if (!qrisUrl) {

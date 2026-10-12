@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react"
 import { useTheme } from "next-themes"
+import { useQuery } from "@tanstack/react-query"
 import { Volume2, VolumeX, Moon, Sun, Settings, X, Music2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useAudio, AudioTrack } from "@/store/useAudio"
@@ -65,20 +66,25 @@ export const Tools = () => {
     }
   }, [scrollY, isPlaying, setIsPlaying])
 
+  const audioQuery = useQuery({
+    queryKey: ["audio"],
+    queryFn: async (): Promise<AudioTrack[]> => {
+      const res = await fetch("/api/audio", { cache: "no-store" })
+      const json = await res.json().catch(() => null)
+      if (!res.ok) throw new Error("Gagal memuat audio")
+      return json?.data ?? []
+    },
+    staleTime: Infinity,
+    gcTime: Infinity,
+    retry: 1,
+    refetchOnWindowFocus: false,
+  })
+
   useEffect(() => {
-    let cancelled = false
-    fetch("/api/audio", { cache: "no-store" })
-      .then((r) => r.json())
-      .then((json) => {
-        if (cancelled) return
-        const tracks: AudioTrack[] = json?.data ?? []
-        if (tracks.length > 0) setPlaylist(tracks)
-      })
-      .catch(() => {})
-    return () => {
-      cancelled = true
-    }
-  }, [setPlaylist])
+    const tracks = audioQuery.data
+    if (!tracks || tracks.length === 0) return
+    setPlaylist(tracks)
+  }, [audioQuery.data, setPlaylist])
 
   useEffect(() => {
     const audio = audioRef.current

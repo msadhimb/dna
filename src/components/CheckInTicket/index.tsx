@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useQuery } from "@tanstack/react-query"
 import { QRCodeSVG } from "qrcode.react"
 import { CheckCircle2 } from "lucide-react"
 import Header from "../Header"
@@ -22,6 +23,7 @@ const CheckInTicket = ({
   guestName?: string
 }) => {
   const { guest } = useGuest()
+  const setGuest = useGuest((state) => state.setGuest)
   const [now, setNow] = useState(() => Date.now())
 
   // Re-evaluate fase aktif mengikuti tanggal (mantu -> unduh).
@@ -30,9 +32,7 @@ const CheckInTicket = ({
     return () => clearInterval(id)
   }, [])
 
-  if (!guestId) return null
-
-  const resolvedGuest = guest?.id === guestId ? guest : null
+  const resolvedGuest = guestId && guest?.id === guestId ? guest : null
   const displayName = guestName ?? resolvedGuest?.full_name ?? ""
   const activeEvent = getActiveEvent(
     resolvedGuest ?? { mantu_status: true, unduh_mantu_status: false },
@@ -50,6 +50,49 @@ const CheckInTicket = ({
   // Setelah tanggal unduh tiba, activeEvent -> "unduh" dan isChecked
   // kembali false sehingga QR muncul lagi otomatis.
   const waitingUnduh = hasBoth && isChecked && activeEvent === "mantu"
+
+  // Polling status check-in agar QR hilang otomatis setelah panitia scan
+  // tanpa refresh. Berhenti saat waiting unduh (yang ditunggu hanya
+  // tanggal, dihitung lokal) dan berhenti total saat sudah check-in penuh.
+  // Polling lanjut lagi otomatis saat fase unduh tiba dan belum check-in.
+  const statusQuery = useQuery({
+    queryKey: ["guest-status", guestId],
+    queryFn: async () => {
+      const res = await fetch(`/api/guest-status/${guestId}`, {
+        cache: "no-store",
+      })
+      if (!res.ok) throw new Error("Gagal memuat status check-in")
+      return res.json()
+    },
+    refetchInterval: 15_000,
+    enabled: !!guestId && !!resolvedGuest && !isChecked && !waitingUnduh,
+    retry: false,
+    refetchOnWindowFocus: true,
+  })
+
+  // Sinkronkan hasil polling ke store (hanya jika berubah).
+  useEffect(() => {
+    const data = statusQuery.data
+    if (!data || !guestId) return
+    const current = useGuest.getState().guest
+    if (!current || current.id !== guestId) return
+    if (
+      (current.checked_in_at ?? null) !== (data.checked_in_at ?? null) ||
+      (current.checked_in_at_mantu ?? null) !==
+        (data.checked_in_at_mantu ?? null) ||
+      (current.checked_in_at_unduh ?? null) !==
+        (data.checked_in_at_unduh ?? null)
+    ) {
+      setGuest({
+        ...current,
+        checked_in_at: data.checked_in_at ?? null,
+        checked_in_at_mantu: data.checked_in_at_mantu ?? null,
+        checked_in_at_unduh: data.checked_in_at_unduh ?? null,
+      })
+    }
+  }, [statusQuery.data, guestId, setGuest])
+
+  if (!guestId) return null
 
   const activeLabel =
     activeEvent === "mantu" ? "Hari Pernikahan" : "Hari Ngunduh Mantu"
