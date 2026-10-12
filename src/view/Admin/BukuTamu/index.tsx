@@ -68,12 +68,26 @@ const BukuTamu = () => {
   }
 
   const { mutate: checkInScanned, isPending: isCheckingIn } = useMutation({
-    mutationFn: async () =>
-      clientApi({
-        url: `/guests/${scannedGuest.id}/buku-tamu`,
+    // Satu tamu scan sekali per acara. Jika guest_total masih 0 (belum
+    // diketahui), isi dulu dari input panitia baru catat check-in.
+    mutationFn: async (partySize?: number) => {
+      const g = scannedGuest
+      if (!g) throw new Error("Tamu belum dipilih")
+      if ((Number(g?.guest_total) || 0) <= 0) {
+        const n = Math.trunc(Number(partySize) || 0)
+        if (!n || n < 1) throw new Error("Isi jumlah rombongan dulu")
+        await clientApi({
+          url: `/guests/${g.id}`,
+          method: "PATCH",
+          data: { guest_total: n },
+        })
+      }
+      return clientApi({
+        url: `/guests/${g.id}/buku-tamu`,
         method: "PATCH",
         data: { event: checkInEvent },
-      }),
+      })
+    },
     onSuccess: (res: any) => {
       const name = res?.data?.full_name ?? res?.full_name ?? scannedGuest?.full_name ?? ""
       const total = Number(res?.data?.guest_total ?? res?.guest_total ?? scannedGuest?.guest_total) || 0
@@ -151,7 +165,7 @@ const BukuTamu = () => {
                 isConfirming={isCheckingIn}
                 activeEvent={checkInEvent}
                 onScanAgain={handleScanAgain}
-                onConfirm={() => checkInScanned()}
+                onConfirm={(partySize) => checkInScanned(partySize)}
               />
             )}
           </div>
