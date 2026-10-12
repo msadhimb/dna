@@ -26,7 +26,11 @@ const manualSchema = yup.object({
 type ManualValues = yup.InferType<typeof manualSchema>
 
 // Fallback saat kamera/QR bermasalah: cari nama manual.
-export const ManualCheckInForm = () => {
+export const ManualCheckInForm = ({
+  activeEvent = "mantu",
+}: {
+  activeEvent?: "mantu" | "unduh"
+}) => {
   const queryClient = useQueryClient()
   const {
     control,
@@ -43,7 +47,7 @@ export const ManualCheckInForm = () => {
       clientApi({
         url: `/guests/${data.guest}/buku-tamu`,
         method: "PATCH",
-        data: { arrived_count: data.arrived_count },
+        data: { arrived_count: data.arrived_count, event: activeEvent },
       }),
     onSuccess: () => {
       toast?.success?.("Silakan masuk")

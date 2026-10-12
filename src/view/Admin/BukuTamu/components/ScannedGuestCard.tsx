@@ -12,6 +12,7 @@ type ScannedGuestCardProps = {
   guestFrom: string
   arrived: number
   isConfirming: boolean
+  activeEvent: "mantu" | "unduh"
   onArrivedChange: (value: number) => void
   onScanAgain: () => void
   onConfirm: () => void
@@ -23,16 +24,23 @@ export const ScannedGuestCard = ({
   guestFrom,
   arrived,
   isConfirming,
+  activeEvent,
   onArrivedChange,
   onScanAgain,
   onConfirm,
 }: ScannedGuestCardProps) => {
-  const checkedIn = !!guest?.checked_in_at
+  const mantuChecked = !!(
+    guest?.checked_in_at_mantu ?? guest?.checked_in_at
+  )
+  const unduhChecked = !!guest?.checked_in_at_unduh
+  const checkedIn = activeEvent === "mantu" ? mantuChecked : unduhChecked
+  const eventLabel = activeEvent === "mantu" ? "Mantu" : "Ngunduh Mantu"
+
   return (
     <Card className="gap-6 p-5 sm:p-6">
       <div className="min-w-0">
         <p className="text-[11px] font-bold tracking-[0.24em] text-muted uppercase">
-          Tamu terdeteksi
+          Tamu terdeteksi • {eventLabel}
         </p>
         <p className="mt-1 truncate font-serif text-3xl font-semibold text-foreground">
           {guest?.full_name}
@@ -41,14 +49,46 @@ export const ScannedGuestCard = ({
           <Badge variant="outline" className="border-wedding-border bg-wedding-surface px-3 py-1 text-muted">
             {guestFrom}
           </Badge>
+          <Badge
+            variant="outline"
+            className={
+              mantuChecked
+                ? "border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-emerald-600"
+                : "border-border px-3 py-1 text-muted-foreground"
+            }
+          >
+            {mantuChecked ? (
+              <>
+                <Check className="size-3.5" /> Mantu masuk
+              </>
+            ) : (
+              "Mantu belum"
+            )}
+          </Badge>
+          <Badge
+            variant="outline"
+            className={
+              unduhChecked
+                ? "border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-emerald-600"
+                : "border-border px-3 py-1 text-muted-foreground"
+            }
+          >
+            {unduhChecked ? (
+              <>
+                <Check className="size-3.5" /> Ngunduh masuk
+              </>
+            ) : (
+              "Ngunduh belum"
+            )}
+          </Badge>
           {checkedIn ? (
             <Badge className="border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-emerald-600">
               <Check className="size-3.5" />
-              Sudah masuk • +{Number(guest.checked_in_count) || 0}
+              {eventLabel} sudah masuk • +{Number(guest.checked_in_count) || 0}
             </Badge>
           ) : (
             <Badge variant="outline" className="border-book-ornament/40 bg-book-ornament/10 px-3 py-1 text-book-ornament dark:text-book-cover-title">
-              Belum check-in
+              {eventLabel} belum check-in
             </Badge>
           )}
         </div>
@@ -56,7 +96,7 @@ export const ScannedGuestCard = ({
 
       <div className="rounded-2xl border border-wedding-border bg-wedding-surface/60 p-4">
         <p className="text-center text-[11px] font-bold tracking-[0.24em] text-muted uppercase">
-          Jumlah datang
+          Jumlah datang • {eventLabel}
         </p>
         <div className="mt-3 flex items-center justify-center gap-3">
           <Button
@@ -89,7 +129,7 @@ export const ScannedGuestCard = ({
         </div>
         {checkedIn && (
           <p className="mt-2 text-center text-xs text-muted-foreground">
-            Scan ulang akan memperbarui jumlah kedatangan.
+            Scan ulang akan memperbarui jumlah kedatangan {eventLabel.toLowerCase()}.
           </p>
         )}
       </div>
@@ -104,7 +144,9 @@ export const ScannedGuestCard = ({
           disabled={isConfirming || !arrived || arrived < 1}
           onClick={onConfirm}
         >
-          {isConfirming ? "Menyimpan..." : `Konfirmasi Masuk (${arrived || 0})`}
+          {isConfirming
+            ? "Menyimpan..."
+            : `Konfirmasi ${eventLabel} (${arrived || 0})`}
         </Button>
       </div>
     </Card>

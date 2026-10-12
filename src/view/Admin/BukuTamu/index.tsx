@@ -18,10 +18,15 @@ import { useQrScanner } from "./hooks/useQrScanner"
 import { parseGuestId } from "./utils"
 
 type Mode = "scan" | "manual"
+type CheckInEvent = "mantu" | "unduh"
+
+const autoEvent = (): CheckInEvent =>
+  Date.now() >= new Date("2026-12-12T09:00:00").getTime() ? "unduh" : "mantu"
 
 // Buku Tamu: scan QR / cari manual + panel tamu hadir, gaya undangan.
 const BukuTamu = () => {
   const [mode, setMode] = React.useState<Mode>("scan")
+  const [checkInEvent, setCheckInEvent] = React.useState<CheckInEvent>(autoEvent)
   const [scannedGuest, setScannedGuest] = React.useState<any | null>(null)
   const [arrived, setArrived] = React.useState(1)
   const [isFetchingGuest, setIsFetchingGuest] = React.useState(false)
@@ -71,7 +76,7 @@ const BukuTamu = () => {
       clientApi({
         url: `/guests/${scannedGuest.id}/buku-tamu`,
         method: "PATCH",
-        data: { arrived_count: Math.trunc(arrived) },
+        data: { arrived_count: Math.trunc(arrived), event: checkInEvent },
       }),
     onSuccess: (res: any) => {
       const count = res?.data?.checked_in_count ?? res?.checked_in_count ?? arrived
@@ -96,14 +101,24 @@ const BukuTamu = () => {
         title="Buku Tamu"
         description="Arahkan kamera ke QR undangan untuk mencatat kedatangan, atau cari nama secara manual."
         actions={
-          <AdminSegmentedControl<Mode>
-            value={mode}
-            onChange={setMode}
-            options={[
-              { value: "scan", label: "Scan QR", icon: <Camera className="size-4" /> },
-              { value: "manual", label: "Cari Manual", icon: <PencilLine className="size-4" /> },
-            ]}
-          />
+          <div className="flex flex-wrap items-center gap-2">
+            <AdminSegmentedControl<CheckInEvent>
+              value={checkInEvent}
+              onChange={setCheckInEvent}
+              options={[
+                { value: "mantu", label: "Mantu 12 Des" },
+                { value: "unduh", label: "Unduh 26 Des" },
+              ]}
+            />
+            <AdminSegmentedControl<Mode>
+              value={mode}
+              onChange={setMode}
+              options={[
+                { value: "scan", label: "Scan QR", icon: <Camera className="size-4" /> },
+                { value: "manual", label: "Cari Manual", icon: <PencilLine className="size-4" /> },
+              ]}
+            />
+          </div>
         }
       />
 
@@ -144,6 +159,7 @@ const BukuTamu = () => {
                 guestFrom={scannedFrom}
                 arrived={arrived}
                 isConfirming={isCheckingIn}
+                activeEvent={checkInEvent}
                 onArrivedChange={setArrived}
                 onScanAgain={handleScanAgain}
                 onConfirm={() => checkInScanned()}
@@ -158,7 +174,7 @@ const BukuTamu = () => {
           />
         </div>
       ) : (
-        <ManualCheckInForm />
+        <ManualCheckInForm activeEvent={checkInEvent} />
       )}
     </div>
   )

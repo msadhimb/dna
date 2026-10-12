@@ -12,7 +12,9 @@ export default async function GuestPage({
   const client = createClient(await cookies())
   const { data: guest, error } = await client
     .from("guests")
-    .select("id, full_name, guest_from, mantu_status, unduh_mantu_status")
+    .select(
+      "id, full_name, guest_from, mantu_status, unduh_mantu_status, checked_in_at, checked_in_at_mantu, checked_in_at_unduh, checked_in_count"
+    )
     .eq("id", id)
     .maybeSingle()
 

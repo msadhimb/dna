@@ -2,13 +2,20 @@
 
 import React, { useEffect, useState } from "react"
 import { useGuest } from "@/store/useGuest"
+import {
+  MANTU_DATE_ISO,
+  UNDUH_DATE_ISO,
+  getActiveEvent,
+} from "@/helper/eventSchedule"
 
 interface CountdownProps {
   targetDate?: string
+  event?: "mantu" | "unduh"
 }
 
 export function Countdown({
-  targetDate = "2026-12-12T09:00:00",
+  targetDate = MANTU_DATE_ISO,
+  event,
 }: CountdownProps) {
   const { guest } = useGuest()
 
@@ -23,17 +30,23 @@ export function Countdown({
 
   useEffect(() => {
     setMounted(true)
-    const mantuDate = "2026-12-12T09:00:00"
-    const unduhDate = "2026-12-26T11:00:00"
+    const mantuDate = MANTU_DATE_ISO
+    const unduhDate = UNDUH_DATE_ISO
     
     const calc = () => {
       let finalTargetDate = targetDate
       let currentCaption = ""
 
-      if (guest) {
+      if (event === "unduh") {
+        finalTargetDate = unduhDate
+        currentCaption = "Menuju Ngunduh Mantu"
+      } else if (event === "mantu") {
+        finalTargetDate = mantuDate
+        currentCaption = "Menuju Hari Pernikahan"
+      } else if (guest) {
+        const active = getActiveEvent(guest)
         if (guest.mantu_status && guest.unduh_mantu_status) {
-          const now = new Date().getTime()
-          if (now > new Date(mantuDate).getTime()) {
+          if (active === "unduh") {
             finalTargetDate = unduhDate
             currentCaption = "Menuju Ngunduh Mantu"
           } else {
@@ -63,7 +76,7 @@ export function Countdown({
     setTime(calc())
     const id = setInterval(() => setTime(calc()), 1000)
     return () => clearInterval(id)
-  }, [guest, targetDate])
+  }, [guest, targetDate, event])
 
   if (!mounted || !time) {
     return <div className="h-16" />

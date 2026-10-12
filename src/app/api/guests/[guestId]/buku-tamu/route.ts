@@ -3,7 +3,7 @@ import { cookies } from "next/headers"
 import { createClient } from "@/utils/supabase/server"
 
 const FIELDS =
-  "id, full_name, mantu_status, unduh_mantu_status, guest_from, guest_total, checked_in_count, checked_in_at"
+  "id, full_name, mantu_status, unduh_mantu_status, guest_from, guest_total, checked_in_count, checked_in_at, checked_in_at_mantu, checked_in_at_unduh"
 
 async function getAdmin() {
   const client = createClient(await cookies())
@@ -34,12 +34,28 @@ export async function PATCH(
   if (!Number.isInteger(arrived) || arrived < 0)
     return bad("Jumlah tamu harus berupa angka bulat positif")
 
+  // Event yang di-check-in: eksplisit dari panitia, atau otomatis
+  // mengikuti tanggal (sebelum 12 Des = mantu, sesudahnya = unduh).
+  const nowIso = new Date().toISOString()
+  let event = body?.event
+  if (event !== "mantu" && event !== "unduh") {
+    event =
+      new Date(nowIso).getTime() >= new Date("2026-12-12T09:00:00").getTime()
+        ? "unduh"
+        : "mantu"
+  }
+
+  const update: Record<string, unknown> = {
+    checked_in_count: arrived,
+    // Kolom lama tetap diisi untuk kompatibilitas (statistik & list lama).
+    checked_in_at: nowIso,
+  }
+  if (event === "unduh") update.checked_in_at_unduh = nowIso
+  else update.checked_in_at_mantu = nowIso
+
   const { data, error } = await client
     .from("guests")
-    .update({
-      checked_in_count: arrived,
-      checked_in_at: new Date().toISOString(),
-    })
+    .update(update)
     .eq("id", guestId)
     .select(FIELDS)
     .maybeSingle()
