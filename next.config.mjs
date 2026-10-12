@@ -4,8 +4,8 @@ const nextConfig = {
     root: process.cwd(),
   },
   env: {
-    MANTU_DATE: "2026-12-12T09:00:00",
-    UNDUH_DATE: "2026-12-26T11:00:00",
+    NEXT_PUBLIC_MANTU_DATE: "2026-10-11T09:00:00",
+    NEXT_PUBLIC_UNDUH_DATE: "2026-10-12T11:00:00",
   },
   images: {
     remotePatterns: [

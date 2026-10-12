@@ -12,7 +12,6 @@ const ScrollIndicator = ({ className }: { className?: string }) => {
     >
       <ChevronDown className=" absolute animate-bounce" size={18} />
       <ChevronDown className=" absolute top-2 animate-bounce" size={18} />
-      <ChevronDown className=" absolute top-4 animate-bounce" size={18} />
     </div>
   )
 }

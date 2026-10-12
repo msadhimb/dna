@@ -2,7 +2,7 @@
 
 import Card from "@/components/Card"
 import { BookOpenText, CheckCircle2 } from "lucide-react"
-import { latestCheckInAt } from "@/helper/eventSchedule"
+import { latestCheckInAt } from "@/components/CheckInTicket/helprt/eventSchedule"
 import { formatCheckInTime } from "../utils"
 
 type CheckedInPanelProps = {
@@ -13,7 +13,12 @@ type CheckedInPanelProps = {
 }
 
 // 5 tamu terbaru yang sudah check-in (data server — tahan refresh).
-export const CheckedInPanel = ({ guests, total, isPending, isError }: CheckedInPanelProps) => {
+export const CheckedInPanel = ({
+  guests,
+  total,
+  isPending,
+  isError,
+}: CheckedInPanelProps) => {
   return (
     <Card className="gap-3 p-5 lg:sticky lg:top-20 lg:self-start">
       <div className="flex items-center gap-2.5">

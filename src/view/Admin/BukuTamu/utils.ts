@@ -1,10 +1,23 @@
 export type SimpleCamera = { id: string; label: string }
 
-// QR berisi id tamu atau URL undangan personal (.../{id}) -> ambil id-nya
-export const parseGuestId = (text: string) => {
+type ParsedQr = { guestId: string; event: "mantu" | "unduh" | null }
+
+// QR berisi id tamu atau URL undangan personal (.../{id}?event=...) -> ambil id & event-nya
+export const parseGuestId = (text: string): ParsedQr => {
   const trimmed = text.trim().replace(/\/+$/, "")
-  const parts = trimmed.split("/")
-  return parts[parts.length - 1].trim()
+
+  // Pisah path dari query string
+  const [pathPart, queryPart] = trimmed.split("?")
+  const parts = pathPart.split("/")
+  const guestId = parts[parts.length - 1].trim()
+
+  // Baca ?event= kalau ada
+  const params = new URLSearchParams(queryPart ?? "")
+  const rawEvent = params.get("event")
+  const event: ParsedQr["event"] =
+    rawEvent === "mantu" || rawEvent === "unduh" ? rawEvent : null
+
+  return { guestId, event }
 }
 
 // Kamera belakang biasanya berlabel back/rear; kalau tidak ketahuan, pakai terakhir

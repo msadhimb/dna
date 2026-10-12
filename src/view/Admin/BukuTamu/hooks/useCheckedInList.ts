@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query"
 import clientApi from "@/services/client"
-import type { EventKey } from "@/helper/eventSchedule"
+import type { EventKey } from "@/components/CheckInTicket/helprt/eventSchedule"
 
 // Daftar sudah check-in dari server — tahan refresh & sinkron antar HP panitia.
 // Difilter per event aktif: saat tanggal unduh tiba, statistik reset (0)

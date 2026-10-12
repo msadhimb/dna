@@ -15,7 +15,7 @@ import { ScannedGuestCard } from "./components/ScannedGuestCard"
 import { ScannerPanel } from "./components/ScannerPanel"
 import { useCheckedInList } from "./hooks/useCheckedInList"
 import { useQrScanner } from "./hooks/useQrScanner"
-import { autoCheckInEvent } from "@/helper/eventSchedule"
+import { autoCheckInEvent } from "@/components/CheckInTicket/helprt/eventSchedule"
 import { parseGuestId } from "./utils"
 
 type Mode = "scan" | "manual"
@@ -33,7 +33,8 @@ const BukuTamu = () => {
   const [isFetchingGuest, setIsFetchingGuest] = React.useState(false)
   const queryClient = useQueryClient()
   const checkedIn = useCheckedInList(checkInEvent)
-  const eventLabel = checkInEvent === "mantu" ? "Mantu • 12 Des" : "Ngunduh • 26 Des"
+  const eventLabel =
+    checkInEvent === "mantu" ? "Mantu • 12 Des" : "Ngunduh • 26 Des"
 
   const scanner = useQrScanner({
     enabled: mode === "scan",
@@ -41,7 +42,7 @@ const BukuTamu = () => {
   })
 
   async function handleScan(decodedText: string) {
-    const guestId = parseGuestId(decodedText)
+    const { guestId, event: qrEvent } = parseGuestId(decodedText)
     if (!guestId) {
       toast?.error?.("QR tidak valid")
       scanner.unlock()
@@ -51,9 +52,11 @@ const BukuTamu = () => {
     try {
       const res = await clientApi({ url: `/guests/${guestId}`, method: "GET" })
       const guest = res?.data ?? res
-      setScannedGuest(guest)
+      setScannedGuest({ ...guest, _qrEvent: qrEvent })
     } catch (err: any) {
-      toast?.error?.(err?.response?.data?.error || "Tamu tidak ditemukan, coba lagi")
+      toast?.error?.(
+        err?.response?.data?.error || "Tamu tidak ditemukan, coba lagi"
+      )
       scanner.unlock()
     } finally {
       setIsFetchingGuest(false)
@@ -82,16 +85,26 @@ const BukuTamu = () => {
           data: { guest_total: n },
         })
       }
+      // Prioritaskan event dari QR; fallback ke event sesi panitia
+      const eventToSend = g._qrEvent ?? checkInEvent
       return clientApi({
         url: `/guests/${g.id}/buku-tamu`,
         method: "PATCH",
-        data: { event: checkInEvent },
+        data: { event: eventToSend },
       })
     },
     onSuccess: (res: any) => {
-      const name = res?.data?.full_name ?? res?.full_name ?? scannedGuest?.full_name ?? ""
-      const total = Number(res?.data?.guest_total ?? res?.guest_total ?? scannedGuest?.guest_total) || 0
-      toast?.success?.(`Silakan masuk${name ? `, ${name}` : ""}${total ? ` (${total} orang)` : ""}`)
+      const name =
+        res?.data?.full_name ?? res?.full_name ?? scannedGuest?.full_name ?? ""
+      const total =
+        Number(
+          res?.data?.guest_total ??
+            res?.guest_total ??
+            scannedGuest?.guest_total
+        ) || 0
+      toast?.success?.(
+        `Silakan masuk${name ? `, ${name}` : ""}${total ? ` (${total} orang)` : ""}`
+      )
       queryClient.invalidateQueries({ queryKey: ["guests", "checked-in"] })
       queryClient.invalidateQueries({ queryKey: ["guests"] })
       handleScanAgain()
@@ -119,8 +132,16 @@ const BukuTamu = () => {
               value={mode}
               onChange={setMode}
               options={[
-                { value: "scan", label: "Scan QR", icon: <Camera className="size-4" /> },
-                { value: "manual", label: "Cari Manual", icon: <PencilLine className="size-4" /> },
+                {
+                  value: "scan",
+                  label: "Scan QR",
+                  icon: <Camera className="size-4" />,
+                },
+                {
+                  value: "manual",
+                  label: "Cari Manual",
+                  icon: <PencilLine className="size-4" />,
+                },
               ]}
             />
           </div>

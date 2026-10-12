@@ -1,9 +1,9 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { useTheme } from "next-themes"
 import { Countdown } from "@/components/CountDown"
-import { ChevronDown, Heart } from "lucide-react"
+import { Heart } from "lucide-react"
 import Image from "next/image"
 import { useImageUrl } from "@/store/useImageUrl"
 import ScrollIndicator from "../ScrollIndicator"
@@ -59,37 +59,34 @@ const HeroSection = () => {
 
       <div className="relative z-10 flex h-full flex-col items-center justify-between px-6 py-16">
         <div className="animate-fade-up animation-delay-200 opacity-0">
-          <p className="text-[10px] font-medium tracking-[0.4em] text-primary-foreground uppercase md:text-xs dark:text-primary">
+          <p className="text-[10px] font-medium tracking-[0.4em] uppercase md:text-xs text-primary dark:text-muted">
             The Wedding Of
           </p>
         </div>
 
         <div className="flex flex-col items-center gap-3">
-          <h1 className="animate-fade-up animation-delay-400 font-signature text-7xl leading-none text-primary opacity-0 drop-shadow-lg md:text-9xl">
+          <h1 className="animate-fade-up animation-delay-400 font-signature text-7xl leading-none text-primary dark:text-muted opacity-0 drop-shadow-lg md:text-9xl">
             Devi
           </h1>
-          <span className="animate-fade-in animation-delay-600 font-serif text-5xl font-light text-primary italic opacity-0">
+          <span className="animate-fade-in animation-delay-600 font-serif text-5xl font-light text-primary dark:text-muted italic opacity-0">
             &
           </span>
-          <h1 className="animate-fade-up animation-delay-600 font-signature text-7xl leading-none text-primary opacity-0 drop-shadow-lg md:text-9xl">
+          <h1 className="animate-fade-up animation-delay-600 font-signature text-7xl leading-none text-primary dark:text-muted opacity-0 drop-shadow-lg md:text-9xl">
             Adhim
           </h1>
         </div>
 
         <div className="animate-fade-up animation-delay-1000 flex flex-col items-center gap-8 opacity-0">
           <div className="text-white">
-            <Countdown targetDate="2026-12-12T09:00:00" />
+            <Countdown />
           </div>
 
-          <a
-            href="#our-journey"
-            className="group flex flex-col items-center gap-2 text-primary"
-          >
-            <span className="text-[9px] font-medium tracking-[0.4em] uppercase transition-colors group-hover:text-white/60">
+          <div className="group flex flex-col items-center gap-2 text-primary dark:text-muted">
+            <span className="text-[9px] font-medium tracking-[0.4em] uppercase transition-colors">
               Swipe ke Bawah
             </span>
-            <ScrollIndicator className="text-primary" />
-          </a>
+            <ScrollIndicator className="text-primary dark:text-muted" />
+          </div>
         </div>
       </div>
     </header>

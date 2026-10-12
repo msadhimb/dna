@@ -15,23 +15,6 @@ type GuestLike = {
   checked_in_at_unduh?: string | null
 } | null
 
-export function getActiveEvent(
-  guest: GuestLike,
-  now: number = Date.now()
-): EventKey {
-  const hasMantu = !!guest?.mantu_status
-  const hasUnduh = !!guest?.unduh_mantu_status
-
-  // Tamu satu acara: fasenya tetap acara itu.
-  if (hasMantu && !hasUnduh) return "mantu"
-  if (!hasMantu && hasUnduh) return "unduh"
-
-  // Tamu dua acara (atau tanpa flag): ikuti Countdown —
-  // sebelum mantu mulai = fase mantu, sesudahnya = fase unduh.
-  if (now >= new Date(MANTU_DATE_ISO).getTime()) return "unduh"
-  return "mantu"
-}
-
 /** Event check-in aktif mengikuti tanggal (tanpa filter manual):
  * sebelum 12 Des 2026 = mantu, sesudahnya = unduh. */
 export function autoCheckInEvent(now: number = Date.now()): EventKey {

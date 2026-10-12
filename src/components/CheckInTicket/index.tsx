@@ -1,52 +1,26 @@
-"use client"
-
-import { useEffect, useState } from "react"
-import { useQuery } from "@tanstack/react-query"
-import { QRCodeSVG } from "qrcode.react"
-import { CheckCircle2 } from "lucide-react"
+import React from "react"
 import Header from "../Header"
-import { Card } from "../Card"
-import { Countdown } from "../CountDown"
+import Card from "../Card"
+import { QRCodeSVG } from "qrcode.react"
 import { useGuest } from "@/store/useGuest"
-import {
-  UNDUH_DATE_ISO,
-  MANTU_DATE_ISO,
-  getActiveEvent,
-  isCheckedForActiveEvent,
-} from "@/helper/eventSchedule"
+import { useCountdown } from "@/hooks/useCountDown"
+import { useQuery } from "@tanstack/react-query"
+import { CheckCircle2 } from "lucide-react"
+import { Countdown } from "../CountDown"
 
-const CheckInTicket = ({
-  guestId,
-  guestName,
-}: {
-  guestId?: string
-  guestName?: string
-}) => {
+const isSameDay = (a: Date, b: Date) =>
+  a.getFullYear() === b.getFullYear() &&
+  a.getMonth() === b.getMonth() &&
+  a.getDate() === b.getDate()
+
+type TicketView = "checked-in" | "countdown" | "qr"
+
+const CheckInTicket = ({ guestId }: { guestId: string }) => {
   const { guest } = useGuest()
-  const setGuest = useGuest((state) => state.setGuest)
-  const [now, setNow] = useState(() => Date.now())
+  const { title, detailTitle, isEventDay, unduhMantuDate } = useCountdown()
 
-  useEffect(() => {
-    const id = setInterval(() => setNow(Date.now()), 60_000)
-    return () => clearInterval(id)
-  }, [])
-
-  const resolvedGuest = guestId && guest?.id === guestId ? guest : null
-  const displayName = guestName ?? resolvedGuest?.full_name ?? ""
-  const activeEvent = getActiveEvent(
-    resolvedGuest ?? { mantu_status: true, unduh_mantu_status: false },
-    now
-  )
-  const isChecked = resolvedGuest
-    ? isCheckedForActiveEvent(resolvedGuest, activeEvent)
-    : false
-
-  const hasBoth = !!(
-    resolvedGuest?.mantu_status && resolvedGuest?.unduh_mantu_status
-  )
-  const waitingUnduh = hasBoth && isChecked && activeEvent === "mantu"
-
-  const statusQuery = useQuery({
+  // status terbaru dari polling (asumsi response berisi field yang sama dengan guest)
+  const { data: status } = useQuery({
     queryKey: ["guest-status", guestId],
     queryFn: async () => {
       const res = await fetch(`/api/guest-status/${guestId}`, {
@@ -56,41 +30,56 @@ const CheckInTicket = ({
       return res.json()
     },
     refetchInterval: 5_000,
-    enabled: !!guestId && !!resolvedGuest && !isChecked && !waitingUnduh,
+    // berhenti polling setelah check-in terakhir selesai
+    enabled: !!guestId && !guest?.checked_in_at_unduh,
     retry: false,
     refetchOnWindowFocus: true,
   })
 
-  useEffect(() => {
-    const data = statusQuery.data
-    if (!data || !guestId) return
-    const current = useGuest.getState().guest
-    if (!current || current.id !== guestId) return
-    if (
-      (current.checked_in_at ?? null) !== (data.checked_in_at ?? null) ||
-      (current.checked_in_at_mantu ?? null) !==
-        (data.checked_in_at_mantu ?? null) ||
-      (current.checked_in_at_unduh ?? null) !==
-        (data.checked_in_at_unduh ?? null)
-    ) {
-      setGuest({
-        ...current,
-        checked_in_at: data.checked_in_at ?? null,
-        checked_in_at_mantu: data.checked_in_at_mantu ?? null,
-        checked_in_at_unduh: data.checked_in_at_unduh ?? null,
-      })
+  // data polling menang atas data store
+  const isCheckedInAtMantu = !!(
+    status?.checked_in_at_mantu ?? guest?.checked_in_at_mantu
+  )
+  const isCheckedInAtUnduhMantu = !!(
+    status?.checked_in_at_unduh ?? guest?.checked_in_at_unduh
+  )
+  const hasBothStatus = !!(guest?.mantu_status && guest?.unduh_mantu_status)
+
+  const isUnduhDay = isEventDay
+
+  const view: TicketView = (() => {
+    if (isCheckedInAtUnduhMantu) return "checked-in"
+    if (isCheckedInAtMantu) {
+      if (!hasBothStatus) return "checked-in"
+      if (isUnduhDay) return "qr"
+      if (isEventDay) return "checked-in"
+      return "countdown"
     }
-  }, [statusQuery.data, guestId, setGuest])
+    return isEventDay ? "qr" : "countdown"
+  })()
 
-  if (!guestId) return null
+  const showQr = view === "qr"
 
-  const activeLabel =
-    activeEvent === "mantu" ? "Hari Pernikahan" : "Hari Ngunduh Mantu"
-  const activeDateTarget =
-    activeEvent === "mantu" ? MANTU_DATE_ISO : UNDUH_DATE_ISO
+  useQuery({
+    queryKey: ["guest-status", guestId],
+    queryFn: async () => {
+      const res = await fetch(`/api/guest-status/${guestId}`, {
+        cache: "no-store",
+      })
+      if (!res.ok) throw new Error("Gagal memuat status check-in")
+      return res.json()
+    },
+    refetchInterval: 5_000,
+    // polling hanya saat QR tampil, supaya tampilan berubah otomatis setelah discan
+    enabled: !!guestId && showQr,
+    retry: false,
+    refetchOnWindowFocus: true,
+  })
 
-  // Sudah check-in untuk fase aktif -> QR hilang.
-  if (resolvedGuest && (isChecked || waitingUnduh)) {
+  if (view === "checked-in") {
+    // countdown hanya untuk tamu yang punya dua undangan dan belum check-in di Ngunduh Mantu
+    const showCountdown = hasBothStatus && !isCheckedInAtUnduhMantu
+
     return (
       <section
         id="check-in-ticket"
@@ -101,7 +90,7 @@ const CheckInTicket = ({
             subHeader="Check-in"
             title="Tiket Masuk"
             subTitle={
-              waitingUnduh
+              showCountdown
                 ? "Check-in Pernikahan selesai. QR Ngunduh Mantu akan muncul sesuai tanggalnya."
                 : "Tiket ini sudah dipindai panitia. Terima kasih atas kehadiran Anda."
             }
@@ -112,17 +101,17 @@ const CheckInTicket = ({
               <span className="flex size-14 items-center justify-center rounded-full bg-emerald-500/10">
                 <CheckCircle2 className="size-8 text-emerald-600" />
               </span>
-              {displayName ? (
-                <p className="text-lg font-semibold">{displayName}</p>
+              {guest?.full_name ? (
+                <p className="text-lg font-semibold">{guest.full_name}</p>
               ) : null}
               <p className="text-sm font-medium text-emerald-600">
-                {waitingUnduh
+                {showCountdown
                   ? "Sampai jumpa di Ngunduh Mantu"
                   : "Sudah check-in"}
               </p>
-              {waitingUnduh ? (
+              {showCountdown ? (
                 <div className="w-full rounded-2xl bg-wedding-surface/60 p-4">
-                  <Countdown event="unduh" />
+                  <Countdown />
                 </div>
               ) : null}
             </Card>
@@ -141,34 +130,39 @@ const CheckInTicket = ({
         <Header
           subHeader="Check-in"
           title="Tiket Masuk"
-          subTitle="Tunjukkan tiket ini kepada panitia saat tiba di lokasi acara. Simpan tangkapan layar agar mudah dibuka kembali."
+          subTitle={
+            showQr
+              ? "Tunjukkan tiket ini kepada panitia saat tiba di lokasi acara. Simpan tangkapan layar agar mudah dibuka kembali."
+              : isCheckedInAtMantu
+                ? "Check-in Pernikahan selesai. QR Ngunduh Mantu akan muncul sesuai tanggalnya."
+                : "QR tiket akan muncul pada hari acara. Simpan halaman ini agar mudah dibuka kembali."
+          }
         />
 
         <div className="flex justify-center">
           <Card className="w-full max-w-md items-center gap-4 p-6 text-center md:p-8">
-            {hasBoth ? (
-              <p className="text-[11px] font-bold tracking-[0.24em] uppercase text-wedding-accent">
-                {activeLabel}
-              </p>
-            ) : null}
-            <div className="rounded-2xl bg-white p-4">
-              <QRCodeSVG
-                value={
-                  typeof window !== "undefined"
-                    ? `${window.location.origin}/${guestId}`
-                    : guestId
-                }
-                size={200}
-              />
-            </div>
-            {displayName ? (
-              <p className="text-lg font-semibold">{displayName}</p>
-            ) : null}
-            {hasBoth && waitingUnduh ? (
-              <div className="w-full">
-                <Countdown targetDate={activeDateTarget} event={activeEvent} />
+            <p className="text-[11px] font-bold tracking-[0.24em] uppercase text-wedding-accent">
+              {showQr ? detailTitle : title}
+            </p>
+
+            {showQr && (
+              <div className="rounded-2xl bg-white p-4">
+                <QRCodeSVG
+                  value={
+                    typeof window !== "undefined"
+                      ? `${window.location.origin}/${guestId}?event=${isUnduhDay ? "unduh" : "mantu"}`
+                      : `${guestId}?event=${isUnduhDay ? "unduh" : "mantu"}`
+                  }
+                  size={200}
+                />
               </div>
-            ) : null}
+            )}
+
+            {!showQr && (
+              <div className="w-full rounded-2xl bg-wedding-surface/60 p-4">
+                <Countdown />
+              </div>
+            )}
             <p className="text-sm text-wedding-text-secondary">
               Satu tiket berlaku untuk satu undangan. Panitia akan memindai
               tiket ini pada saat check-in.
