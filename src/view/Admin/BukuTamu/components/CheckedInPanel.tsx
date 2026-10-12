@@ -60,7 +60,7 @@ export const CheckedInPanel = ({ guests, total, isPending, isError }: CheckedInP
                 </p>
               </div>
               <span className="shrink-0 rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-bold text-emerald-600">
-                +{Number(guest.checked_in_count) || 0}
+                +{Number(guest.guest_total) || 0}
               </span>
             </div>
           ))}

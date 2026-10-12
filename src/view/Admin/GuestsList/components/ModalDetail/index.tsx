@@ -207,7 +207,7 @@ export const GuestDetailModal = ({
                 </p>
                 <p className="text-sm font-semibold text-foreground">
                   {checkedAny
-                    ? `+${Number(guest?.checked_in_count) || 0} orang masuk`
+                    ? `+${Number(guest?.guest_total) || 0} orang masuk`
                     : "Belum ada kedatangan tercatat"}
                 </p>
               </div>

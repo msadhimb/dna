@@ -9,7 +9,6 @@ export type Guest = {
   checked_in_at: string | null
   checked_in_at_mantu: string | null
   checked_in_at_unduh: string | null
-  checked_in_count: number | null
 }
 
 type GuestStore = {

@@ -2,11 +2,14 @@
 
 import { useQuery } from "@tanstack/react-query"
 import clientApi from "@/services/client"
+import type { EventKey } from "@/helper/eventSchedule"
 
 // Daftar sudah check-in dari server — tahan refresh & sinkron antar HP panitia.
-export const useCheckedInList = () => {
+// Difilter per event aktif: saat tanggal unduh tiba, statistik reset (0)
+// dan hanya menghitung tamu yang check-in unduh.
+export const useCheckedInList = (event: EventKey = "mantu") => {
   const query = useQuery({
-    queryKey: ["guests", "checked-in"],
+    queryKey: ["guests", "checked-in", event],
     queryFn: async () => {
       const res: any = await clientApi({
         url: "/guests",
@@ -15,7 +18,8 @@ export const useCheckedInList = () => {
           page: 1,
           pageSize: 5,
           checked_in: true,
-          sortBy: "checked_in_at",
+          checked_in_event: event,
+          sortBy: event === "unduh" ? "checked_in_at_unduh" : "checked_in_at",
           sortDir: "desc",
         },
       })

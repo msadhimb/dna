@@ -32,6 +32,12 @@ export function getActiveEvent(
   return "mantu"
 }
 
+/** Event check-in aktif mengikuti tanggal (tanpa filter manual):
+ * sebelum 12 Des 2026 = mantu, sesudahnya = unduh. */
+export function autoCheckInEvent(now: number = Date.now()): EventKey {
+  return now >= new Date(MANTU_DATE_ISO).getTime() ? "unduh" : "mantu"
+}
+
 const pickMantuChecked = (guest: GuestLike): string | null =>
   guest?.checked_in_at_mantu ?? guest?.checked_in_at ?? null
 

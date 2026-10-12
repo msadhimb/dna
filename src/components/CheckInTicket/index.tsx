@@ -26,7 +26,6 @@ const CheckInTicket = ({
   const setGuest = useGuest((state) => state.setGuest)
   const [now, setNow] = useState(() => Date.now())
 
-  // Re-evaluate fase aktif mengikuti tanggal (mantu -> unduh).
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 60_000)
     return () => clearInterval(id)
@@ -45,16 +44,8 @@ const CheckInTicket = ({
   const hasBoth = !!(
     resolvedGuest?.mantu_status && resolvedGuest?.unduh_mantu_status
   )
-  // Tamu dua acara yang sudah scan mantu tapi fase unduh belum tiba:
-  // QR disembunyikan sementara + tampilkan countdown ke unduh.
-  // Setelah tanggal unduh tiba, activeEvent -> "unduh" dan isChecked
-  // kembali false sehingga QR muncul lagi otomatis.
   const waitingUnduh = hasBoth && isChecked && activeEvent === "mantu"
 
-  // Polling status check-in agar QR hilang otomatis setelah panitia scan
-  // tanpa refresh. Berhenti saat waiting unduh (yang ditunggu hanya
-  // tanggal, dihitung lokal) dan berhenti total saat sudah check-in penuh.
-  // Polling lanjut lagi otomatis saat fase unduh tiba dan belum check-in.
   const statusQuery = useQuery({
     queryKey: ["guest-status", guestId],
     queryFn: async () => {
@@ -64,13 +55,12 @@ const CheckInTicket = ({
       if (!res.ok) throw new Error("Gagal memuat status check-in")
       return res.json()
     },
-    refetchInterval: 15_000,
+    refetchInterval: 5_000,
     enabled: !!guestId && !!resolvedGuest && !isChecked && !waitingUnduh,
     retry: false,
     refetchOnWindowFocus: true,
   })
 
-  // Sinkronkan hasil polling ke store (hanya jika berubah).
   useEffect(() => {
     const data = statusQuery.data
     if (!data || !guestId) return

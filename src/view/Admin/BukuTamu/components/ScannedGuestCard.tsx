@@ -2,30 +2,25 @@
 
 import { Button } from "@/components/Button"
 import Card from "@/components/Card"
-import { FormInput } from "@/components/Form/FormInput"
 import { Badge } from "@/components/ui/badge"
-import { Check, Minus, Plus, RotateCcw } from "lucide-react"
-import { NumericFormat } from "react-number-format"
+import { Check, RotateCcw, Users } from "lucide-react"
 
 type ScannedGuestCardProps = {
   guest: any
   guestFrom: string
-  arrived: number
   isConfirming: boolean
   activeEvent: "mantu" | "unduh"
-  onArrivedChange: (value: number) => void
   onScanAgain: () => void
   onConfirm: () => void
 }
 
-// Kartu konfirmasi tamu hasil scan + stepper jumlah datang.
+// Kartu konfirmasi tamu hasil scan. Satu tamu scan sekali per acara:
+// jumlah rombongan otomatis = guest_total, tanpa input manual.
 export const ScannedGuestCard = ({
   guest,
   guestFrom,
-  arrived,
   isConfirming,
   activeEvent,
-  onArrivedChange,
   onScanAgain,
   onConfirm,
 }: ScannedGuestCardProps) => {
@@ -35,6 +30,7 @@ export const ScannedGuestCard = ({
   const unduhChecked = !!guest?.checked_in_at_unduh
   const checkedIn = activeEvent === "mantu" ? mantuChecked : unduhChecked
   const eventLabel = activeEvent === "mantu" ? "Mantu" : "Ngunduh Mantu"
+  const partySize = Number(guest?.guest_total) || 0
 
   return (
     <Card className="gap-6 p-5 sm:p-6">
@@ -84,7 +80,7 @@ export const ScannedGuestCard = ({
           {checkedIn ? (
             <Badge className="border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-emerald-600">
               <Check className="size-3.5" />
-              {eventLabel} sudah masuk • +{Number(guest.checked_in_count) || 0}
+              {eventLabel} sudah masuk
             </Badge>
           ) : (
             <Badge variant="outline" className="border-book-ornament/40 bg-book-ornament/10 px-3 py-1 text-book-ornament dark:text-book-cover-title">
@@ -94,44 +90,15 @@ export const ScannedGuestCard = ({
         </div>
       </div>
 
-      <div className="rounded-2xl border border-wedding-border bg-wedding-surface/60 p-4">
-        <p className="text-center text-[11px] font-bold tracking-[0.24em] text-muted uppercase">
-          Jumlah datang • {eventLabel}
+      <div className="flex items-center justify-center gap-2.5 rounded-2xl border border-wedding-border bg-wedding-surface/60 px-4 py-4">
+        <Users className="size-5 shrink-0 text-muted" />
+        <p className="text-sm text-muted-foreground">
+          Rombongan{" "}
+          <span className="font-serif text-xl font-bold text-foreground">
+            {partySize}
+          </span>{" "}
+          orang • sesuai undangan
         </p>
-        <div className="mt-3 flex items-center justify-center gap-3">
-          <Button
-            variant="outline"
-            size="sm"
-            aria-label="Kurangi"
-            className="size-10 shrink-0 rounded-full"
-            onClick={() => onArrivedChange(Math.max(1, (arrived || 1) - 1))}
-          >
-            <Minus className="size-4" />
-          </Button>
-          <NumericFormat
-            value={arrived}
-            thousandSeparator=","
-            allowNegative={false}
-            decimalScale={0}
-            onValueChange={(values: any) => onArrivedChange(values.floatValue ?? 0)}
-            customInput={FormInput}
-            className="max-w-28 text-center font-serif text-2xl font-bold"
-          />
-          <Button
-            variant="outline"
-            size="sm"
-            aria-label="Tambah"
-            className="size-10 shrink-0 rounded-full"
-            onClick={() => onArrivedChange((arrived || 0) + 1)}
-          >
-            <Plus className="size-4" />
-          </Button>
-        </div>
-        {checkedIn && (
-          <p className="mt-2 text-center text-xs text-muted-foreground">
-            Scan ulang akan memperbarui jumlah kedatangan {eventLabel.toLowerCase()}.
-          </p>
-        )}
       </div>
 
       <div className="flex flex-col gap-2 sm:flex-row">
@@ -141,12 +108,10 @@ export const ScannedGuestCard = ({
         </Button>
         <Button
           className="w-full rounded-xl"
-          disabled={isConfirming || !arrived || arrived < 1}
+          disabled={isConfirming}
           onClick={onConfirm}
         >
-          {isConfirming
-            ? "Menyimpan..."
-            : `Konfirmasi ${eventLabel} (${arrived || 0})`}
+          {isConfirming ? "Menyimpan..." : `Konfirmasi ${eventLabel}`}
         </Button>
       </div>
     </Card>

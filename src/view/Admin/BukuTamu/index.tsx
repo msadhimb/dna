@@ -15,23 +15,25 @@ import { ScannedGuestCard } from "./components/ScannedGuestCard"
 import { ScannerPanel } from "./components/ScannerPanel"
 import { useCheckedInList } from "./hooks/useCheckedInList"
 import { useQrScanner } from "./hooks/useQrScanner"
+import { autoCheckInEvent } from "@/helper/eventSchedule"
 import { parseGuestId } from "./utils"
 
 type Mode = "scan" | "manual"
-type CheckInEvent = "mantu" | "unduh"
-
-const autoEvent = (): CheckInEvent =>
-  Date.now() >= new Date("2026-12-12T09:00:00").getTime() ? "unduh" : "mantu"
 
 // Buku Tamu: scan QR / cari manual + panel tamu hadir, gaya undangan.
+// Event check-in otomatis mengikuti tanggal (tanpa filter manual):
+// sebelum 12 Des 2026 = mantu, sesudahnya = unduh. Statistik reset
+// saat tanggal unduh tiba dan hanya menghitung check-in unduh.
 const BukuTamu = () => {
   const [mode, setMode] = React.useState<Mode>("scan")
-  const [checkInEvent, setCheckInEvent] = React.useState<CheckInEvent>(autoEvent)
+  // useState agar event terkunci per sesi panitia (tidak flip tiba-tiba
+  // tepat tengah malam saat halaman terbuka).
+  const [checkInEvent] = React.useState(autoCheckInEvent)
   const [scannedGuest, setScannedGuest] = React.useState<any | null>(null)
-  const [arrived, setArrived] = React.useState(1)
   const [isFetchingGuest, setIsFetchingGuest] = React.useState(false)
   const queryClient = useQueryClient()
-  const checkedIn = useCheckedInList()
+  const checkedIn = useCheckedInList(checkInEvent)
+  const eventLabel = checkInEvent === "mantu" ? "Mantu • 12 Des" : "Ngunduh • 26 Des"
 
   const scanner = useQrScanner({
     enabled: mode === "scan",
@@ -50,11 +52,6 @@ const BukuTamu = () => {
       const res = await clientApi({ url: `/guests/${guestId}`, method: "GET" })
       const guest = res?.data ?? res
       setScannedGuest(guest)
-      // Utamakan jumlah aktual yang sudah tercatat (scan ulang),
-      // baru jatah undangan sebagai default check-in pertama.
-      setArrived(
-        Number(guest?.checked_in_count) || Number(guest?.guest_total) || 1
-      )
     } catch (err: any) {
       toast?.error?.(err?.response?.data?.error || "Tamu tidak ditemukan, coba lagi")
       scanner.unlock()
@@ -65,7 +62,6 @@ const BukuTamu = () => {
 
   const handleScanAgain = () => {
     setScannedGuest(null)
-    setArrived(1)
     // Kamera dihidupkan ulang oleh ScannerPanel saat di-mount ulang
     // (onViewportReady) — unlock/resume saja tidak cukup karena
     // #qr-viewport ikut di-unmount saat kartu hasil scan tampil.
@@ -76,12 +72,12 @@ const BukuTamu = () => {
       clientApi({
         url: `/guests/${scannedGuest.id}/buku-tamu`,
         method: "PATCH",
-        data: { arrived_count: Math.trunc(arrived), event: checkInEvent },
+        data: { event: checkInEvent },
       }),
     onSuccess: (res: any) => {
-      const count = res?.data?.checked_in_count ?? res?.checked_in_count ?? arrived
       const name = res?.data?.full_name ?? res?.full_name ?? scannedGuest?.full_name ?? ""
-      toast?.success?.(`Silakan masuk${name ? `, ${name}` : ""} (${count} orang)`)
+      const total = Number(res?.data?.guest_total ?? res?.guest_total ?? scannedGuest?.guest_total) || 0
+      toast?.success?.(`Silakan masuk${name ? `, ${name}` : ""}${total ? ` (${total} orang)` : ""}`)
       queryClient.invalidateQueries({ queryKey: ["guests", "checked-in"] })
       queryClient.invalidateQueries({ queryKey: ["guests"] })
       handleScanAgain()
@@ -99,17 +95,12 @@ const BukuTamu = () => {
     <div className="w-full max-w-full space-y-6 font-manrope">
       <AdminPageHeader
         title="Buku Tamu"
-        description="Arahkan kamera ke QR undangan untuk mencatat kedatangan, atau cari nama secara manual."
+        description={`Arahkan kamera ke QR undangan untuk mencatat kedatangan, atau cari nama secara manual. Mode check-in otomatis: ${eventLabel}.`}
         actions={
           <div className="flex flex-wrap items-center gap-2">
-            <AdminSegmentedControl<CheckInEvent>
-              value={checkInEvent}
-              onChange={setCheckInEvent}
-              options={[
-                { value: "mantu", label: "Mantu 12 Des" },
-                { value: "unduh", label: "Unduh 26 Des" },
-              ]}
-            />
+            <span className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-book-ornament/40 bg-book-ornament/10 px-3 text-sm font-semibold text-book-ornament dark:text-book-cover-title">
+              {eventLabel}
+            </span>
             <AdminSegmentedControl<Mode>
               value={mode}
               onChange={setMode}
@@ -127,13 +118,13 @@ const BukuTamu = () => {
           icon={<UsersRound className="size-5" />}
           label="Undangan Hadir"
           value={(checkedIn.totalGuests ?? 0).toLocaleString("id-ID")}
-          hint="Tamu sudah check-in"
+          hint={`Check-in ${checkInEvent === "mantu" ? "mantu" : "ngunduh mantu"}`}
         />
         <AdminStatCard
           icon={<UserCheck className="size-5" />}
           label="Jiwa Hadir"
           value={(checkedIn.totalPeople ?? 0).toLocaleString("id-ID")}
-          hint="Total orang masuk"
+          hint={`Orang masuk ${checkInEvent === "mantu" ? "mantu" : "ngunduh mantu"}`}
           accent="#16a34a"
         />
       </div>
@@ -157,10 +148,8 @@ const BukuTamu = () => {
               <ScannedGuestCard
                 guest={scannedGuest}
                 guestFrom={scannedFrom}
-                arrived={arrived}
                 isConfirming={isCheckingIn}
                 activeEvent={checkInEvent}
-                onArrivedChange={setArrived}
                 onScanAgain={handleScanAgain}
                 onConfirm={() => checkInScanned()}
               />

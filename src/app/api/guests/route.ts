@@ -3,7 +3,7 @@ import { cookies } from "next/headers"
 import { createClient } from "@/utils/supabase/server"
 
 const FIELDS =
-  "id, full_name, guest_from, mantu_status, unduh_mantu_status, guest_total, physical_invitation, sended, checked_in_count, checked_in_at, checked_in_at_mantu, checked_in_at_unduh"
+  "id, full_name, guest_from, mantu_status, unduh_mantu_status, guest_total, physical_invitation, sended, checked_in_at, checked_in_at_mantu, checked_in_at_unduh"
 
 async function adminClient() {
   const client = createClient(await cookies())
@@ -35,6 +35,15 @@ export async function GET(request: NextRequest) {
   const physicalInvitationParam = request.nextUrl.searchParams.get("physical_invitation")
   const sendedParam = request.nextUrl.searchParams.get("sended")
   const checkedInParam = request.nextUrl.searchParams.get("checked_in")
+  // checked_in_event=mantu|unduh: batasi hitungan check-in ke satu acara.
+  // Dipakai Buku Tamu agar statistik reset saat tanggal unduh tiba.
+  const checkedInEvent = request.nextUrl.searchParams.get("checked_in_event")
+  const eventFilter =
+    checkedInEvent === "mantu"
+      ? "checked_in_at_mantu.not.is.null,checked_in_at.not.is.null"
+      : checkedInEvent === "unduh"
+        ? "checked_in_at_unduh.not.is.null"
+        : "checked_in_at.not.is.null,checked_in_at_mantu.not.is.null,checked_in_at_unduh.not.is.null"
   const allowedSort = ["full_name", "id", "checked_in_at", "checked_in_at_mantu", "checked_in_at_unduh"]
   const requestedSort =
     request.nextUrl.searchParams.get("sortBy") ?? "full_name"
@@ -59,10 +68,7 @@ export async function GET(request: NextRequest) {
   if (physicalInvitationParam === "false") query = query.eq("physical_invitation", false)
   if (sendedParam === "true") query = query.eq("sended", true)
   if (sendedParam === "false") query = query.eq("sended", false)
-  if (checkedInParam === "true")
-    query = query.or(
-      "checked_in_at.not.is.null,checked_in_at_mantu.not.is.null,checked_in_at_unduh.not.is.null"
-    )
+  if (checkedInParam === "true") query = query.or(eventFilter)
   if (checkedInParam === "false")
     query = query
       .is("checked_in_at", null)
@@ -82,9 +88,7 @@ export async function GET(request: NextRequest) {
     const { data: checkedRows, error: summaryError } = await client
       .from("guests")
       .select("guest_total")
-      .or(
-        "checked_in_at.not.is.null,checked_in_at_mantu.not.is.null,checked_in_at_unduh.not.is.null"
-      )
+      .or(eventFilter)
     if (summaryError) return bad(summaryError.message, 500)
     summary = {
       totalGuests: checkedRows?.length ?? 0,

@@ -7,25 +7,20 @@ import * as yup from "yup"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { PencilLine } from "lucide-react"
-import { NumericFormat } from "react-number-format"
 import { Button } from "@/components/Button"
 import Card from "@/components/Card"
-import { FormInput } from "@/components/Form/FormInput"
 import FormSelect from "@/components/Form/FormSelect"
 import clientApi from "@/services/client"
 
 const manualSchema = yup.object({
   guest: yup.string().required("Tamu wajib dipilih"),
-  arrived_count: yup
-    .number()
-    .typeError("Jumlah datang harus berupa angka")
-    .required("Jumlah datang wajib diisi")
-    .min(1, "Jumlah datang minimal 1"),
 })
 
 type ManualValues = yup.InferType<typeof manualSchema>
 
 // Fallback saat kamera/QR bermasalah: cari nama manual.
+// Satu tamu scan sekali per acara: jumlah rombongan = guest_total,
+// tanpa input manual.
 export const ManualCheckInForm = ({
   activeEvent = "mantu",
 }: {
@@ -39,7 +34,7 @@ export const ManualCheckInForm = ({
     reset,
   } = useForm<ManualValues>({
     resolver: yupResolver(manualSchema),
-    defaultValues: { guest: "", arrived_count: 0 },
+    defaultValues: { guest: "" },
   })
 
   const { mutate, isPending } = useMutation({
@@ -47,7 +42,7 @@ export const ManualCheckInForm = ({
       clientApi({
         url: `/guests/${data.guest}/buku-tamu`,
         method: "PATCH",
-        data: { arrived_count: data.arrived_count, event: activeEvent },
+        data: { event: activeEvent },
       }),
     onSuccess: () => {
       toast?.success?.("Silakan masuk")
@@ -94,22 +89,6 @@ export const ManualCheckInForm = ({
                 resolveEndpoint="/guests"
                 placeholder="Cari & pilih tamu..."
                 error={errors.guest?.message}
-              />
-            )}
-          />
-          <Controller
-            name="arrived_count"
-            control={control}
-            render={({ field }) => (
-              <NumericFormat
-                value={field.value}
-                thousandSeparator=","
-                allowNegative={false}
-                decimalScale={0}
-                onValueChange={(values: any) => field.onChange(values.floatValue)}
-                label="Jumlah Datang"
-                customInput={FormInput}
-                error={errors.arrived_count?.message}
               />
             )}
           />

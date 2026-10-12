@@ -3,7 +3,7 @@ import { cookies } from "next/headers"
 import { createClient } from "@/utils/supabase/server"
 
 const FIELDS =
-  "id, full_name, mantu_status, unduh_mantu_status, guest_from, guest_total, checked_in_count, checked_in_at, checked_in_at_mantu, checked_in_at_unduh"
+  "id, full_name, mantu_status, unduh_mantu_status, guest_from, guest_total, checked_in_at, checked_in_at_mantu, checked_in_at_unduh"
 
 async function getAdmin() {
   const client = createClient(await cookies())
@@ -25,14 +25,8 @@ export async function PATCH(
   const { guestId } = await params
   const body = await request.json().catch(() => null)
 
-  // arrived_count = jumlah yang benar-benar datang (realita di pintu).
-  // guest_total tetap sebagai patokan undangan dan TIDAK ditimpa di sini.
-  // Terima alias guest_total lama agar klien lama tidak rusak.
-  const arrived =
-    body?.arrived_count !== undefined ? body.arrived_count : body?.guest_total
-  if (arrived === undefined) return bad("arrived_count wajib diisi")
-  if (!Number.isInteger(arrived) || arrived < 0)
-    return bad("Jumlah tamu harus berupa angka bulat positif")
+  // Satu tamu hanya scan sekali per acara: tidak ada hitungan jumlah,
+  // cukup catat waktu check-in. Jumlah rombongan = guest_total.
 
   // Event yang di-check-in: eksplisit dari panitia, atau otomatis
   // mengikuti tanggal (sebelum 12 Des = mantu, sesudahnya = unduh).
@@ -46,7 +40,6 @@ export async function PATCH(
   }
 
   const update: Record<string, unknown> = {
-    checked_in_count: arrived,
     // Kolom lama tetap diisi untuk kompatibilitas (statistik & list lama).
     checked_in_at: nowIso,
   }
