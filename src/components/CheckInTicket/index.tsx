@@ -164,7 +164,7 @@ const CheckInTicket = ({
             {displayName ? (
               <p className="text-lg font-semibold">{displayName}</p>
             ) : null}
-            {hasBoth ? (
+            {hasBoth && waitingUnduh ? (
               <div className="w-full">
                 <Countdown targetDate={activeDateTarget} event={activeEvent} />
               </div>
