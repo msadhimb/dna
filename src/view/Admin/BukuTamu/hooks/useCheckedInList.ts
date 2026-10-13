@@ -2,12 +2,14 @@
 
 import { useQuery } from "@tanstack/react-query"
 import clientApi from "@/services/client"
-import type { EventKey } from "@/components/CheckInTicket/helprt/eventSchedule"
+import { useCountdown } from "@/hooks/useCountDown"
 
 // Daftar sudah check-in dari server — tahan refresh & sinkron antar HP panitia.
 // Difilter per event aktif: saat tanggal unduh tiba, statistik reset (0)
 // dan hanya menghitung tamu yang check-in unduh.
-export const useCheckedInList = (event: EventKey = "mantu") => {
+export const useCheckedInList = () => {
+  const { isUnduhDay } = useCountdown()
+
   const query = useQuery({
     queryKey: ["guests", "checked-in", event],
     queryFn: async () => {
@@ -18,8 +20,8 @@ export const useCheckedInList = (event: EventKey = "mantu") => {
           page: 1,
           pageSize: 5,
           checked_in: true,
-          checked_in_event: event,
-          sortBy: event === "unduh" ? "checked_in_at_unduh" : "checked_in_at",
+          checked_in_event: isUnduhDay ? "unduh" : "mantu",
+          sortBy: isUnduhDay ? "checked_in_at_unduh" : "checked_in_at_mantu",
           sortDir: "desc",
         },
       })

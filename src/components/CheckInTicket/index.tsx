@@ -8,52 +8,39 @@ import { useQuery } from "@tanstack/react-query"
 import { CheckCircle2 } from "lucide-react"
 import { Countdown } from "../CountDown"
 
-const isSameDay = (a: Date, b: Date) =>
-  a.getFullYear() === b.getFullYear() &&
-  a.getMonth() === b.getMonth() &&
-  a.getDate() === b.getDate()
-
-type TicketView = "checked-in" | "countdown" | "qr"
+type TicketView = "checked-in" | "countdown" | "qr" | "finished"
 
 const CheckInTicket = ({ guestId }: { guestId: string }) => {
   const { guest } = useGuest()
-  const { title, detailTitle, isEventDay, unduhMantuDate } = useCountdown()
-
-  // status terbaru dari polling (asumsi response berisi field yang sama dengan guest)
-  const { data: status } = useQuery({
-    queryKey: ["guest-status", guestId],
-    queryFn: async () => {
-      const res = await fetch(`/api/guest-status/${guestId}`, {
-        cache: "no-store",
-      })
-      if (!res.ok) throw new Error("Gagal memuat status check-in")
-      return res.json()
-    },
-    refetchInterval: 5_000,
-    // berhenti polling setelah check-in terakhir selesai
-    enabled: !!guestId && !guest?.checked_in_at_unduh,
-    retry: false,
-    refetchOnWindowFocus: true,
-  })
+  const { title, detailTitle, isEventDay, isUnduhDay, isMantuDay } =
+    useCountdown()
 
   // data polling menang atas data store
-  const isCheckedInAtMantu = !!(
-    status?.checked_in_at_mantu ?? guest?.checked_in_at_mantu
-  )
-  const isCheckedInAtUnduhMantu = !!(
-    status?.checked_in_at_unduh ?? guest?.checked_in_at_unduh
-  )
+  const isCheckedInAtMantu = !!guest?.checked_in_at_mantu
+  const isCheckedInAtUnduhMantu = !!guest?.checked_in_at_unduh
   const hasBothStatus = !!(guest?.mantu_status && guest?.unduh_mantu_status)
 
-  const isUnduhDay = isEventDay
-
   const view: TicketView = (() => {
-    if (isCheckedInAtUnduhMantu) return "checked-in"
-    if (isCheckedInAtMantu) {
-      if (!hasBothStatus) return "checked-in"
-      if (isUnduhDay) return "qr"
-      if (isEventDay) return "checked-in"
-      return "countdown"
+    if (hasBothStatus) {
+      if (isMantuDay) {
+        if (isCheckedInAtMantu) {
+          return "checked-in"
+        } else {
+          return "qr"
+        }
+      } else if (isUnduhDay) {
+        if (isCheckedInAtUnduhMantu) {
+          return "checked-in"
+        } else {
+          return "qr"
+        }
+      } else {
+        if (isCheckedInAtMantu && isCheckedInAtUnduhMantu) {
+          return "finished"
+        } else {
+          return "countdown"
+        }
+      }
     }
     return isEventDay ? "qr" : "countdown"
   })()
@@ -70,16 +57,12 @@ const CheckInTicket = ({ guestId }: { guestId: string }) => {
       return res.json()
     },
     refetchInterval: 5_000,
-    // polling hanya saat QR tampil, supaya tampilan berubah otomatis setelah discan
     enabled: !!guestId && showQr,
     retry: false,
     refetchOnWindowFocus: true,
   })
 
   if (view === "checked-in") {
-    // countdown hanya untuk tamu yang punya dua undangan dan belum check-in di Ngunduh Mantu
-    const showCountdown = hasBothStatus && !isCheckedInAtUnduhMantu
-
     return (
       <section
         id="check-in-ticket"
@@ -90,30 +73,23 @@ const CheckInTicket = ({ guestId }: { guestId: string }) => {
             subHeader="Check-in"
             title="Tiket Masuk"
             subTitle={
-              showCountdown
-                ? "Check-in Pernikahan selesai. QR Ngunduh Mantu akan muncul sesuai tanggalnya."
-                : "Tiket ini sudah dipindai panitia. Terima kasih atas kehadiran Anda."
+              "Tiket ini sudah dipindai panitia. Terima kasih atas kehadiran Anda."
             }
           />
 
           <div className="flex justify-center">
-            <Card className="w-full max-w-md items-center gap-4 p-6 text-center md:p-8">
+            <Card className="w-full max-w-md items-center gap-2 p-6 text-center md:p-8">
               <span className="flex size-14 items-center justify-center rounded-full bg-emerald-500/10">
                 <CheckCircle2 className="size-8 text-emerald-600" />
               </span>
               {guest?.full_name ? (
-                <p className="text-lg font-semibold">{guest.full_name}</p>
+                <p className="text-sm md:text-md font-semibold font-serif">
+                  {guest.full_name}
+                </p>
               ) : null}
-              <p className="text-sm font-medium text-emerald-600">
-                {showCountdown
-                  ? "Sampai jumpa di Ngunduh Mantu"
-                  : "Sudah check-in"}
+              <p className="text-sm md:text-md font-medium text-emerald-600 font-serif ">
+                Terimakasih sudah meluangkan waktu untuk hadir di acara kami :)
               </p>
-              {showCountdown ? (
-                <div className="w-full rounded-2xl bg-wedding-surface/60 p-4">
-                  <Countdown />
-                </div>
-              ) : null}
             </Card>
           </div>
         </div>
@@ -160,13 +136,23 @@ const CheckInTicket = ({ guestId }: { guestId: string }) => {
 
             {!showQr && (
               <div className="w-full rounded-2xl bg-wedding-surface/60 p-4">
-                <Countdown />
+                <Countdown
+                  isVisibleLabel={false}
+                  className="dark:text-wedding-accent"
+                />
               </div>
             )}
-            <p className="text-sm text-wedding-text-secondary">
-              Satu tiket berlaku untuk satu undangan. Panitia akan memindai
-              tiket ini pada saat check-in.
-            </p>
+            {showQr ? (
+              <p className="text-sm text-wedding-text-secondary font-serif">
+                Satu tiket berlaku untuk satu undangan. Panitia akan memindai
+                tiket ini pada saat check-in.
+              </p>
+            ) : (
+              <p className="text-sm md:text-md text-muted font-bold font-serif">
+                Tiket akan muncul pada hari acara. Simpan halaman ini agar mudah
+                dibuka kembali.
+              </p>
+            )}
           </Card>
         </div>
       </div>

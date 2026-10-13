@@ -1,10 +1,17 @@
 "use client"
 
 import { useCountdown } from "@/hooks/useCountDown"
+import { cn } from "@/lib/utils"
 import moment from "moment"
 import React from "react"
 
-export const Countdown = () => {
+export const Countdown = ({
+  isVisibleLabel = true,
+  className,
+}: {
+  isVisibleLabel?: boolean
+  className?: string
+}) => {
   const { title, isEventDay, units, isFinished, unduhMantuDate, mantuDate } =
     useCountdown()
 
@@ -35,8 +42,13 @@ export const Countdown = () => {
   }
 
   return (
-    <div className="flex flex-col items-center gap-1 font-bold text-primary dark:text-muted">
-      {title && (
+    <div
+      className={cn(
+        "flex flex-col items-center gap-1 font-bold text-primary dark:text-muted",
+        className
+      )}
+    >
+      {title && isVisibleLabel && (
         <span className="mb-3 text-[10px] font-bold tracking-[0.3em] uppercase opacity-80 md:text-xs">
           {title}
         </span>

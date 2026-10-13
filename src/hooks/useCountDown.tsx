@@ -62,8 +62,6 @@ export const useCountdown = () => {
 
   const currentEvent: any = events.find((e) => now <= endOfDay(e.date)) ?? null
 
-  console.log(currentEvent)
-
   const units = [
     { value: getTimeLeft(currentEvent?.date)?.d, label: "Hari" },
     { value: getTimeLeft(currentEvent?.date)?.h, label: "Jam" },
@@ -97,5 +95,13 @@ export const useCountdown = () => {
     units,
     unduhMantuDate: process.env.NEXT_PUBLIC_UNDUH_DATE,
     mantuDate: process.env.NEXT_PUBLIC_MANTU_DATE,
+    isUnduhDay: isSameDay(
+      now,
+      new Date(process.env.NEXT_PUBLIC_UNDUH_DATE as string)
+    ),
+    isMantuDay: isSameDay(
+      now,
+      new Date(process.env.NEXT_PUBLIC_MANTU_DATE as string)
+    ),
   }
 }

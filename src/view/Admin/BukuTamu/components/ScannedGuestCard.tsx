@@ -43,14 +43,10 @@ export const ScannedGuestCard = ({
   onScanAgain,
   onConfirm,
 }: ScannedGuestCardProps) => {
-  const mantuChecked = !!(
-    guest?.checked_in_at_mantu ?? guest?.checked_in_at
-  )
+  const mantuChecked = !!(guest?.checked_in_at_mantu ?? guest?.checked_in_at)
   const unduhChecked = !!guest?.checked_in_at_unduh
   const checkedIn = activeEvent === "mantu" ? mantuChecked : unduhChecked
   const eventLabel = activeEvent === "mantu" ? "Mantu" : "Ngunduh Mantu"
-  const partySize = Number(guest?.guest_total) || 0
-  const needsManualCount = partySize <= 0
 
   const {
     control,
@@ -62,13 +58,13 @@ export const ScannedGuestCard = ({
     defaultValues: { party_size: 1 },
   })
 
+  const submitConfirm = handleSubmit((values) =>
+    onConfirm(Math.trunc(values.party_size))
+  )
+
   useEffect(() => {
     reset({ party_size: 1 })
   }, [guest?.id, reset])
-
-  const submitConfirm = handleSubmit((values) =>
-    onConfirm(needsManualCount ? Math.trunc(values.party_size) : undefined)
-  )
 
   return (
     <Card className="gap-6 p-5 sm:p-6">
@@ -80,7 +76,10 @@ export const ScannedGuestCard = ({
           {guest?.full_name}
         </p>
         <div className="mt-3 flex flex-wrap items-center gap-2">
-          <Badge variant="outline" className="border-wedding-border bg-wedding-surface px-3 py-1 text-muted">
+          <Badge
+            variant="outline"
+            className="border-wedding-border bg-wedding-surface px-3 py-1 text-muted"
+          >
             {guestFrom}
           </Badge>
           <Badge
@@ -121,86 +120,80 @@ export const ScannedGuestCard = ({
               {eventLabel} sudah masuk
             </Badge>
           ) : (
-            <Badge variant="outline" className="border-book-ornament/40 bg-book-ornament/10 px-3 py-1 text-book-ornament dark:text-book-cover-title">
+            <Badge
+              variant="outline"
+              className="border-book-ornament/40 bg-book-ornament/10 px-3 py-1 text-book-ornament dark:text-book-cover-title"
+            >
               {eventLabel} belum check-in
             </Badge>
           )}
         </div>
       </div>
 
-      {needsManualCount ? (
-        <div className="rounded-2xl border border-wedding-border bg-wedding-surface/60 p-4">
-          <p className="text-center text-[11px] font-bold tracking-[0.24em] text-muted uppercase">
-            Jumlah rombongan • belum tercatat
-          </p>
-          <Controller
-            name="party_size"
-            control={control}
-            render={({ field: { value, onChange, ...field } }) => (
-              <>
-                <div className="mt-3 flex items-center justify-center gap-3">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    aria-label="Kurangi"
-                    className="size-10 shrink-0 rounded-full"
-                    onClick={() => onChange(Math.max(1, (value || 1) - 1))}
-                  >
-                    <Minus className="size-4" />
-                  </Button>
-                  <NumericFormat
-                    {...field}
-                    value={value}
-                    thousandSeparator=","
-                    allowNegative={false}
-                    decimalScale={0}
-                    onValueChange={(values: any) =>
-                      onChange(values.floatValue ?? undefined)
-                    }
-                    customInput={FormInput}
-                    className="max-w-28 text-center font-serif text-2xl font-bold"
-                    error={errors.party_size?.message}
-                  />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    aria-label="Tambah"
-                    className="size-10 shrink-0 rounded-full"
-                    onClick={() => onChange((value || 0) + 1)}
-                  >
-                    <Plus className="size-4" />
-                  </Button>
-                </div>
-                {errors.party_size?.message && (
-                  <p className="mt-2 text-center text-xs font-medium text-destructive">
-                    {errors.party_size.message}
-                  </p>
-                )}
-              </>
-            )}
-          />
-          <p className="mt-2 text-center text-xs text-muted-foreground">
-            Jumlah tamu ini belum ada di database — isi sesuai rombongan yang
-            datang.
-          </p>
-        </div>
-      ) : (
-        <div className="flex items-center justify-center gap-2.5 rounded-2xl border border-wedding-border bg-wedding-surface/60 px-4 py-4">
-          <Users className="size-5 shrink-0 text-muted" />
-          <p className="text-sm text-muted-foreground">
-            Rombongan{" "}
-            <span className="font-serif text-xl font-bold text-foreground">
-              {partySize}
-            </span>{" "}
-            orang • sesuai undangan
-          </p>
-        </div>
-      )}
+      <div className="rounded-2xl border border-wedding-border bg-wedding-surface/60 p-4">
+        <p className="text-center text-[11px] font-bold tracking-[0.24em] text-muted uppercase">
+          Jumlah rombongan • belum tercatat
+        </p>
+        <Controller
+          name="party_size"
+          control={control}
+          render={({ field: { value, onChange, ...field } }) => (
+            <>
+              <div className="mt-3 flex items-center justify-center gap-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  aria-label="Kurangi"
+                  className="size-10 shrink-0 rounded-full"
+                  onClick={() => onChange(Math.max(1, (value || 1) - 1))}
+                >
+                  <Minus className="size-4" />
+                </Button>
+                <NumericFormat
+                  {...field}
+                  value={value}
+                  thousandSeparator=","
+                  allowNegative={false}
+                  decimalScale={0}
+                  onValueChange={(values: any) =>
+                    onChange(values.floatValue ?? undefined)
+                  }
+                  customInput={FormInput}
+                  className="max-w-28 text-center font-serif text-2xl font-bold"
+                  error={errors.party_size?.message}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  aria-label="Tambah"
+                  className="size-10 shrink-0 rounded-full"
+                  onClick={() => onChange((value || 0) + 1)}
+                >
+                  <Plus className="size-4" />
+                </Button>
+              </div>
+              {errors.party_size?.message && (
+                <p className="mt-2 text-center text-xs font-medium text-destructive">
+                  {errors.party_size.message}
+                </p>
+              )}
+            </>
+          )}
+        />
+        <p className="mt-2 text-center text-xs text-muted-foreground">
+          Jumlah tamu ini belum ada di database — isi sesuai rombongan yang
+          datang.
+        </p>
+      </div>
 
       <div className="flex flex-col gap-2 sm:flex-row">
-        <Button variant="outline" className="w-full rounded-xl" onClick={onScanAgain}>
+        <Button
+          variant="outline"
+          className="w-full rounded-xl"
+          onClick={onScanAgain}
+        >
           <RotateCcw className="size-4" />
           Scan Lagi
         </Button>

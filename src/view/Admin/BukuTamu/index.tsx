@@ -15,8 +15,8 @@ import { ScannedGuestCard } from "./components/ScannedGuestCard"
 import { ScannerPanel } from "./components/ScannerPanel"
 import { useCheckedInList } from "./hooks/useCheckedInList"
 import { useQrScanner } from "./hooks/useQrScanner"
-import { autoCheckInEvent } from "@/components/CheckInTicket/helprt/eventSchedule"
 import { parseGuestId } from "./utils"
+import { useCountdown } from "@/hooks/useCountDown"
 
 type Mode = "scan" | "manual"
 
@@ -26,15 +26,14 @@ type Mode = "scan" | "manual"
 // saat tanggal unduh tiba dan hanya menghitung check-in unduh.
 const BukuTamu = () => {
   const [mode, setMode] = React.useState<Mode>("scan")
-  // useState agar event terkunci per sesi panitia (tidak flip tiba-tiba
-  // tepat tengah malam saat halaman terbuka).
-  const [checkInEvent] = React.useState(autoCheckInEvent)
   const [scannedGuest, setScannedGuest] = React.useState<any | null>(null)
   const [isFetchingGuest, setIsFetchingGuest] = React.useState(false)
+
+  const { isUnduhDay } = useCountdown()
+
   const queryClient = useQueryClient()
-  const checkedIn = useCheckedInList(checkInEvent)
-  const eventLabel =
-    checkInEvent === "mantu" ? "Mantu • 12 Des" : "Ngunduh • 26 Des"
+  const checkedIn = useCheckedInList()
+  const eventLabel = isUnduhDay ? "Ngunduh • 26 Des" : "Mantu • 12 Des"
 
   const scanner = useQrScanner({
     enabled: mode === "scan",
@@ -43,6 +42,7 @@ const BukuTamu = () => {
 
   async function handleScan(decodedText: string) {
     const { guestId, event: qrEvent } = parseGuestId(decodedText)
+    console.log(guestId, qrEvent)
     if (!guestId) {
       toast?.error?.("QR tidak valid")
       scanner.unlock()
@@ -86,7 +86,7 @@ const BukuTamu = () => {
         })
       }
       // Prioritaskan event dari QR; fallback ke event sesi panitia
-      const eventToSend = g._qrEvent ?? checkInEvent
+      const eventToSend = g._qrEvent ?? (isUnduhDay ? "unduh" : "mantu")
       return clientApi({
         url: `/guests/${g.id}/buku-tamu`,
         method: "PATCH",
@@ -153,13 +153,13 @@ const BukuTamu = () => {
           icon={<UsersRound className="size-5" />}
           label="Undangan Hadir"
           value={(checkedIn.totalGuests ?? 0).toLocaleString("id-ID")}
-          hint={`Check-in ${checkInEvent === "mantu" ? "mantu" : "ngunduh mantu"}`}
+          hint={`Check-in ${isUnduhDay ? "ngunduh mantu" : "mantu"}`}
         />
         <AdminStatCard
           icon={<UserCheck className="size-5" />}
           label="Jiwa Hadir"
           value={(checkedIn.totalPeople ?? 0).toLocaleString("id-ID")}
-          hint={`Orang masuk ${checkInEvent === "mantu" ? "mantu" : "ngunduh mantu"}`}
+          hint={`Orang masuk ${isUnduhDay ? "ngunduh mantu" : "mantu"}`}
           accent="#16a34a"
         />
       </div>
@@ -184,7 +184,7 @@ const BukuTamu = () => {
                 guest={scannedGuest}
                 guestFrom={scannedFrom}
                 isConfirming={isCheckingIn}
-                activeEvent={checkInEvent}
+                activeEvent={isUnduhDay ? "unduh" : "mantu"}
                 onScanAgain={handleScanAgain}
                 onConfirm={(partySize) => checkInScanned(partySize)}
               />
@@ -198,7 +198,7 @@ const BukuTamu = () => {
           />
         </div>
       ) : (
-        <ManualCheckInForm activeEvent={checkInEvent} />
+        <ManualCheckInForm activeEvent={isUnduhDay ? "unduh" : "mantu"} />
       )}
     </div>
   )
