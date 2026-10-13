@@ -1,107 +1,148 @@
-// "use client"
+"use client"
 
-import { getTimeLeft } from "@/helper/getTimeLeft"
 import { useGuest } from "@/store/useGuest"
 import { useEffect, useMemo, useState } from "react"
+
+const TZ = "Asia/Jakarta"
+const TZ_OFFSET = "+07:00"
 
 type CountdownEvent = {
   date: Date
   title: string
+  detail: string
+}
+
+type TimeLeft = {
+  totalSeconds: number
+  isStarted: boolean // waktu acara sudah tercapai
+  isFinished: boolean // hari H sudah lewat (lewat 23:59 WIB)
+  d: number
+  h: number
+  m: number
+  s: number
+  units: { value: number; label: string }[]
 }
 
 export const useCountdown = () => {
   const { guest } = useGuest()
   const [now, setNow] = useState(() => new Date())
 
-  // update tiap detik
+  const mantuDate = process.env.NEXT_PUBLIC_MANTU_DATE
+  const unduhDate = process.env.NEXT_PUBLIC_UNDUH_DATE
 
-  const isSameDay = (a: Date, b: Date) =>
-    a.getFullYear() === b.getFullYear() &&
-    a.getMonth() === b.getMonth() &&
-    a.getDate() === b.getDate()
-
-  const endOfDay = (d: Date) => {
-    const end = new Date(d)
-    end.setHours(23, 59, 59, 999)
-    return end
+  // parse string tanpa offset sebagai WIB
+  const parseWIB = (s?: string): Date | null => {
+    if (!s) return null
+    const hasTz = /([zZ]|[+-]\d{2}:?\d{2})$/.test(s)
+    const d = new Date(hasTz ? s : `${s}${TZ_OFFSET}`)
+    return isNaN(d.getTime()) ? null : d
   }
 
-  // daftar event, urut dari yang paling awal
+  // "YYYY-MM-DD" di zona WIB
+  const dayKey = (d: Date) => d.toLocaleDateString("en-CA", { timeZone: TZ })
+
+  const isSameDay = (a: Date, b: Date) => dayKey(a) === dayKey(b)
+
+  const endOfDay = (d: Date) =>
+    new Date(`${dayKey(d)}T23:59:59.999${TZ_OFFSET}`)
+
+  const buildTimeLeft = (target: Date | null, now: Date): TimeLeft => {
+    const totalSeconds = target
+      ? Math.max(0, Math.floor((target.getTime() - now.getTime()) / 1000))
+      : 0
+
+    const d = Math.floor(totalSeconds / 86400)
+    const h = Math.floor((totalSeconds % 86400) / 3600)
+    const m = Math.floor((totalSeconds % 3600) / 60)
+    const s = totalSeconds % 60
+
+    return {
+      totalSeconds,
+      isStarted: target ? now >= target : false,
+      isFinished: target ? now > endOfDay(target) : true,
+      d,
+      h,
+      m,
+      s,
+      units: [
+        { value: d, label: "Hari" },
+        { value: h, label: "Jam" },
+        { value: m, label: "Menit" },
+        { value: s, label: "Detik" },
+      ],
+    }
+  }
+
+  const mantu = useMemo(() => parseWIB(mantuDate), [mantuDate])
+  const unduh = useMemo(() => parseWIB(unduhDate), [unduhDate])
+
   const events = useMemo<CountdownEvent[]>(() => {
-    const list = [
-      ...(guest?.mantu_status
-        ? [
-            {
-              date: process.env.NEXT_PUBLIC_MANTU_DATE,
-              title: "Menuju Acara Pernikahan",
-              detail: "Acara Pernikahan",
-            },
-          ]
-        : []),
-      ...(guest?.unduh_mantu_status
-        ? [
-            {
-              date: process.env.NEXT_PUBLIC_UNDUH_DATE,
-              title: "Menuju Acara Ngunduh Mantu",
-              detail: "Acara Ngunduh Mantu",
-            },
-          ]
-        : []),
-    ]
+    const list: { date: Date | null; title: string; detail: string }[] = []
+
+    if (guest?.mantu_status) {
+      list.push({
+        date: mantu,
+        title: "Menuju Acara Pernikahan",
+        detail: "Acara Pernikahan",
+      })
+    }
+    if (guest?.unduh_mantu_status) {
+      list.push({
+        date: unduh,
+        title: "Menuju Acara Ngunduh Mantu",
+        detail: "Acara Ngunduh Mantu",
+      })
+    }
 
     return list
-      .filter((e) => !!e.date)
-      .map((e) => ({
-        title: e.title,
-        date: new Date(e.date as string),
-        detail: e.detail,
-      }))
-      .filter((e) => !isNaN(e.date.getTime()))
+      .filter((e): e is CountdownEvent => e.date !== null)
       .sort((a, b) => a.date.getTime() - b.date.getTime())
-  }, [guest?.mantu_status, guest?.unduh_mantu_status])
+  }, [guest?.mantu_status, guest?.unduh_mantu_status, mantu, unduh])
 
-  const currentEvent: any = events.find((e) => now <= endOfDay(e.date)) ?? null
+  // countdown per acara (selalu tersedia, terlepas dari event aktif)
+  const mantuTimeLeft = buildTimeLeft(mantu, now).totalSeconds
+  const unduhMantuTimeLeft = buildTimeLeft(unduh, now).totalSeconds
 
-  const units = [
-    { value: getTimeLeft(currentEvent?.date)?.d, label: "Hari" },
-    { value: getTimeLeft(currentEvent?.date)?.h, label: "Jam" },
-    { value: getTimeLeft(currentEvent?.date)?.m, label: "Menit" },
-    { value: getTimeLeft(currentEvent?.date)?.s, label: "Detik" },
-  ]
+  // event tetap "aktif" sampai akhir hari H (WIB)
+  const currentEvent: any = events.find((e) => now <= endOfDay(e.date))
 
   useEffect(() => {
     const interval = setInterval(() => setNow(new Date()), 1000)
     return () => clearInterval(interval)
   }, [])
 
+  const base = {
+    unduhMantuDate: unduhDate,
+    mantuDate,
+    mantuTimeLeft,
+    unduhMantuTimeLeft,
+    isMantuDay: mantu ? isSameDay(now, mantu) : false,
+    isUnduhDay: unduh ? isSameDay(now, unduh) : false,
+  }
+
+  const current = buildTimeLeft(events[0].date, now)
+
   if (!currentEvent) {
     return {
+      ...base,
       title: "",
       detailTitle: "",
       isEventDay: false,
-      isFinished: true, // semua event sudah lewat
-      timeLeft: { days: 0, hours: 0, minutes: 0, seconds: 0 },
-      unduhMantuDate: process.env.NEXT_PUBLIC_UNDUH_DATE,
-      mantuDate: process.env.NEXT_PUBLIC_MANTU_DATE,
+      isStarted: false,
+      isFinished: true,
+      timeLeft: current.totalSeconds,
+      units: current.units,
     }
   }
 
   return {
+    ...base,
     title: currentEvent.title,
     detailTitle: currentEvent.detail,
-    isEventDay: isSameDay(now, currentEvent.date), // true tepat di hari H
+    isEventDay: isSameDay(now, currentEvent.date),
+    isStarted: current.isStarted,
     isFinished: false,
-    timeLeft: getTimeLeft(currentEvent.date),
-    units,
-    unduhMantuDate: process.env.NEXT_PUBLIC_UNDUH_DATE,
-    mantuDate: process.env.NEXT_PUBLIC_MANTU_DATE,
-    isUnduhDay: isSameDay(
-      now,
-      new Date(process.env.NEXT_PUBLIC_UNDUH_DATE as string)
-    ),
-    isMantuDay: isSameDay(
-      now,
-      new Date(process.env.NEXT_PUBLIC_MANTU_DATE as string)
-    ),
+    timeLeft: current.totalSeconds,
+    units: current.units,
   }
 }

@@ -4,45 +4,58 @@ import { QRCodeSVG } from "qrcode.react"
 import { useGuest } from "@/store/useGuest"
 import { useCountdown } from "@/hooks/useCountDown"
 import { useQuery } from "@tanstack/react-query"
-import { CheckCircle2 } from "lucide-react"
+import { CheckCircle2, XCircle } from "lucide-react"
 import { Countdown } from "../CountDown"
 import clientApi from "@/services/client"
 
-type TicketView = "checked-in" | "countdown" | "qr" | "finished"
+type TicketView = "checked-in" | "countdown" | "qr" | "finished" | "missed"
 
 const CheckInTicket = ({ guestId }: { guestId: string }) => {
   const { guest, setGuest } = useGuest()
-  const { title, detailTitle, isEventDay, isUnduhDay, isMantuDay } =
-    useCountdown()
+  const {
+    timeLeft,
+    title,
+    detailTitle,
+    isEventDay,
+    isUnduhDay,
+    isMantuDay,
+    mantuTimeLeft,
+    unduhMantuTimeLeft,
+    isFinished,
+  } = useCountdown()
 
   // data polling menang atas data store
   const isCheckedInAtMantu = !!guest?.checked_in_at_mantu
   const isCheckedInAtUnduhMantu = !!guest?.checked_in_at_unduh
+  const isCheckedIn = !!guest?.checked_in_at
   const hasBothStatus = !!(guest?.mantu_status && guest?.unduh_mantu_status)
 
   const view: TicketView = (() => {
     if (hasBothStatus) {
-      if (isMantuDay) {
-        if (isCheckedInAtMantu) {
-          return "checked-in"
-        } else {
-          return "qr"
-        }
-      } else if (isUnduhDay) {
-        if (isCheckedInAtUnduhMantu) {
-          return "checked-in"
-        } else {
-          return "qr"
-        }
-      } else {
-        if (isCheckedInAtMantu && isCheckedInAtUnduhMantu) {
-          return "finished"
-        } else {
-          return "countdown"
-        }
+      // hari H dan acara sudah dimulai
+      if (isMantuDay && mantuTimeLeft === 0) {
+        return isCheckedInAtMantu ? "checked-in" : "qr"
       }
+
+      if (isUnduhDay && unduhMantuTimeLeft === 0) {
+        return isCheckedInAtUnduhMantu ? "checked-in" : "qr"
+      }
+
+      // kedua acara sudah lewat
+      if (isFinished) {
+        return isCheckedInAtMantu || isCheckedInAtUnduhMantu
+          ? "finished"
+          : "missed"
+      }
+
+      // masih ada acara yang akan datang
+      return "countdown"
+    } else {
+      if (isCheckedIn) return "checked-in"
+      if (isFinished) return "missed"
+      if (isEventDay && timeLeft === 0) return "qr"
+      return "countdown" // hari H sebelum jam acara, atau belum hari H
     }
-    return isEventDay ? "qr" : "countdown"
   })()
 
   const showQr = view === "qr"
@@ -67,7 +80,7 @@ const CheckInTicket = ({ guestId }: { guestId: string }) => {
     refetchOnWindowFocus: true,
   })
 
-  if (view === "checked-in") {
+  if (view === "checked-in" || view === "missed") {
     return (
       <section
         id="check-in-ticket"
@@ -84,16 +97,31 @@ const CheckInTicket = ({ guestId }: { guestId: string }) => {
 
           <div className="flex justify-center">
             <Card className="w-full max-w-md items-center gap-2 p-6 text-center md:p-8">
-              <span className="flex size-14 items-center justify-center rounded-full bg-emerald-500/10">
-                <CheckCircle2 className="size-8 text-emerald-600" />
+              {hasBothStatus && unduhMantuTimeLeft !== 0 && (
+                <p className="text-sm md:text-md text-muted font-serif font-bold">
+                  Anda sudah Check-in diacara Mantu/Pernikahan
+                </p>
+              )}
+              <span
+                className={`flex size-14 items-center justify-center rounded-full ${view === "checked-in" ? "bg-emerald-500/10" : "bg-red-500/10"}`}
+              >
+                {view === "checked-in" ? (
+                  <CheckCircle2 className="size-8 text-emerald-600" />
+                ) : (
+                  <XCircle className="size-8 text-red-600" />
+                )}
               </span>
               {guest?.full_name ? (
                 <p className="text-sm md:text-md font-semibold font-serif">
                   {guest.full_name}
                 </p>
               ) : null}
-              <p className="text-sm md:text-md font-medium text-emerald-600 font-serif ">
-                Terimakasih sudah meluangkan waktu untuk hadir di acara kami :)
+              <p
+                className={`text-sm md:text-md font-medium ${view === "checked-in" ? "text-emerald-600" : "text-red-600"} font-serif `}
+              >
+                {view === "checked-in"
+                  ? "Terimakasih sudah meluangkan waktu untuk hadir di acara kami :)"
+                  : "Maaf, anda tidak melakukan check-in di acara kami. Terima Kasih atas perhatiannya. "}
               </p>
             </Card>
           </div>
@@ -143,7 +171,7 @@ const CheckInTicket = ({ guestId }: { guestId: string }) => {
               <div className="w-full rounded-2xl bg-wedding-surface/60 p-4">
                 <Countdown
                   isVisibleLabel={false}
-                  className="dark:text-wedding-accent"
+                  className="dark:text-wedding-accent text-muted"
                 />
               </div>
             )}

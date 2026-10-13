@@ -20,9 +20,10 @@ export const Countdown = ({
     unduhMantuDate,
     mantuDate,
     isUnduhDay,
+    timeLeft,
   } = useCountdown()
 
-  if (isFinished) {
+  if (isFinished && timeLeft === 0) {
     return (
       <div className="flex flex-col items-center justify-center gap-1 font-bold text-primary animate-fade-up">
         <span className="mt-1.5 text-md font-bold tracking-[0.3em] uppercase md:text-xl">
@@ -38,7 +39,7 @@ export const Countdown = ({
     )
   }
 
-  if (isEventDay) {
+  if (isEventDay && timeLeft === 0) {
     return (
       <div className="flex flex-col items-center justify-center gap-1 opacity/80 text-primary animate-fade-up">
         <span className=" text-lg md:text-2xl tracking-[0.3em] uppercase">

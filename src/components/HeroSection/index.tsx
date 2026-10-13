@@ -7,7 +7,6 @@ import { Heart } from "lucide-react"
 import Image from "next/image"
 import { useImageUrl } from "@/store/useImageUrl"
 import ScrollIndicator from "../ScrollIndicator"
-import moment from "moment"
 
 const HeroSection = () => {
   const { resolvedTheme } = useTheme()
