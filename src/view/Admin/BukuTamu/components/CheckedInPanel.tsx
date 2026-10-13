@@ -2,7 +2,6 @@
 
 import Card from "@/components/Card"
 import { BookOpenText, CheckCircle2 } from "lucide-react"
-import { latestCheckInAt } from "@/components/CheckInTicket/helprt/eventSchedule"
 import { formatCheckInTime } from "../utils"
 
 type CheckedInPanelProps = {
@@ -61,7 +60,7 @@ export const CheckedInPanel = ({
                   {guest.full_name}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  Masuk pukul {formatCheckInTime(latestCheckInAt(guest))}
+                  Masuk pukul {formatCheckInTime(guest?.checked_in_at)}
                 </p>
               </div>
               <span className="shrink-0 rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-bold text-emerald-600">

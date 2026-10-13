@@ -232,7 +232,7 @@ const MainView = ({
           guestId={guestId}
           guestName={guestName}
         />
-        <CheckInTicket guestId={guestId} guestName={guestName} />
+        <CheckInTicket guestId={guestId as string} />
         <DigitalGift />
         <RomanticQuote />
         <Footer />
