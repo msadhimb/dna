@@ -1,4 +1,3 @@
-import React from "react"
 import Header from "../Header"
 import Card from "../Card"
 import { QRCodeSVG } from "qrcode.react"
@@ -7,11 +6,12 @@ import { useCountdown } from "@/hooks/useCountDown"
 import { useQuery } from "@tanstack/react-query"
 import { CheckCircle2 } from "lucide-react"
 import { Countdown } from "../CountDown"
+import clientApi from "@/services/client"
 
 type TicketView = "checked-in" | "countdown" | "qr" | "finished"
 
 const CheckInTicket = ({ guestId }: { guestId: string }) => {
-  const { guest } = useGuest()
+  const { guest, setGuest } = useGuest()
   const { title, detailTitle, isEventDay, isUnduhDay, isMantuDay } =
     useCountdown()
 
@@ -50,14 +50,19 @@ const CheckInTicket = ({ guestId }: { guestId: string }) => {
   useQuery({
     queryKey: ["guest-status", guestId],
     queryFn: async () => {
-      const res = await fetch(`/api/guest-status/${guestId}`, {
-        cache: "no-store",
+      const res = await clientApi({
+        url: `/guest-status/${guestId}`,
+        method: "GET",
       })
-      if (!res.ok) throw new Error("Gagal memuat status check-in")
-      return res.json()
+
+      setGuest({
+        ...guest,
+        ...res,
+      })
+      return res
     },
     refetchInterval: 5_000,
-    enabled: !!guestId && showQr,
+    enabled: !!guestId && isEventDay,
     retry: false,
     refetchOnWindowFocus: true,
   })
