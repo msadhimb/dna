@@ -120,7 +120,7 @@ export const useCountdown = () => {
     isUnduhDay: unduh ? isSameDay(now, unduh) : false,
   }
 
-  const current = buildTimeLeft(events[0].date, now)
+  const current = buildTimeLeft(events[0]?.date, now)
 
   if (!currentEvent) {
     return {
